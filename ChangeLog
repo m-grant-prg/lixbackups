@@ -1,0 +1,56 @@
+2012-01-10 v 1.0.13 Mark Grant <m.grant.prg@btinternet.com>
+	* attbckshare:	Removed the .sh extension from the command name.
+	bckfulladhoc:	Removed the .sh extension from the command name.
+			Add .gvfs file exclusion to support Gnome desktops
+			and Ubuntu.
+	bckfullweekly:	Removed the .sh extension from the command name.
+			Add .gvfs file exclusion to support Gnome desktops
+			and Ubuntu.
+	bckincdaily:	Removed the .sh extension from the command name.
+			Add .gvfs file exclusion to support Gnome desktops
+			and Ubuntu.
+	detbckshare:	Removed the .sh extension from the command name.
+
+2010-12-16 v 1.0.12 Mark Grant <m.grant.prg@btinternet.com>
+	* bckfullweekly.sh: allowed mail of disk usage stats from all OS's
+	bckincdaily.sh: allowed mail of disk usage stats from all OS's
+
+2010-12-14 v 1.0.11 Mark Grant <m.grant.prg@btinternet.com>
+	* bckfulladhoc.sh: removed invalid switch from df mailx
+	bckfullweekly.sh: removed invalid switch from df mailx
+	bckincdaily.sh: removed invalid switch from df mailx
+
+2010-11-28 v 1.0.10 Mark Grant <m.grant.prg@btinternet.com>
+	* setup.sh: created to setup backups.conf and ~/.nsmbrc file.
+	attbckshare.sh: Changed to retrieve parameters from the
+	backups.conf and ~/.nsmbrc files
+
+2010-11-23 v 1.0.9 Mark Grant <m.grant.prg@btinternet.com>
+	* bckincdaily.sh: remove -g segfault temp fix for Linux
+
+2010-11-21 v 1.0.8 Mark Grant <m.grant.prg@btinternet.com>
+	* attbckshare.sh: new man page
+	detbckshare.sh: new man page
+	bckfulladhoc.sh: new man page
+	bckfullweekly.sh: new man page
+	bckincdaily.sh: new man page
+
+2010-11-20 v 1.0.7 Mark Grant <m.grant.prg@btinternet.com>
+	* attbckshare.sh: man page added.
+	detbckshare.sh: man page added.
+	bckfulladhoc.sh:man page added.
+	bckfullweekly.sh: man page added.
+	bckincdaily: man page added.
+
+2010-11-20 v 1.0.6 Mark Grant <m.grant.prg@btinternet.com>
+
+	* bckfullweekly v1.0.6: Removed shutdown.
+	bckincdaily v1.0.8: Removed shutdown.
+
+2010-11-18 v1.0.5 Mark Grant <m.grant.prg@btinternet.com>
+
+	* attbckshare.sh introduced.
+	detbckshare.sh introduced.
+	bckfulladhoc.sh introduced.
+	bckfullweekly.sh introduced.
+	bckincdaily.sh introduced.

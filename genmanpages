@@ -1,0 +1,5 @@
+txt2man -t attbckshare -s 1 -v "Backup Scripts Manual" manpagessrc/attbckshare.1.txt > manpages/attbckshare.1
+txt2man -t detbckshare -s 1 -v "Backup Scripts Manual" manpagessrc/detbckshare.1.txt > manpages/detbckshare.1
+txt2man -t bckfulladhoc -s 1 -v "Backup Scripts Manual" manpagessrc/bckfulladhoc.1.txt > manpages/bckfulladhoc.1
+txt2man -t bckfullweekly -s 1 -v "Backup Scripts Manual" manpagessrc/bckfullweekly.1.txt > manpages/bckfullweekly.1
+txt2man -t bckincdaily -s 1 -v "Backup Scripts Manual" manpagessrc/bckincdaily.1.txt > manpages/bckincdaily.1

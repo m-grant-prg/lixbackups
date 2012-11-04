@@ -1,0 +1,42 @@
+NAME
+attbckshare - attach network share for backups
+SYNOPSIS
+attbckshare [OPTION]
+DESCRIPTION
+Attaches a pre-determined network samba share as a target location for backup
+files.
+OPTIONS
+-h --help  prints usage information
+
+-v --version  prints version information
+EXIT STATUS
+0
+if OK,
+
+1
+if minor problems,
+
+64
+error in command line arguments.
+
+65
+failed to mount share due to mount error.
+
+66
+Backup share already mounted.
+AUTHOR
+Written by Mark Grant.
+REPORTING BUGS
+Report bugs to <m.grant.prg@btinternet.com>
+COPYRIGHT
+Copyright 2010 Mark Grant.
+.br
+License GPLv3+: GNU GPL version 3 or later
+.br
+<http://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+.br
+There is NO WARRANTY, to the extent permitted by law.
+SEE ALSO
+detbckshare(1) mount(8) (and mount_smbfs(8) on FreeBSD) umount(8)

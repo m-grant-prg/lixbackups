@@ -1,0 +1,14 @@
+The INSTALL file in this directory contains more detailed generic instructions
+to install this package but here is a simple sequence to follow:
+
+1 ... cd to this directory.
+
+2 ... Type './configure'
+
+3 ... Type 'Make Install Clean'
+
+4 ... Type './setup.sh'
+
+5 ... Answer the questions posed by ./setusp.sh
+
+(Quote marks are for textual clarity only).
