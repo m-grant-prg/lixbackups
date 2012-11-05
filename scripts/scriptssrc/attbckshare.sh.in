@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	attbckshare is automatically generated,				##
-##		pleased do not modify!					##
+##	attbckshare.sh is automatically generated,			##
+##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: attbckshare						##
+## Script ID: attbckshare.sh						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
@@ -17,7 +17,7 @@
 ## 	on								##
 ## 	/mnt/charybdisbck						##
 ##									##
-## Syntax:	attbckshare [-h || --help || -v || --version]		##
+## Syntax:	attbckshare.sh [-h || --help || -v || --version]	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -32,7 +32,7 @@
 ## In order to make the package portable all the necessary parameters	##
 ## are stored in a $PREFIX/etc/backups.conf file.			##
 ## On FreeBSD mounting a NAS share uses the mount_smbfs command rather	##
-## than the mount.cifs command on Linux. Thisdifference means that on	##
+## than the mount.cifs command on Linux. This difference means that on	##
 ## FreeBSD we also utilise the ~/.nsmbrc file.				##
 ## The format of the backups.conf file is below:			##
 ##	# NAS server name						##
@@ -91,8 +91,8 @@
 ##				etclocation/backups.conf and, when	##
 ##				necessary (FreeBSD), the ~/.nsmbrc file.##
 ## 10/01/2012	MG	1.0.5	Removed the .sh extension from the	##
-##				command name. Add .gvfs file exclusion	##
-##				to support Gnome desktops and Ubuntu.	##
+##				command name.				##
+## 05/11/2012	MG	1.0.6	Reverted to the .sh file extension.	##
 ##									##
 ##########################################################################
 
@@ -101,7 +101,7 @@
 ####################
 script_exit_code=0
 osname=$(uname -s)		# Get system name for OS differentiation
-version="1.0.5"			# set version variable
+version="1.0.6"			# set version variable
 etclocation=@sysconfdir@	# Path to etc directory
 
 ###############
@@ -143,22 +143,22 @@ fi
 if [ $# = 1 ]; then
 	case $1 in
 		-h|-H)
-			echo "Usage is attbckshare [options]"
+			echo "Usage is attbckshare.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		--help|--HELP)
-			echo "Usage is attbckshare [options]"
+			echo "Usage is attbckshare.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		-v|-V)
-			echo "attbckshare version "$version
+			echo "attbckshare.sh version "$version
 			;;
 		--version|--VERSION)
-			echo "attbckshare version "$version
+			echo "attbckshare.sh version "$version
 			;;
 		*)
 			echo "Invalid argument. Try --help"
