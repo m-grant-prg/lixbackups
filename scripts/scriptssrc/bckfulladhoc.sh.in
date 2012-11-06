@@ -1,21 +1,21 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	bckfulladhoc is automatically generated,			##
-##		pleased do not modify!					##
+##	bckfulladhoc.sh is automatically generated,			##
+##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: bckfulladhoc						##
+## Script ID: bckfulladhoc.sh						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
 ## To run a full system backup, not part of any sequence, so		##
 ## just date/time stamped.						##
 ##                                                              	##
-## Syntax:      bckfulladhoc [-h || --help || -v || --version]		##
+## Syntax:      bckfulladhoc.sh [-h || --help || -v || --version]	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -49,6 +49,10 @@
 ## 10/01/2012	MG	1.0.8	Removed the .sh extension from the	##
 ##				command name. Add .gvfs file exclusion	##
 ##				to support Gnome desktops and Ubuntu.	##
+## 06/11/2012	MG	1.0.9	Reverted to use the .sh file extension.	##
+##				Added exclusion to tar command for /run	##
+##				and /var/run following inclusion of	##
+##				/run in Linux.				##
 ##									##
 ##########################################################################
 
@@ -58,7 +62,7 @@ exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.8"			# set version variable
+version="1.0.9"			# set version variable
 etclocation=@sysconfdir@	# Path to etc directory
 
 ###############
@@ -79,7 +83,7 @@ script_exit()
 mess_log "$1" 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdin & stdout & close fd's 6 & 7
 sleep 5
-detbckshare
+detbckshare.sh
 exit $script_exit_code
 }
 
@@ -106,22 +110,22 @@ fi
 if [ $# = 1 ]; then
 	case $1 in
 		-h|-H)
-			echo "Usage is bckfulladhoc [options]"
+			echo "Usage is bckfulladhoc.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		--help|--HELP)
-			echo "Usage is bckfulladhoc [options]"
+			echo "Usage is bckfulladhoc.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		-v|-V)
-			echo "bckfulladhoc version "$version
+			echo "bckfulladhoc.sh version "$version
 			;;
 		--version|--VERSION)
-			echo "bckfulladhoc version "$version
+			echo "bckfulladhoc.sh version "$version
 			;;
 		*)
 			echo "Invalid argument. Try --help"
@@ -152,7 +156,7 @@ exec 3<&-
 backpath="/mnt/$bckupdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare
+attbckshare.sh
 status=$?
 if [ $status != "0" ]
 	then
@@ -179,9 +183,9 @@ fi
 find / -type s > /mnt/$bckupdir/socket_exclude
 
 # Run the backup excluding system directories
-tar -cpzf $backpath --exclude=proc --exclude=lost+found \
+tar -cpzf $backpath --exclude=proc --exclude=lost+found --exclude=run \
 	--exclude=tmp --exclude=mnt --exclude=media --exclude='cdro*' \
-	--exclude=dev --exclude=sys --exclude='.gvfs' \
+	--exclude=dev --exclude=sys --exclude='.gvfs' --exclude=var/run \
 	--exclude-from=/mnt/$bckupdir/socket_exclude /
 status=$?
 
@@ -211,7 +215,7 @@ mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 sleep 5
 
 # Unmount the backup NAS server
-detbckshare
+detbckshare.sh
 
 # And exit
 exit 0

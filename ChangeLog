@@ -1,4 +1,18 @@
-2012-11-5
+2012-11-06 v 1.0.14 Mark Grant <m.grant.prg@btinternet.com>
+	* attbckshare.sh:	Reverted to use the .sh file extension.
+	bckfulladhoc.sh:	Reverted to use the .sh file extension.
+				Add exclusion for /run & /var/run to tar
+				command following Linux inclusion of the /run
+				directory.
+	bckfullweekly.sh:	Reverted to use the .sh file extension.
+				Add exclusion for /run & /var/run to tar
+				command following Linux inclusion of the /run
+				directory.
+	bckincdaily.sh:		Reverted to use the .sh file extension.
+				Add exclusion for /run & /var/run to tar
+				command following Linux inclusion of the /run
+				directory.
+	detbckshare.sh:		Reverted to use the .sh file extension.
 
 2012-01-10 v 1.0.13 Mark Grant <m.grant.prg@btinternet.com>
 	* attbckshare:	Removed the .sh extension from the command name.

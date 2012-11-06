@@ -92,7 +92,7 @@
 script_exit_code=0
 osname=$(uname -s)		# Get system name for OS differentiation
 version="1.0.3"			# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+etclocation=/usr/local/etc	# Path to etc directory
 
 ###############
 ## Functions ##

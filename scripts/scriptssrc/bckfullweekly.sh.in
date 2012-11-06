@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	bckfullweekly is automatically generated,			##
-##		pleased do not modify!					##
+##	bckfullweekly.sh is automatically generated,			##
+##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: bckfullweekly						##
+## Script ID: bckfullweekly.sh						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
@@ -19,7 +19,7 @@
 ## The weekly timing element is expected to be delivered via    	##
 ## cron.                                                        	##
 ##                                                              	##
-## Syntax:      bckfullweekly [-h || --help || -v || --version]		##
+## Syntax:      bckfullweekly.sh [-h || --help || -v || --version]	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -57,6 +57,10 @@
 ## 10/01/2012	MG	1.0.10	Removed the .sh extension from the	##
 ##				command name. Add .gvfs file exclusion	##
 ##				to support Gnome desktops and Ubuntu.	##
+## 06/11/2012	MG	1.0.11	Reverted to use the .sh file extension.	##
+##				Added exclusion to tar command for /run	##
+##				and /var/run following inclusion of	##
+##				/run in Linux.				##
 ##									##
 ##########################################################################
 
@@ -66,7 +70,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.10"			# set version variable
+version="1.0.11"		# set version variable
 etclocation=@sysconfdir@	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
@@ -90,7 +94,7 @@ script_exit()
 mess_log "$1" 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdin & stdout & close fd's 6 & 7
 sleep 5
-detbckshare
+detbckshare.sh
 exit $script_exit_code
 }
 
@@ -117,22 +121,22 @@ fi
 if [ $# = 1 ]; then
 	case $1 in
 		-h|-H)
-			echo "Usage is bckfullweekly [options]"
+			echo "Usage is bckfullweekly.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		--help|--HELP)
-			echo "Usage is bckfullweekly [options]"
+			echo "Usage is bckfullweekly.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		-v|-V)
-			echo "bckfullweekly version "$version
+			echo "bckfullweekly.sh version "$version
 			;;
 		--version|--VERSION)
-			echo "bckfullweekly version "$version
+			echo "bckfullweekly.sh version "$version
 			;;
 		*)
 			echo "Invalid argument. Try --help"
@@ -170,7 +174,7 @@ backpath="/mnt/$bckupdir/backup"$bckseq".tar.gz"
 snarpath="/mnt/$bckupdir/backup.snar"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare
+attbckshare.sh
 status=$?
 if [ $status != "0" ]
 	then
@@ -311,6 +315,7 @@ Linux)
 		--exclude=proc --exclude=lost+found --exclude=tmp \
 		--exclude=mnt --exclude=media --exclude='cdro*' --exclude=dev \
 		--exclude=sys --exclude='.gvfs' \
+		--exclude=run --exclude=var/run \
 		--exclude-from=/mnt/$bckupdir/socket_exclude /
 	status=$?
 ;;
@@ -354,7 +359,7 @@ mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 sleep 5
 
 # Unmount the backup NAS server
-detbckshare
+detbckshare.sh
 
 # And exit
 exit 0

@@ -8,7 +8,7 @@ edit = sed \
 
 scriptssrcdir = $(srcdir)/scripts/scriptssrc
 
-setup: Makefile
+setup.sh: Makefile
 	rm -f $@ $@.tmp
 	test -f ./$@.in || scriptssrcdir=$(scriptssrcdir)/; \
 	$(edit) $${scriptssrcdir}$@.in >$@.tmp
@@ -17,6 +17,6 @@ setup: Makefile
 
 	chmod a+x $@
 
-setup: $(scriptssrcdir)/setup.in
+setup.sh: $(scriptssrcdir)/setup.sh.in
 
-EXTRA_DIST = setup $(scriptssrcdir)/setup.in
+EXTRA_DIST = setup.sh $(scriptssrcdir)/setup.sh.in

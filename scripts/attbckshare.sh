@@ -1,41 +1,39 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	setup.sh is automatically generated,				##
+##	attbckshare.sh is automatically generated,			##
 ##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: setup.sh							##
+## Script ID: attbckshare.sh						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## To setup the config files for the Backup package.			##
+## To mount the backup share on the NAS server. E.g.			##
+## 	\\Ambrosia\charybdisbck						##
+## 	on								##
+## 	/mnt/charybdisbck						##
 ##									##
-## Syntax:	setup.sh [-h || --help || -v || --version]		##
+## Syntax:	attbckshare.sh [-h || --help || -v || --version]	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
 ##		64 - Invalid arguments					##
-##		65 - File(s) already exist				##
+##		65 - Failed mounting backup NAS server			##
+##		66 - Backcup share already mounted			##
 ##		67 - trap received					##
 ##									##
 ## Further Info:							##
-## The backup package mounts a NAS share as a target for the backup.	##
-## Something like:-							##
-## 	the NAS share \\Ambrosia\charybdisbck				##
-## 	mounted on							##
-## 	/mnt/charybdisbck						##
+## This script mounts a NAS share as a target for the backup scripts.	##
+##									##
 ## In order to make the package portable all the necessary parameters	##
 ## are stored in a $PREFIX/etc/backups.conf file.			##
 ## On FreeBSD mounting a NAS share uses the mount_smbfs command rather	##
 ## than the mount.cifs command on Linux. This difference means that on	##
 ## FreeBSD we also utilise the ~/.nsmbrc file.				##
-## This script will create one or both files as necessary. It will NOT	##
-## maintain the files once created, post-installation the files should	##
-## be maintained by using an editor.					##
 ## The format of the backups.conf file is below:			##
 ##	# NAS server name						##
 ##	bckupsys=MyServer						##
@@ -79,10 +77,22 @@
 ##									##
 ## Date		Author	Version	Description				##
 ##									##
-## 25/11/2010	MG	1.0.1	Created.				##
-## 10/01/2012	MG	1.0.2	Removed the .sh extension from the	##
+## 09/04/2010	MG	1.0.1	Created for Linux.			##
+## 26/08/2010	MG	1.0.2	Major revision completed supporting	##
+##				FreeBSD as well as Linux. Also put all	##
+##				relevant parameters in variables at	##
+##				beginning of script to enhance		##
+##				portability. (e.g. System, backup user	##
+##				etc.).					##
+## 18/11/2010	MG	1.0.3	Changed to emit help and version on	##
+##				input of correct flag as argument. Also	##
+##				stored version in string in Init section##
+## 28/11/2010	MG	1.0.4	Changed script to read parameters from	##
+##				etclocation/backups.conf and, when	##
+##				necessary (FreeBSD), the ~/.nsmbrc file.##
+## 10/01/2012	MG	1.0.5	Removed the .sh extension from the	##
 ##				command name.				##
-## 06/11/2012	MG	1.0.3	Reverted to use the .sh file extension.	##
+## 05/11/2012	MG	1.0.6	Reverted to the .sh file extension.	##
 ##									##
 ##########################################################################
 
@@ -91,8 +101,8 @@
 ####################
 script_exit_code=0
 osname=$(uname -s)		# Get system name for OS differentiation
-version="1.0.3"			# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+version="1.0.6"			# set version variable
+etclocation=/usr/local/etc	# Path to etc directory
 
 ###############
 ## Functions ##
@@ -133,22 +143,22 @@ fi
 if [ $# = 1 ]; then
 	case $1 in
 		-h|-H)
-			echo "Usage is setup.sh [options]"
+			echo "Usage is attbckshare.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		--help|--HELP)
-			echo "Usage is setup.sh [options]"
+			echo "Usage is attbckshare.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		-v|-V)
-			echo "setup.sh version "$version
+			echo "attbckshare.sh version "$version
 			;;
 		--version|--VERSION)
-			echo "setup.sh version "$version
+			echo "attbckshare.sh version "$version
 			;;
 		*)
 			echo "Invalid argument. Try --help"
@@ -158,44 +168,67 @@ if [ $# = 1 ]; then
 	exit 0
 fi
 
-if test -f ~/.nsmbrc || test -f $etclocation/backups.conf ; then
-	echo "File(s) exist, they must be maintained with an editor."
-	exit 65
-fi
+# Read parameters from $etclocation/backups.conf
+IFS="="
 
-read -p "NAS server name: " bckupsys
-read -p "NAS and mount backup directory: " bckupdir
-read -p "NAS user profile: " bckupusr
-read -p "NAS password for user profile: " bckuppwd
-read -p "Workgroup name: " bckupwg
-read -p "User to notify: " notifyuser
+exec 3<$etclocation/backups.conf
+while read -u3 -ra input
+do
+	case ${input[0]} in
+	server)
+		bckupsys=${input[1]}
+		;;
+	dir)
+		bckupdir=${input[1]}
+		;;
+	user)
+		bckupusr=${input[1]}
+		;;
+	password)
+		bckuppwd=${input[1]}
+		;;
+	esac
+done
+exec 3<&-
 
-# Setup files
-test -d $etclocation || mkdir -p $etclocation
+# If FreeBSD we also need the workgroup which can be obtained from
+# the ~/.nsmbrc file
 
-# Write ~/.nsmbrc file if necessary
 if [ $osname = "FreeBSD" ]; then
-	echo "# First define a workgroup." >>~/.nsmbrc
-	echo "[default]" >>~/.nsmbrc
-	echo "workgroup="$bckupwg >>~/.nsmbrc
-	echo "# Then define a server." >>~/.nsmbrc
-	echo "["$bckupsys"]" \
-		| sed y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/ \
-		>>~/.nsmbrc
-	echo "addr="$bckupsys >>~/.nsmbrc
-	echo "# Then define a server / user pair." >>~/.nsmbrc
-	echo "["$bckupsys":"$bckupusr"]" \
-		| sed y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/ \
-		>>~/.nsmbrc
-	echo "# Use persistent password cache for user." >>~/.nsmbrc
-	echo "password="$bckuppwd >>~/.nsmbrc
+	exec 3<~/.nsmbrc
+	while read -u3 -ra input
+	do
+		case ${input[0]} in
+		workgroup)
+			bckupwg=${input[1]}
+			;;
+		esac
+	done
+	exec 3<&-
 fi
 
-# Write $etclocation/backups.conf file
-echo "server="$bckupsys >>$etclocation/backups.conf
-echo "dir="$bckupdir >>$etclocation/backups.conf
-echo "user="$bckupusr >>$etclocation/backups.conf
-echo "password="$bckuppwd >>$etclocation/backups.conf
-echo "notifyuser="$notifyuser >> $etclocation/backups.conf
-
+# Check to see if the NAS backup server is mounted, if not, mount
+if [ "$(mount | grep "/mnt/$bckupdir")" == "" ] 
+	then
+	case $osname in
+	FreeBSD)
+		mount_smbfs -I $bckupsys -N -U $bckupusr -W $bckupwg \
+        		//$bckupusr@$bckupsys/$bckupdir /mnt/$bckupdir
+		status=$?
+	;;
+	Linux)
+	mount -t cifs -o user=$bckupusr,password=$bckuppwd \
+        	//$bckupsys/$bckupdir /mnt/$bckupdir
+	status=$?
+	;;
+	esac
+	if [ $status != "0" ]
+		then
+		script_exit_code=65
+		script_exit "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code
+	fi
+	else
+	script_exit_code=66
+	script_exit "Backup share already mounted. Script exit code: "$script_exit_code
+fi
 exit 0

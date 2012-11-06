@@ -1,10 +1,9 @@
 NAME
-attbckshare - attach network share for backups
+detbckshare.sh - detach the network share for backups
 SYNOPSIS
-attbckshare [OPTION]
+detbckshare.sh [OPTION]
 DESCRIPTION
-Attaches a pre-determined network samba share as a target location for backup
-files.
+Detaches the pre-determined network samba share used as a backup target location.
 OPTIONS
 -h --help  prints usage information
 
@@ -20,10 +19,10 @@ if minor problems,
 error in command line arguments.
 
 65
-failed to mount share due to mount error.
+failed to unmount share due to umount error.
 
 66
-Backup share already mounted.
+Backup share not mounted.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
@@ -39,4 +38,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-detbckshare(1) mount(8) (and mount_smbfs(8) on FreeBSD) umount(8)
+attbckshare.sh(1) umount(8) mount(8) (mount_smbfs(8) on FreeBSD)

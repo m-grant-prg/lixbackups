@@ -81,7 +81,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ####################
 script_exit_code=0
 version="1.0.14"		# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+etclocation=/usr/local/etc	# Path to etc directory
 
 # Get system name for implementing OS differences
 osname=$(uname -s)

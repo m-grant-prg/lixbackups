@@ -1,25 +1,25 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	bckincdaily.sh is automatically generated,			##
+##	bckfullweekly.sh is automatically generated,			##
 ##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: bckincdaily.sh						##
+## Script ID: bckfullweekly.sh						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Keeps copying the level 0 incremental file so that each day		##
-## a level 1 backup is made. This effectively makes it a 		##
-## differential, as opposed to incremental, backup. Runs over		##
-## the entire file system. It allows for a cycle of 7 backups		##
-## for daily coverage, designated by the short day form. The		##
-## timing element is expected to be delivered via cron.			##
-##									##
-## Syntax:	bckincdaily.sh [-h || --help || -v || --version]	##
+## Runs a level 0 incremental (ie full) backup of entire        	##
+## file system. It allows for a cycle of 5 backups for weekly   	##
+## coverage, designated by 1 - 5 which identifier is calculated 	##
+## by day of month / 7 + 1                                      	##
+## The weekly timing element is expected to be delivered via    	##
+## cron.                                                        	##
+##                                                              	##
+## Syntax:      bckfullweekly.sh [-h || --help || -v || --version]	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -37,37 +37,27 @@
 ## Date		Author	Version	Description				##
 ##									##
 ## 02/04/2010	MG	1.0.1	Created.				##
-## 26/08/2010	MG	1.0.2	Now uses variables for some backup	##
-##				information. These variables are set at	##
-##				the start of the script enabling some	##
-##				degree of portability.			##
-## 27/08/2010	MG	1.0.3	Introduced temporary patch to avoid	##
-##				FreeBSD gtar core dumping. See 'Known	##
-##				problem' comment.			##
-## 03/09/2010	MG	1.0.4	Upgrade to OpenSUSE 11.3 introduced	##
-##				same tar core dump probem, so		##
-##				introduced same temporary fix.		##
-## 11/09/2010	MG	1.0.5	Changed to use gzip.			##
-## 22/09/2010	MG	1.0.6	Added df command to mail and log disk	##
-##				stats whilst backup share is attached.	##
-## 18/11/2010	MG	1.0.7	Changed to emit help and version on	##
+## 26/08/2010	MG	1.0.2	Amended to use variables enabling some	##
+##				system portability by setting these	##
+##				variables at the start of the script.	##
+## 11/09/2010	MG	1.0.3	Changed to use gzip.			##
+## 24/09/2010	MG	1.0.4	Added disk stat logging and mailing,	##
+##				done whilst backup share is attached.	##
+## 18/11/2010	MG	1.0.5	Changed to emit help and version on	##
 ##				input of correct flag as argument. Also	##
 ##				stored version in string in Init section##
-## 20/11/2010	MG	1.0.8	Removed shutdown from script. In cron	##
+## 20/11/2010	MG	1.0.6	Removed shutdown from script. In cron	##
 ##				can use script.sh && shutdown		##
-## 23/11/2010	MG	1.0.9	The segfault has been fixed in GNU tar	##
-##				listed incremental backups, so the	##
-##				temporary fix has been removed,		##
-## 28/11/2010	MG	1.0.10	Changed script to read parameters from	##
+## 28/11/2010	MG	1.0.7	Changed script to read parameters from	##
 ##				etclocation/backups.conf.		##
-## 14/12/2010	MG	1.0.11	Removed FreeBSD unsupported -B switch	##
+## 14/12/2010	MG	1.0.8	Removed FreeBSD unsupported -B switch	##
 ##				from df -ah mailx command.		##
-## 16/12/2010	MG	1.0.12	Allow the mailing of df -ah command	##
+## 16/12/2010	MG	1.0.9	Allow the mailing of df -ah command	##
 ##				for any OS, not just FreeBSD.		##
-## 10/01/2012	MG	1.0.13	Removed the .sh extension from the	##
+## 10/01/2012	MG	1.0.10	Removed the .sh extension from the	##
 ##				command name. Add .gvfs file exclusion	##
 ##				to support Gnome desktops and Ubuntu.	##
-## 06/11/2012	MG	1.0.14	Reverted to use the .sh file extension.	##
+## 06/11/2012	MG	1.0.11	Reverted to use the .sh file extension.	##
 ##				Added exclusion to tar command for /run	##
 ##				and /var/run following inclusion of	##
 ##				/run in Linux.				##
@@ -80,16 +70,16 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.14"		# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+version="1.0.11"		# set version variable
+etclocation=/usr/local/etc	# Path to etc directory
 
-# Get system name for implementing OS differences
+# Get system name for implementing OS differeneces.
 osname=$(uname -s)
 
 ###############
 ## Functions ##
 ###############
-script_short_desc="Daily Incremental Backup"
+script_short_desc="Weekly Full Backup"
 
 # Standard function to log $1 to stderr and mail to recipient
 mess_log()
@@ -131,22 +121,22 @@ fi
 if [ $# = 1 ]; then
 	case $1 in
 		-h|-H)
-			echo "Usage is bckincdaily.sh [options]"
+			echo "Usage is bckfullweekly.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		--help|--HELP)
-			echo "Usage is bckincdaily.sh [options]"
+			echo "Usage is bckfullweekly.sh [options]"
 			echo "	-h or --help displays usage information"
 			echo "	OR"
 			echo "	-v or --version displays version information"
 			;;
 		-v|-V)
-			echo "bckincdaily.sh version "$version
+			echo "bckfullweekly.sh version "$version
 			;;
 		--version|--VERSION)
-			echo "bckincdaily.sh version "$version
+			echo "bckfullweekly.sh version "$version
 			;;
 		*)
 			echo "Invalid argument. Try --help"
@@ -173,14 +163,20 @@ do
 done
 exec 3<&-
 
+# Calculate backup sequence number. DoM/7 + 1
+# Remove leading zeros otherwise thinks it is octal
+bckseq=$(date +%d)
+bckseq=$(echo $bckseq | sed 's/^0*//')
+((bckseq=bckseq / 7 + 1))
+
 # Build the backup & incremental file names and paths
-backpath="/mnt/$bckupdir/backup"$(date +%a)".tar.gz"
-snarpath="/mnt/$bckupdir/backup"$(date +%a)".snar"
+backpath="/mnt/$bckupdir/backup"$bckseq".tar.gz"
+snarpath="/mnt/$bckupdir/backup.snar"
 
 # Check to see if the NAS backup server is mounted, if not, mount
 attbckshare.sh
 status=$?
-if [ $status != "0" -a $status != "66" ]
+if [ $status != "0" ]
 	then
 	script_exit_code=65
 	script_exit "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code
@@ -194,28 +190,111 @@ mess_log "Attempting to process backup - "$backpath
 date
 date 1>&2
 
-# If the backup or incremental files exists, delete.
-# (Just in case full backup has not done this)
-if [ -f $backpath -a -r $backpath -a -w $backpath ]
-	then
-		rm $backpath
+# Empty the NAS trashbox
+rm /mnt/$bckupdir/trashbox/*
+
+# If the backup file exists, delete
+if [ -f $backpath -a -r $backpath \
+        -a -w $backpath ]
+        then
+                rm $backpath
 fi
 
+# If the level 0 incremental file exists, delete
 if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
-	then
-		rm $snarpath
+        then
+                rm $snarpath
 fi
 
-# Copy level 0 incremental file in order to perform a
-# level 1, effective differential backup each run.
-if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
-	-a -w /mnt/$bckupdir/backup.snar ]
-	then
-	cp /mnt/$bckupdir/backup.snar $snarpath
-	else
-	echo "backup.snar does not exist or is not accessible"
-	script_exit_code=66
-	script_exit "backup.snar does not exist or is not accessible. Exit code "$script_exit_code
+# If the daily backup files exist, delete
+if [ -f /mnt/$bckupdir/backup"Mon.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Mon.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Mon.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Mon.tar.gz"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Tue.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Tue.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Tue.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Tue.tar.gz"
+fi
+if [ -f /mnt/$bckupdir/backup"Wed.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Wed.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Wed.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Wed.tar.gz"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Thu.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Thu.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Thu.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Thu.tar.gz"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Fri.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Fri.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Fri.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Fri.tar.gz"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Sat.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Sat.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Sat.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Sat.tar.gz"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Sun.tar.gz" \
+	-a -r /mnt/$bckupdir/backup"Sun.tar.gz" \
+	-a -w /mnt/$bckupdir/backup"Sun.tar.gz" ]
+        then
+                rm /mnt/$bckupdir/backup"Sun.tar.gz"
+fi
+
+# If the daily level 1 incremental files exist, delete
+if [ -f /mnt/$bckupdir/backup"Mon.snar" -a -r /mnt/$bckupdir/backup"Mon.snar" \
+        -a -w /mnt/$bckupdir/backup"Mon.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Mon.snar"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Tue.snar" -a -r /mnt/$bckupdir/backup"Tue.snar" \
+        -a -w /mnt/$bckupdir/backup"Tue.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Tue.snar"
+fi
+if [ -f /mnt/$bckupdir/backup"Wed.snar" -a -r /mnt/$bckupdir/backup"Wed.snar" \
+        -a -w /mnt/$bckupdir/backup"Wed.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Wed.snar"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Thu.snar" -a -r /mnt/$bckupdir/backup"Thu.snar" \
+        -a -w /mnt/$bckupdir/backup"Thu.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Thu.snar"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Fri.snar" -a -r /mnt/$bckupdir/backup"Fri.snar" \
+        -a -w /mnt/$bckupdir/backup"Fri.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Fri.snar"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Sat.snar" -a -r /mnt/$bckupdir/backup"Sat.snar" \
+        -a -w /mnt/$bckupdir/backup"Sat.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Sat.snar"
+fi
+
+if [ -f /mnt/$bckupdir/backup"Sun.snar" -a -r /mnt/$bckupdir/backup"Sun.snar" \
+        -a -w /mnt/$bckupdir/backup"Sun.snar" ]
+        then
+                rm /mnt/$bckupdir/backup"Sun.snar"
 fi
 
 # Get list of sockets to exclude
@@ -224,17 +303,17 @@ find / -type s > /mnt/$bckupdir/socket_exclude
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --listed-incremental=$snarpath --exclude=proc \
-		--exclude=lost+found --exclude=tmp --exclude=mnt \
-		--exclude=media --exclude='cdro*' --exclude=dev \
+	gtar -cpzf $backpath --listed-incremental=$snarpath \
+		--exclude=proc --exclude=lost+found --exclude=tmp \
+		--exclude=mnt --exclude=media --exclude='cdro*' --exclude=dev \
 		--exclude=sys --exclude='.gvfs' \
 		--exclude-from=/mnt/$bckupdir/socket_exclude /
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --listed-incremental=$snarpath --exclude=proc \
-		--exclude=lost+found --exclude=tmp --exclude=mnt \
-		--exclude=media --exclude='cdro*' --exclude=dev \
+	tar -cpzf $backpath --listed-incremental=$snarpath \
+		--exclude=proc --exclude=lost+found --exclude=tmp \
+		--exclude=mnt --exclude=media --exclude='cdro*' --exclude=dev \
 		--exclude=sys --exclude='.gvfs' \
 		--exclude=run --exclude=var/run \
 		--exclude-from=/mnt/$bckupdir/socket_exclude /
