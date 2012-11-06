@@ -85,8 +85,8 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(bindir)"
-SCRIPTS = $(bin_SCRIPTS)
+am__installdirs = "$(DESTDIR)$(sbindir)"
+SCRIPTS = $(sbin_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
 am__can_run_installinfo = \
@@ -103,7 +103,7 @@ AUTOMAKE = ${SHELL} /home/mgrantprg/Projects/IXBackups/missing --run automake-1.
 AWK = gawk
 BASH = /bin/bash
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"Backup\ Scripts\" -DPACKAGE_TARNAME=\"backup-scripts\" -DPACKAGE_VERSION=\"1.0.14\" -DPACKAGE_STRING=\"Backup\ Scripts\ 1.0.14\" -DPACKAGE_BUGREPORT=\"m.grant.prg@btinternet.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"backup-scripts\" -DVERSION=\"1.0.14\"
+DEFS = -DPACKAGE_NAME=\"Backup\ Scripts\" -DPACKAGE_TARNAME=\"backup-scripts\" -DPACKAGE_VERSION=\"1.0.16\" -DPACKAGE_STRING=\"Backup\ Scripts\ 1.0.16\" -DPACKAGE_BUGREPORT=\"m.grant.prg@gmail.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"backup-scripts\" -DVERSION=\"1.0.16\"
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
@@ -118,18 +118,18 @@ LTLIBOBJS =
 MAKEINFO = ${SHELL} /home/mgrantprg/Projects/IXBackups/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 PACKAGE = backup-scripts
-PACKAGE_BUGREPORT = m.grant.prg@btinternet.com
+PACKAGE_BUGREPORT = m.grant.prg@gmail.com
 PACKAGE_NAME = Backup Scripts
-PACKAGE_STRING = Backup Scripts 1.0.14
+PACKAGE_STRING = Backup Scripts 1.0.16
 PACKAGE_TARNAME = backup-scripts
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0.14
+PACKAGE_VERSION = 1.0.16
 PATH_SEPARATOR = :
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = 
 TAR = yes
-VERSION = 1.0.14
+VERSION = 1.0.16
 abs_builddir = /home/mgrantprg/Projects/IXBackups/scripts
 abs_srcdir = /home/mgrantprg/Projects/IXBackups/scripts
 abs_top_builddir = /home/mgrantprg/Projects/IXBackups
@@ -176,7 +176,7 @@ edit = sed \
 	-e 's|@prefix[@]|$(prefix)|g'
 
 scriptssrcdir = $(srcdir)/scriptssrc
-bin_SCRIPTS = bckfulladhoc.sh bckfullweekly.sh bckincdaily.sh attbckshare.sh \
+sbin_SCRIPTS = bckfulladhoc.sh bckfullweekly.sh bckincdaily.sh attbckshare.sh \
 	detbckshare.sh
 
 EXTRA_DIST = bckfulladhoc.sh bckfullweekly.sh bckincdaily.sh attbckshare.sh \
@@ -217,12 +217,12 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-install-binSCRIPTS: $(bin_SCRIPTS)
+install-sbinSCRIPTS: $(sbin_SCRIPTS)
 	@$(NORMAL_INSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	@list='$(sbin_SCRIPTS)'; test -n "$(sbindir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(sbindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(sbindir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
@@ -241,17 +241,17 @@ install-binSCRIPTS: $(bin_SCRIPTS)
 	while read type dir files; do \
 	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(sbindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(sbindir)$$dir" || exit $$?; \
 	     } \
 	; done
 
-uninstall-binSCRIPTS:
+uninstall-sbinSCRIPTS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	@list='$(sbin_SCRIPTS)'; test -n "$(sbindir)" || exit 0; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	       sed -e 's,.*/,,;$(transform)'`; \
-	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(sbindir)'; $(am__uninstall_files_from_dir)
 tags: TAGS
 TAGS:
 
@@ -293,7 +293,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(SCRIPTS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(sbindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -352,7 +352,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binSCRIPTS
+install-exec-am: install-sbinSCRIPTS
 
 install-html: install-html-am
 
@@ -390,20 +390,20 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS
+uninstall-am: uninstall-sbinSCRIPTS
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-binSCRIPTS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am uninstall uninstall-am uninstall-binSCRIPTS
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-sbinSCRIPTS install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am uninstall \
+	uninstall-am uninstall-sbinSCRIPTS
 
 
 attbckshare.sh detbckshare.sh bckfulladhoc.sh \
