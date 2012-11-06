@@ -1,4 +1,8 @@
-2012-11-06 v 1.0.14 Mark Grant <m.grant.prg@btinternet.com>
+2012-11-06 v 1.0.15 Mark Grant <m.grant.prg@gmail.com>
+	* Updated Author email address.
+	Moved installation from bindir to sbindir.
+
+2012-11-06 v 1.0.14 Mark Grant <m.grant.prg@gmail.com>
 	* attbckshare.sh:	Reverted to use the .sh file extension.
 	bckfulladhoc.sh:	Reverted to use the .sh file extension.
 				Add exclusion for /run & /var/run to tar

@@ -22,7 +22,7 @@ bckfulladhoc.sh: $(scriptssrcdir)/bckfulladhoc.sh.in
 bckfullweekly.sh: $(scriptssrcdir)/bckfullweekly.sh.in
 bckincdaily.sh: $(scriptssrcdir)/bckincdaily.sh.in
 
-bin_SCRIPTS = bckfulladhoc.sh bckfullweekly.sh bckincdaily.sh attbckshare.sh \
+sbin_SCRIPTS = bckfulladhoc.sh bckfullweekly.sh bckincdaily.sh attbckshare.sh \
 	detbckshare.sh
 EXTRA_DIST = bckfulladhoc.sh bckfullweekly.sh bckincdaily.sh attbckshare.sh \
 	detbckshare.sh $(scriptssrcdir)/attbckshare.sh.in \
