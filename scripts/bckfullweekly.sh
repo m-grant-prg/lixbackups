@@ -61,6 +61,10 @@
 ##				Added exclusion to tar command for /run	##
 ##				and /var/run following inclusion of	##
 ##				/run in Linux.				##
+## 17/11/2012	MG	1.0.12	Moved NAS trash empty to after deletion	##
+##				of this backup. Commented out deletion	##
+##				of daily backups as this will now be	##
+##				handled by the daily backup.		##
 ##									##
 ##########################################################################
 
@@ -70,7 +74,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.11"		# set version variable
+version="1.0.12"		# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
@@ -190,9 +194,6 @@ mess_log "Attempting to process backup - "$backpath
 date
 date 1>&2
 
-# Empty the NAS trashbox
-rm /mnt/$bckupdir/trashbox/*
-
 # If the backup file exists, delete
 if [ -f $backpath -a -r $backpath \
         -a -w $backpath ]
@@ -206,6 +207,10 @@ if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
                 rm $snarpath
 fi
 
+# Empty the NAS trashbox
+rm /mnt/$bckupdir/trashbox/*
+
+<<Old_deletion_of_daily_backups.
 # If the daily backup files exist, delete
 if [ -f /mnt/$bckupdir/backup"Mon.tar.gz" \
 	-a -r /mnt/$bckupdir/backup"Mon.tar.gz" \
@@ -296,6 +301,7 @@ if [ -f /mnt/$bckupdir/backup"Sun.snar" -a -r /mnt/$bckupdir/backup"Sun.snar" \
         then
                 rm /mnt/$bckupdir/backup"Sun.snar"
 fi
+Old_deletion_of_daily_backups.
 
 # Get list of sockets to exclude
 find / -type s > /mnt/$bckupdir/socket_exclude

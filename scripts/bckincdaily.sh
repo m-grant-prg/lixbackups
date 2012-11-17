@@ -71,6 +71,8 @@
 ##				Added exclusion to tar command for /run	##
 ##				and /var/run following inclusion of	##
 ##				/run in Linux.				##
+## 17/11/2012	MG	1.0.15	After deletion of last copy of this	##
+##				backup, empty the NAS trash.		##
 ##									##
 ##########################################################################
 
@@ -80,7 +82,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.14"		# set version variable
+version="1.0.15"		# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 # Get system name for implementing OS differences
@@ -205,6 +207,9 @@ if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
 	then
 		rm $snarpath
 fi
+
+# Empty the NAS trashbox
+rm /mnt/$bckupdir/trashbox/*
 
 # Copy level 0 incremental file in order to perform a
 # level 1, effective differential backup each run.
