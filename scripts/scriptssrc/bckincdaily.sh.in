@@ -73,6 +73,8 @@
 ##				/run in Linux.				##
 ## 17/11/2012	MG	1.0.15	After deletion of last copy of this	##
 ##				backup, empty the NAS trash.		##
+## 20/12/2012	MG	1.0.16	Added Host name and day of week to	##
+##				email message subject line.		##
 ##									##
 ##########################################################################
 
@@ -82,7 +84,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.15"		# set version variable
+version="1.0.16"		# set version variable
 etclocation=@sysconfdir@	# Path to etc directory
 
 # Get system name for implementing OS differences
@@ -91,7 +93,7 @@ osname=$(uname -s)
 ###############
 ## Functions ##
 ###############
-script_short_desc="Daily Incremental Backup"
+script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
 
 # Standard function to log $1 to stderr and mail to recipient
 mess_log()

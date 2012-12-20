@@ -53,6 +53,8 @@
 ##				Added exclusion to tar command for /run	##
 ##				and /var/run following inclusion of	##
 ##				/run in Linux.				##
+##20/12/2012	MG	1.0.10	Added Host name and date/time suffix	##
+##				to email message subject line.		##
 ##									##
 ##########################################################################
 
@@ -62,13 +64,13 @@ exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.9"			# set version variable
+version="1.0.10"		# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 ###############
 ## Functions ##
 ###############
-script_short_desc="Ad Hoc Full Backup"
+script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
 
 # Standard function to log $1 to stderr and mail to recipient
 mess_log()

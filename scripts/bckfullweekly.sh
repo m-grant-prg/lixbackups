@@ -65,6 +65,8 @@
 ##				of this backup. Commented out deletion	##
 ##				of daily backups as this will now be	##
 ##				handled by the daily backup.		##
+## 20/12/2012	MG	1.0.13	Added Host name and seuence number to	##
+##				email message subject line.		##
 ##									##
 ##########################################################################
 
@@ -74,16 +76,22 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.12"		# set version variable
+version="1.0.13"		# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
 osname=$(uname -s)
 
+# Calculate backup sequence number. DoM/7 + 1
+# Remove leading zeros otherwise thinks it is octal
+bckseq=$(date +%d)
+bckseq=$(echo $bckseq | sed 's/^0*//')
+((bckseq=bckseq / 7 + 1))
+
 ###############
 ## Functions ##
 ###############
-script_short_desc="Weekly Full Backup"
+script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
 
 # Standard function to log $1 to stderr and mail to recipient
 mess_log()
@@ -166,12 +174,6 @@ do
 	esac
 done
 exec 3<&-
-
-# Calculate backup sequence number. DoM/7 + 1
-# Remove leading zeros otherwise thinks it is octal
-bckseq=$(date +%d)
-bckseq=$(echo $bckseq | sed 's/^0*//')
-((bckseq=bckseq / 7 + 1))
 
 # Build the backup & incremental file names and paths
 backpath="/mnt/$bckupdir/backup"$bckseq".tar.gz"
