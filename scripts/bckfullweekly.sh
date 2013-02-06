@@ -67,6 +67,8 @@
 ##				handled by the daily backup.		##
 ## 20/12/2012	MG	1.0.13	Added Host name and seuence number to	##
 ##				email message subject line.		##
+## 06/02/2013	MG	1.0.14	Added mailing of backup file date	##
+##				hierarchy after backup.			##
 ##									##
 ##########################################################################
 
@@ -76,7 +78,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.13"		# set version variable
+version="1.0.14"		# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
@@ -345,10 +347,14 @@ mess_log "Processing of "$backpath" is complete. Status: "$status
 if [ $osname == "FreeBSD" ]
   then
   df -ah # Log disk stats
+  ls -lht /mnt/$bckupdir
 fi
 
-# Was using the line buffered -B switch but this is not available under FreeBSD
-df -ah | mailx -s "$script_short_desc" $mail_recipient # Mail disk stats
+# Mail disk stats
+df -ah | mailx -s "$script_short_desc" $mail_recipient
+
+# Mail backup file date hierarchy
+ls -lht /mnt/$bckupdir | mailx -s "$script_short_desc" $mail_recipient
 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
