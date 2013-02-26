@@ -93,6 +93,8 @@
 ## 10/01/2012	MG	1.0.5	Removed the .sh extension from the	##
 ##				command name.				##
 ## 05/11/2012	MG	1.0.6	Reverted to the .sh file extension.	##
+## 26/02/2013	MG	1.0.7	Changed command line option processing	##
+##				to use getopts.				##
 ##									##
 ##########################################################################
 
@@ -101,7 +103,7 @@
 ####################
 script_exit_code=0
 osname=$(uname -s)		# Get system name for OS differentiation
-version="1.0.6"			# set version variable
+version="1.0.7"			# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 ###############
@@ -133,39 +135,27 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ##########
 ## Main ##
 ##########
-# Command line must have 1 or no arguments
-if [ $# -gt 1 ]
-	then
-		echo "Script can only take 1 argument. Try --help."
-		exit 64
-fi
-
-if [ $# = 1 ]; then
-	case $1 in
-		-h|-H)
-			echo "Usage is attbckshare.sh [options]"
-			echo "	-h or --help displays usage information"
+# Process command line arguments with getopts.
+while getopts :hv arg
+do
+	case $arg in
+		h)	echo "Usage is $0 [options]"
+			echo "	-h displays usage information"
 			echo "	OR"
-			echo "	-v or --version displays version information"
+			echo "	-v displays version information"
 			;;
-		--help|--HELP)
-			echo "Usage is attbckshare.sh [options]"
-			echo "	-h or --help displays usage information"
-			echo "	OR"
-			echo "	-v or --version displays version information"
+		v)	echo "$0 version "$version
 			;;
-		-v|-V)
-			echo "attbckshare.sh version "$version
-			;;
-		--version|--VERSION)
-			echo "attbckshare.sh version "$version
-			;;
-		*)
-			echo "Invalid argument. Try --help"
+		\?)	echo "Invalid argument -$OPTARG." >&2
 			exit 64
 			;;
 	esac
-	exit 0
+done
+
+# If help or version requested then exit now.
+if [ $# -gt 0 ]
+	then
+		exit 0
 fi
 
 # Read parameters from $etclocation/backups.conf

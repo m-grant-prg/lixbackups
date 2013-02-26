@@ -1,3 +1,6 @@
+Release 1.0.20 2013-02-26
+Changed internals of processing command line options.
+
 Release 1.0.19 2013-02-06
 Added mailing of backup file date hierachy after backup.
 

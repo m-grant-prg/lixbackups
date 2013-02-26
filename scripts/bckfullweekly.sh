@@ -69,6 +69,8 @@
 ##				email message subject line.		##
 ## 06/02/2013	MG	1.0.14	Added mailing of backup file date	##
 ##				hierarchy after backup.			##
+## 26/02/2013	MG	1.0.15	Changed command line option processing	##
+##				to use getopts.				##
 ##									##
 ##########################################################################
 
@@ -78,7 +80,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.14"		# set version variable
+version="1.0.15"		# set version variable
 etclocation=/usr/local/etc	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
@@ -125,39 +127,27 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ##########
 ## Main ##
 ##########
-# Command line must have 1 or no arguments
-if [ $# -gt 1 ]
-	then
-		echo "Script can only take 1 argument. Try --help."
-		exit 64
-fi
-
-if [ $# = 1 ]; then
-	case $1 in
-		-h|-H)
-			echo "Usage is bckfullweekly.sh [options]"
-			echo "	-h or --help displays usage information"
+# Process command line arguments with getopts.
+while getopts :hv arg
+do
+	case $arg in
+		h)	echo "Usage is $0 [options]"
+			echo "	-h displays usage information"
 			echo "	OR"
-			echo "	-v or --version displays version information"
+			echo "	-v displays version information"
 			;;
-		--help|--HELP)
-			echo "Usage is bckfullweekly.sh [options]"
-			echo "	-h or --help displays usage information"
-			echo "	OR"
-			echo "	-v or --version displays version information"
+		v)	echo "$0 version "$version
 			;;
-		-v|-V)
-			echo "bckfullweekly.sh version "$version
-			;;
-		--version|--VERSION)
-			echo "bckfullweekly.sh version "$version
-			;;
-		*)
-			echo "Invalid argument. Try --help"
+		\?)	echo "Invalid argument -$OPTARG." >&2
 			exit 64
 			;;
 	esac
-	exit 0
+done
+
+# If help or version requested then exit now.
+if [ $# -gt 0 ]
+	then
+		exit 0
 fi
 
 # Read parameters from $etclocation/backups.conf

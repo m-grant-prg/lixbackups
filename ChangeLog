@@ -1,3 +1,12 @@
+2013-02-26 v 1.0.20 Mark Grant <m.grant.prg@gmail.com>
+	* Changed all scripts to use getopts in command line option processing.
+	attbckshare.sh:		Now at version 1.0.7
+	bckfulladhoc.sh:	Now at version 1.0.11
+	bckfullweekly.sh:	Now at version 1.0.15
+	bckincdaily.sh:		Now at version 1.0.18
+	detbckshare.sh:		Now at version 1.0.7
+	setup.sh:		Now at version 1.0.4
+
 2013-02-06 v 1.0.19 Mark Grant <m.grant.prg@gmail.com>
 	* Changed Daily and weekly backup scripts to mail the backup file date
 	hierarchy.
