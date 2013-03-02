@@ -105,7 +105,7 @@ AUTOMAKE = ${SHELL} /home/mgrantprg/ScriptProjects/IXBackups/missing --run autom
 AWK = gawk
 BASH = /bin/bash
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"Backup\ Scripts\" -DPACKAGE_TARNAME=\"backup-scripts\" -DPACKAGE_VERSION=\"1.0.20\" -DPACKAGE_STRING=\"Backup\ Scripts\ 1.0.20\" -DPACKAGE_BUGREPORT=\"m.grant.prg@gmail.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"backup-scripts\" -DVERSION=\"1.0.20\"
+DEFS = -DPACKAGE_NAME=\"Backup\ Scripts\" -DPACKAGE_TARNAME=\"backup-scripts\" -DPACKAGE_VERSION=\"1.0.21\" -DPACKAGE_STRING=\"Backup\ Scripts\ 1.0.21\" -DPACKAGE_BUGREPORT=\"m.grant.prg@gmail.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"backup-scripts\" -DVERSION=\"1.0.21\"
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
@@ -122,16 +122,16 @@ MKDIR_P = /bin/mkdir -p
 PACKAGE = backup-scripts
 PACKAGE_BUGREPORT = m.grant.prg@gmail.com
 PACKAGE_NAME = Backup Scripts
-PACKAGE_STRING = Backup Scripts 1.0.20
+PACKAGE_STRING = Backup Scripts 1.0.21
 PACKAGE_TARNAME = backup-scripts
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0.20
+PACKAGE_VERSION = 1.0.21
 PATH_SEPARATOR = :
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = 
 TAR = yes
-VERSION = 1.0.20
+VERSION = 1.0.21
 abs_builddir = /home/mgrantprg/ScriptProjects/IXBackups/manpages
 abs_srcdir = /home/mgrantprg/ScriptProjects/IXBackups/manpages
 abs_top_builddir = /home/mgrantprg/ScriptProjects/IXBackups
@@ -171,7 +171,7 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-dist_man1_MANS = attbckshare.sh.1 detbckshare.sh.1 bckfulladhoc.sh.1 bckfullweekly.sh.1 bckincdaily.sh.1
+dist_man1_MANS = attbckshare.sh.1 detbckshare.sh.1 bckfulladhoc.sh.1 bckfullweekly.sh.1 bckdatadaily.sh.1 bckincdaily.sh.1
 all: all-am
 
 .SUFFIXES:

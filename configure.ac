@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([Backup Scripts], [1.0.20], [m.grant.prg@gmail.com])
+AC_INIT([Backup Scripts], [1.0.21], [m.grant.prg@gmail.com])
 
 AM_INIT_AUTOMAKE
 

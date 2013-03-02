@@ -1,3 +1,10 @@
+2013-03-02 v 1.0.21 Mark Grant <m.grant.prg@gmail.com>
+	* Created bckdatadaily.sh which performs a data backup using files
+	specified in $etclocation/backup.files. Amended setup.sh to create the
+	file needed.
+	bckdatadaily.sh:	Now at version 1.0.1
+	setup.sh:		Now at version 1.0.5
+	
 2013-02-26 v 1.0.20 Mark Grant <m.grant.prg@gmail.com>
 	* Changed all scripts to use getopts in command line option processing.
 	attbckshare.sh:		Now at version 1.0.7

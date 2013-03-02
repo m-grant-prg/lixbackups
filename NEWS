@@ -1,3 +1,6 @@
+Release 1.0.21 2013-03-02
+Created new script to support backups from a stored list of files to backup.
+
 Release 1.0.20 2013-02-26
 Changed internals of processing command line options.
 

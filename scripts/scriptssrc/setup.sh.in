@@ -85,6 +85,10 @@
 ## 06/11/2012	MG	1.0.3	Reverted to use the .sh file extension.	##
 ## 26/02/2013	MG	1.0.4	Changed command line option processing	##
 ##				to use getopts.				##
+## 02/03/2013	MG	1.0.5	Added the creation (touch) of		##
+##				$etclocation/backup.files which is the	##
+##				--files-from argument for the		##
+##				bckdatadaily.sh script.			##
 ##									##
 ##########################################################################
 
@@ -93,7 +97,7 @@
 ####################
 script_exit_code=0
 osname=$(uname -s)		# Get system name for OS differentiation
-version="1.0.4"			# set version variable
+version="1.0.5"			# set version variable
 etclocation=@sysconfdir@	# Path to etc directory
 
 ###############
@@ -187,5 +191,8 @@ echo "dir="$bckupdir >>$etclocation/backups.conf
 echo "user="$bckupusr >>$etclocation/backups.conf
 echo "password="$bckuppwd >>$etclocation/backups.conf
 echo "notifyuser="$notifyuser >> $etclocation/backups.conf
+
+# Create $etclocation/backup.files file
+touch $etclocation/backup.files
 
 exit 0
