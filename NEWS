@@ -1,3 +1,7 @@
+Release 1.0.22 2013-04-01
+Changed all scripts to use new backups sub-directory of sysconfdir.Added
+include and exclude from files.
+
 Release 1.0.21 2013-03-02
 Created new script to support backups from a stored list of files to backup.
 

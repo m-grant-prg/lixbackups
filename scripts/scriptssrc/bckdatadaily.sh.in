@@ -33,6 +33,10 @@
 ## Date		Author	Version	Description				##
 ##									##
 ## 02/03/2013	MG	1.0.1	Created.				##
+## 01/04/2013	MG	1.0.2	Moved config files to new backups	##
+##				directory under sysconfdir. Added	##
+##				exclude files for system, weekly, daily	##
+##				and data.				##
 ##									##
 ##########################################################################
 
@@ -42,8 +46,8 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.1"			# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+version="1.0.2"				# set version variable
+etclocation=@sysconfdir@/backups	# Path to etc directory
 
 # Get system name for implementing OS differences
 osname=$(uname -s)
@@ -154,25 +158,22 @@ fi
 rm /mnt/$bckupdir/trashbox/*
 
 # Get list of sockets to exclude
-find / -type s > /mnt/$bckupdir/socket_exclude
+find / -type s > /mnt/$bckupdir/sockets.exclude
 
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --files-from=$etclocation/backup.files \
-		--exclude=lost+found --exclude=tmp --exclude=mnt \
-		--exclude=media --exclude='cdro*' --exclude=dev \
-		--exclude=sys --exclude='.gvfs' --exclude=proc \
-		--exclude-from=/mnt/$bckupdir/socket_exclude
+	gtar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
+		--exclude-from=$etclocation/bcksystem.exclude \
+		--exclude-from=$etclocation/bckdatadaily.exclude \
+		--exclude-from=/mnt/$bckupdir/sockets.exclude /
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --files-from=$etclocation/backup.files \
-		--exclude=lost+found --exclude=tmp --exclude=mnt \
-		--exclude=media --exclude='cdro*' --exclude=dev \
-		--exclude=sys --exclude='.gvfs' --exclude=proc \
-		--exclude=run --exclude=var/run \
-		--exclude-from=/mnt/$bckupdir/socket_exclude
+	tar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
+		--exclude-from=$etclocation/bcksystem.exclude \
+		--exclude-from=$etclocation/bckdatadaily.exclude \
+		--exclude-from=/mnt/$bckupdir/sockets.exclude /
 	status=$?
 ;;
 esac

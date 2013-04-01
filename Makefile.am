@@ -1,4 +1,4 @@
-SUBDIRS = scripts manpages
+SUBDIRS = scripts manpages conffiles
 
 edit = sed \
 	-e 's|@bindir[@]|$(bindir)|g' \

@@ -53,10 +53,14 @@
 ##				Added exclusion to tar command for /run	##
 ##				and /var/run following inclusion of	##
 ##				/run in Linux.				##
-##20/12/2012	MG	1.0.10	Added Host name and date/time suffix	##
+## 20/12/2012	MG	1.0.10	Added Host name and date/time suffix	##
 ##				to email message subject line.		##
 ## 26/02/2013	MG	1.0.11	Changed command line option processing	##
 ##				to use getopts.				##
+## 01/04/2013	MG	1.0.12	Moved config files to new backups	##
+##				directory under sysconfdir. Added	##
+##				exclude files for system, weekly, daily	##
+##				and data.				##
 ##									##
 ##########################################################################
 
@@ -66,8 +70,8 @@ exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.11"		# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+version="1.0.12"			# set version variable
+etclocation=@sysconfdir@/backups	# Path to etc directory
 
 ###############
 ## Functions ##
@@ -172,13 +176,11 @@ if [ -f $backpath -a -r $backpath \
 fi
 
 # Get list of sockets for exclusion
-find / -type s > /mnt/$bckupdir/socket_exclude
+find / -type s > /mnt/$bckupdir/sockets.exclude
 
 # Run the backup excluding system directories
-tar -cpzf $backpath --exclude=proc --exclude=lost+found --exclude=run \
-	--exclude=tmp --exclude=mnt --exclude=media --exclude='cdro*' \
-	--exclude=dev --exclude=sys --exclude='.gvfs' --exclude=var/run \
-	--exclude-from=/mnt/$bckupdir/socket_exclude /
+tar -cpzf $backpath --exclude-from=$etclocation/bcksystem.exclude \
+	--exclude-from=/mnt/$bckupdir/sockets.exclude /
 status=$?
 
 # Final log entries and restore stdout & stderr

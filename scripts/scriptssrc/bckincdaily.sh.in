@@ -79,6 +79,10 @@
 ##				hierarchy after backup.			##
 ## 26/02/2013	MG	1.0.18	Changed command line option processing	##
 ##				to use getopts.				##
+## 01/04/2013	MG	1.0.19	Moved config files to new backups	##
+##				directory under sysconfdir. Added	##
+##				exclude files for system, weekly, daily	##
+##				and data.				##
 ##									##
 ##########################################################################
 
@@ -88,8 +92,8 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.18"		# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+version="1.0.19"			# set version variable
+etclocation=@sysconfdir@/backups	# Path to etc directory
 
 # Get system name for implementing OS differences
 osname=$(uname -s)
@@ -223,20 +227,17 @@ find / -type s > /mnt/$bckupdir/socket_exclude
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --listed-incremental=$snarpath --exclude=proc \
-		--exclude=lost+found --exclude=tmp --exclude=mnt \
-		--exclude=media --exclude='cdro*' --exclude=dev \
-		--exclude=sys --exclude='.gvfs' \
-		--exclude-from=/mnt/$bckupdir/socket_exclude /
+	gtar -cpzf $backpath --listed-incremental=$snarpath \
+		--exclude-from=$etclocation/bcksystem.exclude \
+		--exclude-from=$etclocation/bckincdaily.exclude \
+		--exclude-from=/mnt/$bckupdir/sockets.exclude /
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --listed-incremental=$snarpath --exclude=proc \
-		--exclude=lost+found --exclude=tmp --exclude=mnt \
-		--exclude=media --exclude='cdro*' --exclude=dev \
-		--exclude=sys --exclude='.gvfs' \
-		--exclude=run --exclude=var/run \
-		--exclude-from=/mnt/$bckupdir/socket_exclude /
+	tar -cpzf $backpath --listed-incremental=$snarpath \
+		--exclude-from=$etclocation/bcksystem.exclude \
+		--exclude-from=$etclocation/bckincdaily.exclude \
+		--exclude-from=/mnt/$bckupdir/sockets.exclude /
 	status=$?
 ;;
 esac

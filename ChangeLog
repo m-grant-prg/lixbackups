@@ -1,3 +1,12 @@
+2013-04-.1 v 1.0.22 Mark Grant <m.grant.prg@gmail.com>
+	* Changed all scripts to use new backups sub-directory of sysconfdir.
+	Added include and exclude from files.
+	bckdatadaily.sh		Now at version 1.0.2
+	bckfulladhoc.sh:	Now at version 1.0.12
+	bckfullweekly.sh:	Now at version 1.0.16
+	bckincdaily.sh:		Now at version 1.0.19
+	setup.sh:		Now at version 1.0.6
+
 2013-03-02 v 1.0.21 Mark Grant <m.grant.prg@gmail.com>
 	* Created bckdatadaily.sh which performs a data backup using files
 	specified in $etclocation/backup.files. Amended setup.sh to create the

@@ -1,0 +1,11 @@
+lost+found
+tmp
+mnt
+media
+'cdro*'
+dev
+sys
+'.gvfs'
+proc
+run
+var/run

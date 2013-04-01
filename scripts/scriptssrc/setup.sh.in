@@ -89,6 +89,10 @@
 ##				$etclocation/backup.files which is the	##
 ##				--files-from argument for the		##
 ##				bckdatadaily.sh script.			##
+## 01/04/2013	MG	1.0.6	Moved config files to new backups	##
+##				directory under sysconfdir. Added	##
+##				exclude files for system, weekly, daily	##
+##				and data.				##
 ##									##
 ##########################################################################
 
@@ -96,9 +100,9 @@
 ## Init variables ##
 ####################
 script_exit_code=0
-osname=$(uname -s)		# Get system name for OS differentiation
-version="1.0.5"			# set version variable
-etclocation=@sysconfdir@	# Path to etc directory
+osname=$(uname -s)			# Get system name for OS differentiation
+version="1.0.6"				# set version variable
+etclocation=@sysconfdir@/backups	# Path to etc directory
 
 ###############
 ## Functions ##
@@ -192,7 +196,10 @@ echo "user="$bckupusr >>$etclocation/backups.conf
 echo "password="$bckuppwd >>$etclocation/backups.conf
 echo "notifyuser="$notifyuser >> $etclocation/backups.conf
 
-# Create $etclocation/backup.files file
-touch $etclocation/backup.files
+# Create $etclocation/backups inclde and exclude files
+touch $etclocation/bckfullweekly.exclude
+touch $etclocation/bckincdaily.exclude
+touch $etclocation/bckdatadaily.files
+touch $etclocation/bckdatadaily.exclude
 
 exit 0
