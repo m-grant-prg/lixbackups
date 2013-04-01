@@ -54,6 +54,10 @@
 ## 05/11/2012	MG	1.0.6	Reverted to .sh file extension.		##
 ## 26/02/2013	MG	1.0.7	Changed command line option processing	##
 ##				to use getopts.				##
+## 01/04/2013	MG	1.0.8	Moved config files to new backups	##
+##				directory under sysconfdir. Added	##
+##				exclude files for system, weekly, daily	##
+##				and data.				##
 ##									##
 ##########################################################################
 
@@ -61,8 +65,8 @@
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.7"			# set version variable
-etclocation=/usr/local/etc	# Path to etc directory
+version="1.0.8"				# set version variable
+etclocation=/usr/local/etc/backups	# Path to etc directory
 
 ###############
 ## Functions ##

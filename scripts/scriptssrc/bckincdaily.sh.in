@@ -222,7 +222,7 @@ if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
 fi
 
 # Get list of sockets to exclude
-find / -type s > /mnt/$bckupdir/socket_exclude
+find / -type s > /mnt/$bckupdir/sockets.exclude
 
 # Run the backup excluding system directories
 case $osname in
