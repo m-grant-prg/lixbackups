@@ -1,10 +1,9 @@
 NAME
-bckfulladhoc.sh - perform a full backup at anytime
+detbckshare - detach the network share for backups
 SYNOPSIS
-bckfulladhoc.sh [OPTION]
+detbckshare [OPTION]
 DESCRIPTION
-Perform a full backup to a unique time-stamped backup file on the network
-attached backup share.
+Detaches the pre-determined network samba share used as a backup target location.
 OPTIONS
 -h --help  prints usage information
 
@@ -20,10 +19,10 @@ if minor problems,
 error in command line arguments.
 
 65
-failed to mount share due to mount error.
+failed to unmount share due to umount error.
 
 66
-Backup share already mounted.
+Backup share not mounted.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
@@ -39,4 +38,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare.sh(1) detbckshare.sh(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8)
+attbckshare(1) umount(8) mount(8) (mount_smbfs(8) on FreeBSD)

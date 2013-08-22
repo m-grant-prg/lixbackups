@@ -1,21 +1,21 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	bckfulladhoc.sh is automatically generated,			##
+##	bckfulladhoc is automatically generated,			##
 ##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: bckfulladhoc.sh						##
+## Script ID: bckfulladhoc						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
 ## To run a full system backup, not part of any sequence, so		##
 ## just date/time stamped.						##
 ##                                                              	##
-## Syntax:      bckfulladhoc.sh [-h || --help || -v || --version]	##
+## Syntax:      bckfulladhoc [-h || --help || -v || --version]		##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -61,6 +61,14 @@
 ##				directory under sysconfdir. Added	##
 ##				exclude files for system, weekly, daily	##
 ##				and data.				##
+## 22/08/2013	MG	1.0.13	Debian best practice documentation	##
+##				requires that programs placed in the	##
+##				PATH should not have extensions as the	##
+##				programs may be rewritten in a		##
+##				different language. This would then	##
+##				require a name change, or, if left	##
+##				as-is would cause confusion. So name	##
+##				changed to remove .sh extension.	##
 ##									##
 ##########################################################################
 
@@ -70,8 +78,8 @@ exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.12"			# set version variable
-etclocation=/usr/local/etc/backups	# Path to etc directory
+version="1.0.13"			# set version variable
+etclocation=@sysconfdir@/backups	# Path to etc directory
 
 ###############
 ## Functions ##
@@ -91,7 +99,7 @@ script_exit()
 mess_log "$1" 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdin & stdout & close fd's 6 & 7
 sleep 5
-detbckshare.sh
+detbckshare
 exit $script_exit_code
 }
 
@@ -152,7 +160,7 @@ exec 3<&-
 backpath="/mnt/$bckupdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare.sh
+attbckshare
 status=$?
 if [ $status != "0" ]
 	then
@@ -209,7 +217,7 @@ mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 sleep 5
 
 # Unmount the backup NAS server
-detbckshare.sh
+detbckshare
 
 # And exit
 exit 0

@@ -1,21 +1,21 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	bckdatadaily.sh is automatically generated,			##
+##	bckfulladhoc is automatically generated,			##
 ##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: bckdatadaily.sh						##
+## Script ID: bckfulladhoc						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Backs up directories and files specified in backup.files file.	##
-## The timing element is expected to be delivered via cron.		##
-##									##
-## Syntax:	bckincdaily.sh [-h || --help || -v || --version]	##
+## To run a full system backup, not part of any sequence, so		##
+## just date/time stamped.						##
+##                                                              	##
+## Syntax:      bckfulladhoc [-h || --help || -v || --version]		##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -32,30 +32,59 @@
 ##									##
 ## Date		Author	Version	Description				##
 ##									##
-## 02/03/2013	MG	1.0.1	Created.				##
-## 01/04/2013	MG	1.0.2	Moved config files to new backups	##
+## 02/04/2010	MG	1.0.1	Created.				##
+## 26/08/2010	MG	1.0.2	Amended to use variables enabling some	##
+##				system portability by setting these	##
+##				variables at the start of the script.	##
+## 11/09/2010	MG	1.0.3	Changed to use gzip.			##
+## 24/09/2010	MG	1.0.4	Added disk stat logging and mailing,	##
+##				done whilst backup share is attached.	##
+## 18/11/2010	MG	1.0.5	Changed to emit help and version on	##
+##				input of correct flag as argument. Also	##
+##				stored version in string in Init section##
+## 28/11/2010	MG	1.0.6	Changed script to read parameters from	##
+##				etclocation/backups.conf.		##
+## 14/12/2010	MG	1.0.7	Removed FreeBSD unsupported -B switch	##
+##				from df -ah mailx command.		##
+## 10/01/2012	MG	1.0.8	Removed the .sh extension from the	##
+##				command name. Add .gvfs file exclusion	##
+##				to support Gnome desktops and Ubuntu.	##
+## 06/11/2012	MG	1.0.9	Reverted to use the .sh file extension.	##
+##				Added exclusion to tar command for /run	##
+##				and /var/run following inclusion of	##
+##				/run in Linux.				##
+## 20/12/2012	MG	1.0.10	Added Host name and date/time suffix	##
+##				to email message subject line.		##
+## 26/02/2013	MG	1.0.11	Changed command line option processing	##
+##				to use getopts.				##
+## 01/04/2013	MG	1.0.12	Moved config files to new backups	##
 ##				directory under sysconfdir. Added	##
 ##				exclude files for system, weekly, daily	##
 ##				and data.				##
+## 22/08/2013	MG	1.0.13	Debian best practice documentation	##
+##				requires that programs placed in the	##
+##				PATH should not have extensions as the	##
+##				programs may be rewritten in a		##
+##				different language. This would then	##
+##				require a name change, or, if left	##
+##				as-is would cause confusion. So name	##
+##				changed to remove .sh extension.	##
 ##									##
 ##########################################################################
 
-exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
+exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 
 ####################
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.2"				# set version variable
+version="1.0.13"			# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
-
-# Get system name for implementing OS differences
-osname=$(uname -s)
 
 ###############
 ## Functions ##
 ###############
-script_short_desc=$(uname -n)" "$(date +%A)" Daily Data Backup"
+script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
 
 # Standard function to log $1 to stderr and mail to recipient
 mess_log()
@@ -70,7 +99,7 @@ script_exit()
 mess_log "$1" 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdin & stdout & close fd's 6 & 7
 sleep 5
-detbckshare.sh
+detbckshare
 exit $script_exit_code
 }
 
@@ -128,12 +157,12 @@ done
 exec 3<&-
 
 # Build the backup file name and path
-backpath="/mnt/$bckupdir/backupdata"$(date +%a)".tar.gz"
+backpath="/mnt/$bckupdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare.sh
+attbckshare
 status=$?
-if [ $status != "0" -a $status != "66" ]
+if [ $status != "0" ]
 	then
 	script_exit_code=65
 	script_exit "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code
@@ -147,62 +176,30 @@ mess_log "Attempting to process backup - "$backpath
 date
 date 1>&2
 
-# If the backup file exists, delete.
-# (Just in case full backup has not done this)
-if [ -f $backpath -a -r $backpath -a -w $backpath ]
-	then
-		rm $backpath
+# Not likely, but if it already exists, delete
+if [ -f $backpath -a -r $backpath \
+        -a -w $backpath ]
+        then
+                rm $backpath
 fi
 
-# Empty the NAS trashbox
-rm /mnt/$bckupdir/trashbox/*
-
-# Get list of sockets to exclude
+# Get list of sockets for exclusion
 find / -type s > /mnt/$bckupdir/sockets.exclude
 
 # Run the backup excluding system directories
-case $osname in
-FreeBSD)
-	gtar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
-		--exclude-from=$etclocation/bcksystem.exclude \
-		--exclude-from=$etclocation/bckdatadaily.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
-	status=$?
-;;
-Linux)
-	tar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
-		--exclude-from=$etclocation/bcksystem.exclude \
-		--exclude-from=$etclocation/bckdatadaily.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
-	status=$?
-;;
-esac
+tar -cpzf $backpath --exclude-from=$etclocation/bcksystem.exclude \
+	--exclude-from=/mnt/$bckupdir/sockets.exclude /
+status=$?
 
 # Final log entries and restore stdout & stderr
 date
 date 1>&2
 echo "Processing of "$backpath" is complete. Status: "$status
 mess_log "Processing of "$backpath" is complete. Status: "$status
-##################################################################
-## It is not clear why the following two lines cause everything ##
-## to hang until charybdis is restarted. It is probably due to  ##
-## the odd wiring relating to the kvm which powers off if	##
-## charybdis or scylla are not powered up. So this only affects	##
-## priam during EOD backup routines which shutdown machines on	##
-## completion. So until fixed test on OS.			##
-##################################################################
-if [ $osname == "FreeBSD" ]
-  then
-  df -ah # Log disk stats
-  ls -lht /mnt/$bckupdir
-fi
+df -ah # Log disk stats
 
-# Mail disk stats
-df -ah | mailx -s "$script_short_desc" $mail_recipient
-
-# Mail backup file date hierarchy
-ls -lht /mnt/$bckupdir | mailx -s "$script_short_desc" $mail_recipient
-
+# Was using the line buffered -B switch but this is not available under FreeBSD
+df -ah | mailx -s "$script_short_desc" $mail_recipient # Mail disk stats
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
 # Cleanup logs so they only have 1000 lines max
@@ -220,7 +217,7 @@ mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 sleep 5
 
 # Unmount the backup NAS server
-detbckshare.sh
+detbckshare
 
 # And exit
 exit 0

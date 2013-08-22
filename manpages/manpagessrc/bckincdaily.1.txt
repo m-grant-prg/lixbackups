@@ -1,10 +1,10 @@
 NAME
-attbckshare.sh - attach network share for backups
+bckincdaily - perform an incremental daily backup
 SYNOPSIS
-attbckshare.sh [OPTION]
+bckincdaily [OPTION]
 DESCRIPTION
-Attaches a pre-determined network samba share as a target location for backup
-files.
+Perform an incremental designated backup to a backup file on the network
+attached backup share.
 OPTIONS
 -h --help  prints usage information
 
@@ -39,4 +39,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-detbckshare.sh(1) mount(8) (and mount_smbfs(8) on FreeBSD) umount(8)
+attbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8)

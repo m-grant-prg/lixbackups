@@ -1,4 +1,17 @@
-2013-04-.1 v 1.0.22 Mark Grant <m.grant.prg@gmail.com>
+2013-08-22 v 1.0.23 Mark Grant <m.grant.prg@gmail.com>
+	* Debian best practice documentation requires that programs placed in
+	the PATH should not have extensions as the programs may be rewritten
+	in a different language. This would then require a name change, or,
+	if left as-is would cause confusion. So all names changed to remove .sh
+	extension except for setup.sh which is not on the PATH.
+	attbckshare.sh		Now at version 1.0.9
+	bckdatadaily.sh		Now at version 1.0.3
+	bckfulladhoc.sh:	Now at version 1.0.13
+	bckfullweekly.sh:	Now at version 1.0.17
+	bckincdaily.sh:		Now at version 1.0.20
+	detbckshare.sh		Now at version 1.0.9
+
+2013-04-01 v 1.0.22 Mark Grant <m.grant.prg@gmail.com>
 	* Changed all scripts to use new backups sub-directory of sysconfdir.
 	Added include and exclude from files.
 	attbckshare.sh		Now at version 1.0.8

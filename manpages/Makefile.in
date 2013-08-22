@@ -171,7 +171,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-dist_man1_MANS = attbckshare.sh.1 detbckshare.sh.1 bckfulladhoc.sh.1 bckfullweekly.sh.1 bckdatadaily.sh.1 bckincdaily.sh.1
+dist_man1_MANS = attbckshare.1 detbckshare.1 bckfulladhoc.1 bckfullweekly.1 bckdatadaily.1 bckincdaily.1
 all: all-am
 
 .SUFFIXES:

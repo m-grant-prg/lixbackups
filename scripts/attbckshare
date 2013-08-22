@@ -1,14 +1,14 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	attbckshare.sh is automatically generated,			##
+##	attbckshare is automatically generated,				##
 ##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: attbckshare.sh						##
+## Script ID: attbckshare						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
@@ -17,7 +17,7 @@
 ## 	on								##
 ## 	/mnt/charybdisbck						##
 ##									##
-## Syntax:	attbckshare.sh [-h || --help || -v || --version]	##
+## Syntax:	attbckshare [-h || --help || -v || --version]		##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -99,6 +99,14 @@
 ##				directory under sysconfdir. Added	##
 ##				exclude files for system, weekly, daily	##
 ##				and data.				##
+## 22/08/2013	MG	1.0.9	Debian best practice documentation	##
+##				requires that programs placed in the	##
+##				PATH should not have extensions as the	##
+##				programs may be rewritten in a		##
+##				different language. This would then	##
+##				require a name change, or, if left	##
+##				as-is would cause confusion. So name	##
+##				changed to remove .sh extension.	##
 ##									##
 ##########################################################################
 
@@ -107,7 +115,7 @@
 ####################
 script_exit_code=0
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.0.8"				# set version variable
+version="1.0.9"				# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
 
 ###############

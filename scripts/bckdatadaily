@@ -1,25 +1,21 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-##	bckincdaily.sh is automatically generated,			##
+##	bckdatadaily is automatically generated,			##
 ##		please do not modify!					##
 ##									##
 ##########################################################################
 
 ##########################################################################
 ##									##
-## Script ID: bckincdaily.sh						##
+## Script ID: bckdatadaily						##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Keeps copying the level 0 incremental file so that each day		##
-## a level 1 backup is made. This effectively makes it a 		##
-## differential, as opposed to incremental, backup. Runs over		##
-## the entire file system. It allows for a cycle of 7 backups		##
-## for daily coverage, designated by the short day form. The		##
-## timing element is expected to be delivered via cron.			##
+## Backs up directories and files specified in backup.files file.	##
+## The timing element is expected to be delivered via cron.		##
 ##									##
-## Syntax:	bckincdaily.sh [-h || --help || -v || --version]	##
+## Syntax:	bckincdaily [-h || --help || -v || --version]		##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -36,53 +32,19 @@
 ##									##
 ## Date		Author	Version	Description				##
 ##									##
-## 02/04/2010	MG	1.0.1	Created.				##
-## 26/08/2010	MG	1.0.2	Now uses variables for some backup	##
-##				information. These variables are set at	##
-##				the start of the script enabling some	##
-##				degree of portability.			##
-## 27/08/2010	MG	1.0.3	Introduced temporary patch to avoid	##
-##				FreeBSD gtar core dumping. See 'Known	##
-##				problem' comment.			##
-## 03/09/2010	MG	1.0.4	Upgrade to OpenSUSE 11.3 introduced	##
-##				same tar core dump probem, so		##
-##				introduced same temporary fix.		##
-## 11/09/2010	MG	1.0.5	Changed to use gzip.			##
-## 22/09/2010	MG	1.0.6	Added df command to mail and log disk	##
-##				stats whilst backup share is attached.	##
-## 18/11/2010	MG	1.0.7	Changed to emit help and version on	##
-##				input of correct flag as argument. Also	##
-##				stored version in string in Init section##
-## 20/11/2010	MG	1.0.8	Removed shutdown from script. In cron	##
-##				can use script.sh && shutdown		##
-## 23/11/2010	MG	1.0.9	The segfault has been fixed in GNU tar	##
-##				listed incremental backups, so the	##
-##				temporary fix has been removed,		##
-## 28/11/2010	MG	1.0.10	Changed script to read parameters from	##
-##				etclocation/backups.conf.		##
-## 14/12/2010	MG	1.0.11	Removed FreeBSD unsupported -B switch	##
-##				from df -ah mailx command.		##
-## 16/12/2010	MG	1.0.12	Allow the mailing of df -ah command	##
-##				for any OS, not just FreeBSD.		##
-## 10/01/2012	MG	1.0.13	Removed the .sh extension from the	##
-##				command name. Add .gvfs file exclusion	##
-##				to support Gnome desktops and Ubuntu.	##
-## 06/11/2012	MG	1.0.14	Reverted to use the .sh file extension.	##
-##				Added exclusion to tar command for /run	##
-##				and /var/run following inclusion of	##
-##				/run in Linux.				##
-## 17/11/2012	MG	1.0.15	After deletion of last copy of this	##
-##				backup, empty the NAS trash.		##
-## 20/12/2012	MG	1.0.16	Added Host name and day of week to	##
-##				email message subject line.		##
-## 06/02/2013	MG	1.0.17	Added mailing of backup file date	##
-##				hierarchy after backup.			##
-## 26/02/2013	MG	1.0.18	Changed command line option processing	##
-##				to use getopts.				##
-## 01/04/2013	MG	1.0.19	Moved config files to new backups	##
+## 02/03/2013	MG	1.0.1	Created.				##
+## 01/04/2013	MG	1.0.2	Moved config files to new backups	##
 ##				directory under sysconfdir. Added	##
 ##				exclude files for system, weekly, daily	##
 ##				and data.				##
+## 22/08/2013	MG	1.0.3	Debian best practice documentation	##
+##				requires that programs placed in the	##
+##				PATH should not have extensions as the	##
+##				programs may be rewritten in a		##
+##				different language. This would then	##
+##				require a name change, or, if left	##
+##				as-is would cause confusion. So name	##
+##				changed to remove .sh extension.	##
 ##									##
 ##########################################################################
 
@@ -92,8 +54,8 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.19"			# set version variable
-etclocation=@sysconfdir@/backups	# Path to etc directory
+version="1.0.3"				# set version variable
+etclocation=/usr/local/etc/backups	# Path to etc directory
 
 # Get system name for implementing OS differences
 osname=$(uname -s)
@@ -101,7 +63,7 @@ osname=$(uname -s)
 ###############
 ## Functions ##
 ###############
-script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
+script_short_desc=$(uname -n)" "$(date +%A)" Daily Data Backup"
 
 # Standard function to log $1 to stderr and mail to recipient
 mess_log()
@@ -116,7 +78,7 @@ script_exit()
 mess_log "$1" 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdin & stdout & close fd's 6 & 7
 sleep 5
-detbckshare.sh
+detbckshare
 exit $script_exit_code
 }
 
@@ -173,12 +135,11 @@ do
 done
 exec 3<&-
 
-# Build the backup & incremental file names and paths
-backpath="/mnt/$bckupdir/backup"$(date +%a)".tar.gz"
-snarpath="/mnt/$bckupdir/backup"$(date +%a)".snar"
+# Build the backup file name and path
+backpath="/mnt/$bckupdir/backupdata"$(date +%a)".tar.gz"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare.sh
+attbckshare
 status=$?
 if [ $status != "0" -a $status != "66" ]
 	then
@@ -194,32 +155,15 @@ mess_log "Attempting to process backup - "$backpath
 date
 date 1>&2
 
-# If the backup or incremental files exists, delete.
+# If the backup file exists, delete.
 # (Just in case full backup has not done this)
 if [ -f $backpath -a -r $backpath -a -w $backpath ]
 	then
 		rm $backpath
 fi
 
-if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
-	then
-		rm $snarpath
-fi
-
 # Empty the NAS trashbox
 rm /mnt/$bckupdir/trashbox/*
-
-# Copy level 0 incremental file in order to perform a
-# level 1, effective differential backup each run.
-if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
-	-a -w /mnt/$bckupdir/backup.snar ]
-	then
-	cp /mnt/$bckupdir/backup.snar $snarpath
-	else
-	echo "backup.snar does not exist or is not accessible"
-	script_exit_code=66
-	script_exit "backup.snar does not exist or is not accessible. Exit code "$script_exit_code
-fi
 
 # Get list of sockets to exclude
 find / -type s > /mnt/$bckupdir/sockets.exclude
@@ -227,16 +171,16 @@ find / -type s > /mnt/$bckupdir/sockets.exclude
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --listed-incremental=$snarpath \
+	gtar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
 		--exclude-from=$etclocation/bcksystem.exclude \
-		--exclude-from=$etclocation/bckincdaily.exclude \
+		--exclude-from=$etclocation/bckdatadaily.exclude \
 		--exclude-from=/mnt/$bckupdir/sockets.exclude /
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --listed-incremental=$snarpath \
+	tar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
 		--exclude-from=$etclocation/bcksystem.exclude \
-		--exclude-from=$etclocation/bckincdaily.exclude \
+		--exclude-from=$etclocation/bckdatadaily.exclude \
 		--exclude-from=/mnt/$bckupdir/sockets.exclude /
 	status=$?
 ;;
@@ -284,7 +228,7 @@ mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 sleep 5
 
 # Unmount the backup NAS server
-detbckshare.sh
+detbckshare
 
 # And exit
 exit 0

@@ -103,7 +103,7 @@ AUTOMAKE = ${SHELL} /home/mgrantprg/ScriptProjects/IXBackups/missing --run autom
 AWK = gawk
 BASH = /bin/bash
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"Backup\ Scripts\" -DPACKAGE_TARNAME=\"backup-scripts\" -DPACKAGE_VERSION=\"1.0.22\" -DPACKAGE_STRING=\"Backup\ Scripts\ 1.0.22\" -DPACKAGE_BUGREPORT=\"m.grant.prg@gmail.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"backup-scripts\" -DVERSION=\"1.0.22\"
+DEFS = -DPACKAGE_NAME=\"Backup\ Scripts\" -DPACKAGE_TARNAME=\"backup-scripts\" -DPACKAGE_VERSION=\"1.0.23\" -DPACKAGE_STRING=\"Backup\ Scripts\ 1.0.23\" -DPACKAGE_BUGREPORT=\"m.grant.prg@gmail.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"backup-scripts\" -DVERSION=\"1.0.23\"
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
@@ -120,16 +120,16 @@ MKDIR_P = /bin/mkdir -p
 PACKAGE = backup-scripts
 PACKAGE_BUGREPORT = m.grant.prg@gmail.com
 PACKAGE_NAME = Backup Scripts
-PACKAGE_STRING = Backup Scripts 1.0.22
+PACKAGE_STRING = Backup Scripts 1.0.23
 PACKAGE_TARNAME = backup-scripts
 PACKAGE_URL = 
-PACKAGE_VERSION = 1.0.22
+PACKAGE_VERSION = 1.0.23
 PATH_SEPARATOR = :
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = 
 TAR = yes
-VERSION = 1.0.22
+VERSION = 1.0.23
 abs_builddir = /home/mgrantprg/ScriptProjects/IXBackups/scripts
 abs_srcdir = /home/mgrantprg/ScriptProjects/IXBackups/scripts
 abs_top_builddir = /home/mgrantprg/ScriptProjects/IXBackups
@@ -176,14 +176,14 @@ edit = sed \
 	-e 's|@prefix[@]|$(prefix)|g'
 
 scriptssrcdir = $(srcdir)/scriptssrc
-sbin_SCRIPTS = bckfulladhoc.sh bckfullweekly.sh bckdatadaily.sh bckincdaily.sh \
-	attbckshare.sh detbckshare.sh
+sbin_SCRIPTS = bckfulladhoc bckfullweekly bckdatadaily bckincdaily \
+	attbckshare detbckshare
 
-EXTRA_DIST = bckfulladhoc.sh bckfullweekly.sh bckdatadaily.sh bckincdaily.sh \
-	attbckshare.sh detbckshare.sh $(scriptssrcdir)/attbckshare.sh.in \
-	$(scriptssrcdir)/detbckshare.sh.in $(scriptssrcdir)/bckfulladhoc.sh.in \
-	$(scriptssrcdir)/bckfullweekly.sh.in $(scriptssrcdir)/bckdatadaily.sh.in \
-	$(scriptssrcdir)/bckincdaily.sh.in
+EXTRA_DIST = bckfulladhoc bckfullweekly bckdatadaily bckincdaily \
+	attbckshare detbckshare $(scriptssrcdir)/attbckshare.in \
+	$(scriptssrcdir)/detbckshare.in $(scriptssrcdir)/bckfulladhoc.in \
+	$(scriptssrcdir)/bckfullweekly.in $(scriptssrcdir)/bckdatadaily.in \
+	$(scriptssrcdir)/bckincdaily.in
 
 all: all-am
 
@@ -407,8 +407,8 @@ uninstall-am: uninstall-sbinSCRIPTS
 	uninstall-am uninstall-sbinSCRIPTS
 
 
-attbckshare.sh detbckshare.sh bckfulladhoc.sh \
-	bckfullweekly.sh bckdatadaily.sh bckincdaily.sh: Makefile
+attbckshare detbckshare bckfulladhoc \
+	bckfullweekly bckdatadaily bckincdaily: Makefile
 	rm -f $@ $@.tmp
 	test -f ./$@.in || scriptssrcdir=$(scriptssrcdir)/; \
 	$(edit) $${scriptssrcdir}$@.in >$@.tmp
@@ -417,12 +417,12 @@ attbckshare.sh detbckshare.sh bckfulladhoc.sh \
 
 	chmod a+x $@
 
-attbckshare.sh: $(scriptssrcdir)/attbckshare.sh.in
-detbckshare.sh: $(scriptssrcdir)/detbckshare.sh.in
-bckfulladhoc.sh: $(scriptssrcdir)/bckfulladhoc.sh.in
-bckfullweekly.sh: $(scriptssrcdir)/bckfullweekly.sh.in
-bckdatadaily.sh: $(scriptssrcdir)/bckdatadaily.sh.in
-bckincdaily.sh: $(scriptssrcdir)/bckincdaily.sh.in
+attbckshare: $(scriptssrcdir)/attbckshare.in
+detbckshare: $(scriptssrcdir)/detbckshare.in
+bckfulladhoc: $(scriptssrcdir)/bckfulladhoc.in
+bckfullweekly: $(scriptssrcdir)/bckfullweekly.in
+bckdatadaily: $(scriptssrcdir)/bckdatadaily.in
+bckincdaily: $(scriptssrcdir)/bckincdaily.in
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1,3 +1,10 @@
+Release 1.0.23 2013-08-22
+Debian best practice documentation requires that programs placed in
+the PATH should not have extensions as the programs may be rewritten
+in a different language. This would then require a name change, or,
+if left as-is would cause confusion. So all names changed to remove .sh
+extension except for setup.sh which is not on the PATH.
+
 Release 1.0.22 2013-04-01
 Changed all scripts to use new backups sub-directory of sysconfdir.Added
 include and exclude from files.
