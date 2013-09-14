@@ -1,3 +1,6 @@
+Release 1.0.25 2013-09-14
+Improved coding around sequence calculation.
+
 Release 1.0.24 2013-09-14
 Changed sequence calculation from DOM / 7 + 1 to testing day
 against 7, 14, 21 and 28 as original calc did not work correctly when
