@@ -83,6 +83,11 @@
 ##				require a name change, or, if left	##
 ##				as-is would cause confusion. So name	##
 ##				changed to remove .sh extension.	##
+## 14/09/2013	MG	1.0.18	Changed sequence calculation from	##
+##				DOM / 7 + 1 to testing day against 7,	##
+##				14, 21 and 28 as original calc did not	##
+##				work correctly when day was exactly	##
+##				divisible by 7.				##
 ##									##
 ##########################################################################
 
@@ -92,17 +97,29 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.17"			# set version variable
+version="1.0.18"			# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
 osname=$(uname -s)
 
-# Calculate backup sequence number. DoM/7 + 1
+# Calculate backup sequence number.
 # Remove leading zeros otherwise thinks it is octal
-bckseq=$(date +%d)
-bckseq=$(echo $bckseq | sed 's/^0*//')
-((bckseq=bckseq / 7 + 1))
+day=$(date +%d)
+day=$(echo $day | sed 's/^0*//')
+bckseq=1
+if [ $day -gt 7 ]; then
+	bckseq=2
+fi
+if [ $day -gt 14 ] ; then
+	bckseq=3
+fi
+if [ $day -gt 21 ] ; then
+	bckseq=4
+fi
+if [ $day -gt 28 ] ; then
+	bckseq=5
+fi
 
 ###############
 ## Functions ##
