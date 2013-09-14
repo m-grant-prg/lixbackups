@@ -90,6 +90,8 @@
 ##				divisible by 7.				##
 ## 14/09/2013	MG	1.0.19	Improved coding around sequence		##
 ##				calulation.				##
+## 14/09/2013	MG	1.0.20	Logic error introduced in v1.0.19	##
+##				corrected.				##
 ##									##
 ##########################################################################
 
@@ -99,7 +101,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.19"			# set version variable
+version="1.0.20"			# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
@@ -110,14 +112,14 @@ osname=$(uname -s)
 day=$(date +%d)
 day=$(echo $day | sed 's/^0*//')
 bckseq=1
-if [ $day -gt 7 ]; then
-	bckseq=2
-	elif [ $day -gt 14 ] ; then
-		bckseq=3
-		elif [ $day -gt 21 ] ; then
-			bckseq=4
-			elif [ $day -gt 28 ] ; then
-				bckseq=5
+if [ $day -gt 28 ]; then
+	bckseq=5
+	elif [ $day -gt 21 ] ; then
+		bckseq=4
+		elif [ $day -gt 14 ] ; then
+			bckseq=3
+			elif [ $day -gt 7 ] ; then
+				bckseq=2
 fi
 
 ###############
