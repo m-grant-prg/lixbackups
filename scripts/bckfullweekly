@@ -92,6 +92,9 @@
 ##				calulation.				##
 ## 14/09/2013	MG	1.0.20	Logic error introduced in v1.0.19	##
 ##				corrected.				##
+## 30/10/2013	MG	1.0.21	Removed '-' prepending operations in	##
+##				the tar command. Added --exclude-caches	##
+##				to the tar command.			##
 ##									##
 ##########################################################################
 
@@ -101,7 +104,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.20"			# set version variable
+version="1.0.21"			# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
 
 # Get system name for implementing OS differeneces.
@@ -333,17 +336,19 @@ find / -type s > /mnt/$bckupdir/sockets.exclude
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --listed-incremental=$snarpath \
+	gtar cpzf $backpath --listed-incremental=$snarpath \
 		--exclude-from=$etclocation/bcksystem.exclude \
 		--exclude-from=$etclocation/bckfullweekly.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches /
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --listed-incremental=$snarpath \
+	tar cpzf $backpath --listed-incremental=$snarpath \
 		--exclude-from=$etclocation/bcksystem.exclude \
 		--exclude-from=$etclocation/bckfullweekly.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches /
 	status=$?
 ;;
 esac

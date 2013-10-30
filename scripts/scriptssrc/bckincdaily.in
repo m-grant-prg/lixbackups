@@ -91,6 +91,9 @@
 ##				require a name change, or, if left	##
 ##				as-is would cause confusion. So name	##
 ##				changed to remove .sh extension.	##
+## 30/10/2013	MG	1.0.21	Removed '-' prepending operations in	##
+##				the tar command. Added --exclude-caches	##
+##				to the tar command.			##
 ##									##
 ##########################################################################
 
@@ -100,7 +103,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.20"			# set version variable
+version="1.0.21"			# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 
 # Get system name for implementing OS differences
@@ -235,17 +238,19 @@ find / -type s > /mnt/$bckupdir/sockets.exclude
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --listed-incremental=$snarpath \
+	gtar cpzf $backpath --listed-incremental=$snarpath \
 		--exclude-from=$etclocation/bcksystem.exclude \
 		--exclude-from=$etclocation/bckincdaily.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches /
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --listed-incremental=$snarpath \
+	tar cpzf $backpath --listed-incremental=$snarpath \
 		--exclude-from=$etclocation/bcksystem.exclude \
 		--exclude-from=$etclocation/bckincdaily.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches /
 	status=$?
 ;;
 esac

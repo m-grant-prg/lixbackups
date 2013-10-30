@@ -1,3 +1,12 @@
+2013-10-30 v 1.0.27 Mark Grant <m.grant.prg@gmail.com>
+	* Removed '-' prepending operations in the tar command.
+	Added --exclude-caches to the tar command. Also changed backup command
+	in bckfulladhoc to use tar or gtar depending on OS.
+	bckdatadaily		Now at version 1.0.4
+	bckfulladhoc		Now at version 1.0.14
+	bckfullweekly		Now at version 1.0.21
+	bckincdaily		Now at version 1.0.21
+
 2013-09-14 v 1.0.26 Mark Grant <m.grant.prg@gmail.com>
 	* Logic error introduced in v1.0.19 corrected.
 	bckfullweekly		Now at version 1.0.20

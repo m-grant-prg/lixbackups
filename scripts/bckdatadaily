@@ -45,6 +45,12 @@
 ##				require a name change, or, if left	##
 ##				as-is would cause confusion. So name	##
 ##				changed to remove .sh extension.	##
+## 30/10/2013	MG	1.0.4	Removed '-' prepending operations in tar##
+##				command. Added --exclude-caches to the	##
+##				tar command. Removed the '/' at the end	##
+##				of the tar command as this adds the	##
+##				root directory as a backup start point	##
+##				in addition to --files-from.		##
 ##									##
 ##########################################################################
 
@@ -54,7 +60,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.3"				# set version variable
+version="1.0.4"				# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
 
 # Get system name for implementing OS differences
@@ -171,17 +177,19 @@ find / -type s > /mnt/$bckupdir/sockets.exclude
 # Run the backup excluding system directories
 case $osname in
 FreeBSD)
-	gtar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
+	gtar cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
 		--exclude-from=$etclocation/bcksystem.exclude \
 		--exclude-from=$etclocation/bckdatadaily.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches
 	status=$?
 ;;
 Linux)
-	tar -cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
+	tar cpzf $backpath --files-from=$etclocation/bckdatadaily.files \
 		--exclude-from=$etclocation/bcksystem.exclude \
 		--exclude-from=$etclocation/bckdatadaily.exclude \
-		--exclude-from=/mnt/$bckupdir/sockets.exclude /
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches
 	status=$?
 ;;
 esac

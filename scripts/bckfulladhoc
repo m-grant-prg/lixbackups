@@ -69,6 +69,11 @@
 ##				require a name change, or, if left	##
 ##				as-is would cause confusion. So name	##
 ##				changed to remove .sh extension.	##
+## 30/10/2013	MG	1.0.14	Removed '-' prepending operations in	##
+##				the tar command. Added --exclude-caches	##
+##				to the tar command. Also changed backup	##
+##				command to use tar or gtar depending on	##
+##				OS.					##
 ##									##
 ##########################################################################
 
@@ -78,8 +83,11 @@ exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.13"			# set version variable
+version="1.0.14"			# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
+
+# Get system name for implementing OS differeneces.
+osname=$(uname -s)
 
 ###############
 ## Functions ##
@@ -187,9 +195,20 @@ fi
 find / -type s > /mnt/$bckupdir/sockets.exclude
 
 # Run the backup excluding system directories
-tar -cpzf $backpath --exclude-from=$etclocation/bcksystem.exclude \
-	--exclude-from=/mnt/$bckupdir/sockets.exclude /
-status=$?
+case $osname in
+FreeBSD)
+	gtar cpzf $backpath --exclude-from=$etclocation/bcksystem.exclude \
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches /
+	status=$?
+;;
+Linux)
+	tar cpzf $backpath --exclude-from=$etclocation/bcksystem.exclude \
+		--exclude-from=/mnt/$bckupdir/sockets.exclude \
+		--exclude-caches /
+	status=$?
+;;
+esac
 
 # Final log entries and restore stdout & stderr
 date
