@@ -6,7 +6,7 @@ edit = sed \
 
 scriptssrcdir = $(srcdir)/scriptssrc
 
-attbckshare detbckshare bckfulladhoc \
+attbckshare detbckshare chkbckshare bckfulladhoc \
 	bckfullweekly bckdatadaily bckincdaily: Makefile
 	rm -f $@ $@.tmp
 	test -f ./$@.in || scriptssrcdir=$(scriptssrcdir)/; \
@@ -18,15 +18,16 @@ attbckshare detbckshare bckfulladhoc \
 
 attbckshare: $(scriptssrcdir)/attbckshare.in
 detbckshare: $(scriptssrcdir)/detbckshare.in
+chkbckshare: $(scriptssrcdir)/chkbckshare.in
 bckfulladhoc: $(scriptssrcdir)/bckfulladhoc.in
 bckfullweekly: $(scriptssrcdir)/bckfullweekly.in
 bckdatadaily: $(scriptssrcdir)/bckdatadaily.in
 bckincdaily: $(scriptssrcdir)/bckincdaily.in
 
 sbin_SCRIPTS = bckfulladhoc bckfullweekly bckdatadaily bckincdaily \
-	attbckshare detbckshare
+	attbckshare detbckshare chkbckshare
 EXTRA_DIST = bckfulladhoc bckfullweekly bckdatadaily bckincdaily \
-	attbckshare detbckshare $(scriptssrcdir)/attbckshare.in \
-	$(scriptssrcdir)/detbckshare.in $(scriptssrcdir)/bckfulladhoc.in \
-	$(scriptssrcdir)/bckfullweekly.in $(scriptssrcdir)/bckdatadaily.in \
-	$(scriptssrcdir)/bckincdaily.in
+	attbckshare detbckshare chkbckshare $(scriptssrcdir)/attbckshare.in \
+	$(scriptssrcdir)/detbckshare.in $(scriptssrcdir)/chkbckshare.in \
+	$(scriptssrcdir)/bckfulladhoc.in $(scriptssrcdir)/bckfullweekly.in \
+	$(scriptssrcdir)/bckdatadaily.in $(scriptssrcdir)/bckincdaily.in

@@ -1,0 +1,41 @@
+NAME
+chkbckshare - check if network share is mounted for backups
+SYNOPSIS
+chkbckshare [OPTION]
+DESCRIPTION
+Checks to see if a pre-determined network samba share is mounted as a target
+location for backup files.
+OPTIONS
+-b	(Boolean) Changes output from mount information to TRUE or FALSE
+
+-h	prints usage information
+
+-t	(Terse) Removes prepending scriptname from output
+
+-v	prints version information
+EXIT STATUS
+0
+if OK,
+
+1
+if minor problems,
+
+64
+error in command line arguments.
+
+AUTHOR
+Written by Mark Grant.
+REPORTING BUGS
+Report bugs to <m.grant.prg@btinternet.com>
+COPYRIGHT
+Copyright 2013 Mark Grant.
+.br
+License GPLv3+: GNU GPL version 3 or later
+.br
+<http://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+.br
+There is NO WARRANTY, to the extent permitted by law.
+SEE ALSO
+attbckshare(1) detbckshare(1) mount(8) (and mount_smbfs(8) on FreeBSD) umount(8)
