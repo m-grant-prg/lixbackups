@@ -23,6 +23,8 @@ if minor problems,
 64
 error in command line arguments.
 
+67
+trap received.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
