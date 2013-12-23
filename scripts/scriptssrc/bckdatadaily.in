@@ -150,13 +150,6 @@ do
 	esac
 done
 
-# If help or version requested then exit now.
-if [ $# -gt 0 ]
-	then
-		script_exit_code=0
-		script_exit
-fi
-
 # Read parameters from $etclocation/backups.conf
 IFS="="
 

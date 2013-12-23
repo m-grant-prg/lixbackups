@@ -107,7 +107,7 @@
 ##				require a name change, or, if left	##
 ##				as-is would cause confusion. So name	##
 ##				changed to remove .sh extension.	##
-## 18/12/2013	MG	1.0.10	Changed stdout & stderr message output	##
+## 23/12/2013	MG	1.1.1	Changed stdout & stderr message output	##
 ##				to use a function directing to one or	##
 ##				other based on a status.		##
 ##									##
@@ -117,8 +117,9 @@
 ## Init variables ##
 ####################
 script_exit_code=0
+outputprefix="attbckshare: "
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.0.10"			# set version variable
+version="1.1.1"				# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
 
 ###############
@@ -130,16 +131,15 @@ output()
 {
 	if [ $2 = 0 ]
 	then
-		echo "attbckshare: $1"
+		echo "$outputprefix$1"
 	else
-		echo "attbckshare: $1" 1>&2
+		echo "$outputprefix$1" 1>&2
 	fi
 }
 
-# Standard function to announce $1 and return exit code
+# Standard function to tidy up and return exit code
 script_exit()
 {
-	output $1 $script_exit_code
 	exit $script_exit_code
 }
 
@@ -147,7 +147,8 @@ script_exit()
 trap_exit()
 {
 script_exit_code=67
-script_exit "Script terminating due to trap received. Code: "$script_exit_code
+output "Script terminating due to trap received. Code: "$script_exit_code 1
+script_exit
 }
 
 # Setup trap
@@ -160,24 +161,23 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 while getopts :hv arg
 do
 	case $arg in
-		h)	echo "Usage is $0 [options]"
-			echo "	-h displays usage information"
-			echo "	OR"
-			echo "	-v displays version information"
-			;;
-		v)	echo "$0 version "$version
-			;;
-		\?)	script_exit_code=64
-			script_exit "Invalid argument -$OPTARG."
-			;;
+	h)	echo "Usage is $0 [options]"
+		echo "	-h displays usage information"
+		echo "	OR"
+		echo "	-v displays version information"
+		script_exit_code=0
+		script_exit
+		;;
+	v)	echo "$0 version "$version
+		script_exit_code=0
+		script_exit
+		;;
+	\?)	script_exit_code=64
+		output "Invalid argument -$OPTARG." 1
+		script_exit
+		;;
 	esac
 done
-
-# If help or version requested then exit now.
-if [ $# -gt 0 ]
-	then
-		exit 0
-fi
 
 # Read parameters from $etclocation/backups.conf
 IFS="="
@@ -236,11 +236,14 @@ if [ "$(mount | grep "/mnt/$bckupdir")" == "" ]
 	if [ $status != "0" ]
 		then
 		script_exit_code=65
-		script_exit "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code
+		output "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code 1
+		script_exit
 	fi
 	else
 	script_exit_code=66
-	script_exit "Backup share already mounted. Script exit code: "$script_exit_code
+	output "Backup share already mounted. Script exit code: "$script_exit_code 1
+	script_exit
 fi
 script_exit_code=0
-script_exit "Share //$bckupsys/$bckupdir mounted on /mnt/$bckupdir"
+output "Share //$bckupsys/$bckupdir mounted on /mnt/$bckupdir" 0
+script_exit
