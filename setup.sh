@@ -93,7 +93,7 @@
 ##				directory under sysconfdir. Added	##
 ##				exclude files for system, weekly, daily	##
 ##				and data.				##
-## 18/12/2013	MG	1.0.7	Changed stdout & stderr message output	##
+## 23/12/2013	MG	1.1.1	Changed stdout & stderr message output	##
 ##				to use a function directing to one or	##
 ##				other based on a status.		##
 ##									##
@@ -103,8 +103,9 @@
 ## Init variables ##
 ####################
 script_exit_code=0
+outputprefix="setup.sh: "
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.0.7"				# set version variable
+version="1.1.1"				# set version variable
 etclocation=/usr/local/etc/backups	# Path to etc directory
 
 ###############
@@ -116,16 +117,15 @@ output()
 {
 	if [ $2 = 0 ]
 	then
-		echo "setup.sh: $1"
+		echo "$outputprefix$1"
 	else
-		echo "setup.sh: $1" 1>&2
+		echo "$outputprefix$1" 1>&2
 	fi
 }
 
-# Standard function to announce $1 and return exit code
+# Standard function to tidy up and return exit code
 script_exit()
 {
-	output $1 $script_exit_code
 	exit $script_exit_code
 }
 
@@ -133,7 +133,8 @@ script_exit()
 trap_exit()
 {
 script_exit_code=67
-script_exit "Script terminating due to trap received. Code: "$script_exit_code
+output "Script terminating due to trap received. Code: "$script_exit_code 1
+script_exit
 }
 
 # Setup trap
@@ -146,28 +147,28 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 while getopts :hv arg
 do
 	case $arg in
-		h)	echo "Usage is $0 [options]"
-			echo "	-h displays usage information"
-			echo "	OR"
-			echo "	-v displays version information"
-			;;
-		v)	echo "$0 version "$version
-			;;
-		\?)	script_exit_code=64
-			script_exit "Invalid argument -$OPTARG."
-			;;
+	h)	echo "Usage is $0 [options]"
+		echo "	-h displays usage information"
+		echo "	OR"
+		echo "	-v displays version information"
+		script_exit_code=0
+		script_exit
+		;;
+	v)	echo "$0 version "$version
+		script_exit_code=0
+		script_exit
+		;;
+	\?)	script_exit_code=64
+		output "Invalid argument -$OPTARG." 1
+		script_exit
+		;;
 	esac
 done
 
-# If help or version requested then exit now.
-if [ $# -gt 0 ]
-	then
-		exit 0
-fi
-
 if test -f ~/.nsmbrc || test -f $etclocation/backups.conf ; then
 	script_exit_code=65
-	script_exit "File(s) exist, they must be maintained with an editor."
+	output "File(s) exist, they must be maintained with an editor." 1
+	script_exit
 fi
 
 read -p "NAS server name: " bckupsys
@@ -212,4 +213,5 @@ touch $etclocation/bckdatadaily.files
 touch $etclocation/bckdatadaily.exclude
 
 script_exit_code=0
-script_exit "Files set up."
+output "Files set up." 0
+script_exit
