@@ -105,7 +105,7 @@ then
 	exec 2>&7 7>&-	# Restore stderr and close FD 7
 fi
 
-sleep 5
+# The backup share might or might not be mounted.
 if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
 	detbckshare
