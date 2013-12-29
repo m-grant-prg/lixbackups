@@ -205,7 +205,8 @@ exec 3<&-
 # If FreeBSD we also need the workgroup which can be obtained from
 # the ~/.nsmbrc file
 
-if [ $osname = "FreeBSD" ]; then
+if [ $osname = "FreeBSD" ]
+then
 	exec 3<~/.nsmbrc
 	while read -u3 -ra input
 	do
@@ -219,8 +220,8 @@ if [ $osname = "FreeBSD" ]; then
 fi
 
 # Check to see if the NAS backup server is mounted, if not, mount
-if [ "$(mount | grep "/mnt/$bckupdir")" == "" ] 
-	then
+if [ "$(mount | grep "/mnt/$bckupdir")" == "" ]
+then
 	case $osname in
 	FreeBSD)
 		mount_smbfs -I $bckupsys -N -U $bckupusr -W $bckupwg \
@@ -228,22 +229,23 @@ if [ "$(mount | grep "/mnt/$bckupdir")" == "" ]
 		status=$?
 	;;
 	Linux)
-	mount -t cifs -o user=$bckupusr,password=$bckuppwd \
-        	//$bckupsys/$bckupdir /mnt/$bckupdir
-	status=$?
+		mount -t cifs -o user=$bckupusr,password=$bckuppwd \
+	        	//$bckupsys/$bckupdir /mnt/$bckupdir
+	        status=$?
 	;;
 	esac
 	if [ $status != "0" ]
-		then
+	then
 		script_exit_code=65
 		output "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code 1
 		script_exit
 	fi
-	else
+else
 	script_exit_code=66
 	output "Backup share already mounted. Script exit code: "$script_exit_code 1
 	script_exit
 fi
+
 script_exit_code=0
 output "Share //$bckupsys/$bckupdir mounted on /mnt/$bckupdir" 0
 script_exit

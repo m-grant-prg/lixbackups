@@ -143,21 +143,21 @@ exec 3<&-
 
 # Check to see if the NAS backup server is mounted
 mountoutput=$(mount | grep "/mnt/$bckupdir")
-if [ "$bool" = "FALSE" ] 
+if [ "$bool" = "FALSE" ]
+then
+	if [ "$mountoutput" = "" ]
 	then
-		if [ "$mountoutput" = "" ]
-		then
-			output "Backup share not mounted" 0
-		else
-			output $mountoutput 0
-		fi
+		output "Backup share not mounted" 0
 	else
-		if [ "$mountoutput" = "" ]
-		then
-			output "FALSE" 0
-		else
-			output "TRUE" 0
-		fi
+		output $mountoutput 0
+	fi
+else
+	if [ "$mountoutput" = "" ]
+	then
+		output "FALSE" 0
+	else
+		output "TRUE" 0
+	fi
 fi
 
 script_exit_code=0

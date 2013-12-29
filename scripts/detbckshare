@@ -153,20 +153,21 @@ exec 3<&-
 
 # Check to see if the NAS backup server is mounted, if it is, unmount
 if [ "$(mount | grep "/mnt/$bckupdir")" != "" ]
-	then
+then
 	umount /mnt/$bckupdir
 	status=$?
 	if [ $status != "0" ]
-		then
+	then
 		script_exit_code=65
 		output "Failed to unmount backup NAS server. Umount error: "$status" Script exit code: "$script_exit_code 1
 		script_exit
 	fi
-	else
+else
 	script_exit_code=66
 	output "Backup share not mounted. Script exit code: "$script_exit_code 1
 	script_exit
 fi
+
 script_exit_code=0
 output "Share unmounted from /mnt/$bckupdir" 0
 script_exit
