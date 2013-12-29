@@ -86,7 +86,10 @@ output()
 	else
 		echo "$outputprefix$1" 1>&2
 	fi
-	echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	if [ "$mail_recipient" != "" ]
+	then
+		echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	fi
 }
 
 # Standard function to cleanup and return exit code
@@ -174,7 +177,7 @@ backpath="/mnt/$bckupdir/backupdata"$(date +%a)".tar.gz"
 attbckshare
 status=$?
 if [ $status != "0" -a $status != "66" ]
-	then
+then
 	script_exit_code=65
 	output "Failed to mount backup NAS server. Mount error: "$status 1
 	script_exit
@@ -192,8 +195,8 @@ date 1>&2
 # If the backup file exists, delete.
 # (Just in case full backup has not done this)
 if [ -f $backpath -a -r $backpath -a -w $backpath ]
-	then
-		rm $backpath
+then
+	rm $backpath
 fi
 
 # Empty the NAS trashbox
@@ -237,9 +240,9 @@ echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 ## completion. So until fixed test on OS.			##
 ##################################################################
 if [ $osname == "FreeBSD" ]
-  then
-  df -ah # Log disk stats
-  ls -lht /mnt/$bckupdir
+then
+	df -ah # Log disk stats
+	ls -lht /mnt/$bckupdir
 fi
 
 # Mail disk stats

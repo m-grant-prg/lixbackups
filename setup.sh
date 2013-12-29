@@ -165,7 +165,8 @@ do
 	esac
 done
 
-if test -f ~/.nsmbrc || test -f $etclocation/backups.conf ; then
+if test -f ~/.nsmbrc || test -f $etclocation/backups.conf
+then
 	script_exit_code=65
 	output "File(s) exist, they must be maintained with an editor." 1
 	script_exit
@@ -182,7 +183,8 @@ read -p "User to notify: " notifyuser
 test -d $etclocation || mkdir -p $etclocation
 
 # Write ~/.nsmbrc file if necessary
-if [ $osname = "FreeBSD" ]; then
+if [ $osname = "FreeBSD" ]
+then
 	echo "# First define a workgroup." >>~/.nsmbrc
 	echo "[default]" >>~/.nsmbrc
 	echo "workgroup="$bckupwg >>~/.nsmbrc
