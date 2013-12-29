@@ -208,7 +208,7 @@ snarpath="/mnt/$bckupdir/backup.snar"
 attbckshare
 status=$?
 if [ $status != "0" ]
-	then
+then
 	script_exit_code=65
 	script_exit "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code
 fi
@@ -225,110 +225,17 @@ date 1>&2
 if [ -f $backpath -a -r $backpath \
         -a -w $backpath ]
         then
-                rm $backpath
+        	rm $backpath
 fi
 
 # If the level 0 incremental file exists, delete
 if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
-        then
-                rm $snarpath
+then
+	rm $snarpath
 fi
 
 # Empty the NAS trashbox
 rm /mnt/$bckupdir/trashbox/*
-
-<<Old_deletion_of_daily_backups.
-# If the daily backup files exist, delete
-if [ -f /mnt/$bckupdir/backup"Mon.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Mon.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Mon.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Mon.tar.gz"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Tue.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Tue.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Tue.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Tue.tar.gz"
-fi
-if [ -f /mnt/$bckupdir/backup"Wed.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Wed.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Wed.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Wed.tar.gz"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Thu.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Thu.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Thu.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Thu.tar.gz"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Fri.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Fri.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Fri.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Fri.tar.gz"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Sat.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Sat.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Sat.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Sat.tar.gz"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Sun.tar.gz" \
-	-a -r /mnt/$bckupdir/backup"Sun.tar.gz" \
-	-a -w /mnt/$bckupdir/backup"Sun.tar.gz" ]
-        then
-                rm /mnt/$bckupdir/backup"Sun.tar.gz"
-fi
-
-# If the daily level 1 incremental files exist, delete
-if [ -f /mnt/$bckupdir/backup"Mon.snar" -a -r /mnt/$bckupdir/backup"Mon.snar" \
-        -a -w /mnt/$bckupdir/backup"Mon.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Mon.snar"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Tue.snar" -a -r /mnt/$bckupdir/backup"Tue.snar" \
-        -a -w /mnt/$bckupdir/backup"Tue.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Tue.snar"
-fi
-if [ -f /mnt/$bckupdir/backup"Wed.snar" -a -r /mnt/$bckupdir/backup"Wed.snar" \
-        -a -w /mnt/$bckupdir/backup"Wed.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Wed.snar"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Thu.snar" -a -r /mnt/$bckupdir/backup"Thu.snar" \
-        -a -w /mnt/$bckupdir/backup"Thu.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Thu.snar"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Fri.snar" -a -r /mnt/$bckupdir/backup"Fri.snar" \
-        -a -w /mnt/$bckupdir/backup"Fri.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Fri.snar"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Sat.snar" -a -r /mnt/$bckupdir/backup"Sat.snar" \
-        -a -w /mnt/$bckupdir/backup"Sat.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Sat.snar"
-fi
-
-if [ -f /mnt/$bckupdir/backup"Sun.snar" -a -r /mnt/$bckupdir/backup"Sun.snar" \
-        -a -w /mnt/$bckupdir/backup"Sun.snar" ]
-        then
-                rm /mnt/$bckupdir/backup"Sun.snar"
-fi
-Old_deletion_of_daily_backups.
 
 # Get list of sockets to exclude
 find / -type s > /mnt/$bckupdir/sockets.exclude
@@ -367,9 +274,9 @@ mess_log "Processing of "$backpath" is complete. Status: "$status
 ## completion. So until fixed test on OS.			##
 ##################################################################
 if [ $osname == "FreeBSD" ]
-  then
-  df -ah # Log disk stats
-  ls -lht /mnt/$bckupdir
+then
+	df -ah # Log disk stats
+	ls -lht /mnt/$bckupdir
 fi
 
 # Mail disk stats

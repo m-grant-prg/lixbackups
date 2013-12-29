@@ -128,7 +128,10 @@ output()
 	else
 		echo "$outputprefix$1" 1>&2
 	fi
-	echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	if [ "$mail_recipient" != "" ]
+	then
+		echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	fi
 }
 
 # Standard function to cleanup and return exit code

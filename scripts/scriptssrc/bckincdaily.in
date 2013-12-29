@@ -128,7 +128,10 @@ output()
 	else
 		echo "$outputprefix$1" 1>&2
 	fi
-	echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	if [ "$mail_recipient" != "" ]
+	then
+		echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	fi
 }
 
 # Standard function to cleanup and return exit code
@@ -217,7 +220,7 @@ snarpath="/mnt/$bckupdir/backup"$(date +%a)".snar"
 attbckshare
 status=$?
 if [ $status != "0" -a $status != "66" ]
-	then
+then
 	script_exit_code=65
 	output "Failed to mount backup NAS server. Mount error: "$status 1
 	script_exit
@@ -235,13 +238,13 @@ date 1>&2
 # If the backup or incremental files exists, delete.
 # (Just in case full backup has not done this)
 if [ -f $backpath -a -r $backpath -a -w $backpath ]
-	then
-		rm $backpath
+then
+	rm $backpath
 fi
 
 if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
-	then
-		rm $snarpath
+then
+	rm $snarpath
 fi
 
 # Empty the NAS trashbox
@@ -252,11 +255,11 @@ rm /mnt/$bckupdir/trashbox/*
 if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
 	-a -w /mnt/$bckupdir/backup.snar ]
 	then
-	cp /mnt/$bckupdir/backup.snar $snarpath
+		cp /mnt/$bckupdir/backup.snar $snarpath
 	else
-	script_exit_code=66
-	output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1
-	script_exit
+		script_exit_code=66
+		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1
+		script_exit
 fi
 
 # Get list of sockets to exclude
@@ -297,9 +300,9 @@ echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 ## completion. So until fixed test on OS.			##
 ##################################################################
 if [ $osname == "FreeBSD" ]
-  then
-  df -ah # Log disk stats
-  ls -lht /mnt/$bckupdir
+then
+	df -ah # Log disk stats
+	ls -lht /mnt/$bckupdir
 fi
 
 # Mail disk stats

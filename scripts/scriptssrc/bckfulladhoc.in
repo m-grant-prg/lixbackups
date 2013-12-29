@@ -74,6 +74,9 @@
 ##				to the tar command. Also changed backup	##
 ##				command to use tar or gtar depending on	##
 ##				OS.					##
+## 29/12/2013	MG	1.1.1	Changed stdout & stderr message output	##
+##				to use a function directing to one or	##
+##				other based on a status.		##
 ##									##
 ##########################################################################
 
@@ -83,31 +86,56 @@ exec 6>&1 7>&2	# Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.14"			# set version variable
+version="1.1.1"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
+outputprefix="bckfulladhoc: "
 
 # Get system name for implementing OS differeneces.
 osname=$(uname -s)
 
+script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
+
 ###############
 ## Functions ##
 ###############
-script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
 
-# Standard function to log $1 to stderr and mail to recipient
-mess_log()
+# Output $1 to stdout or stderr depending on $2 and mail to recipient
+output()
 {
-echo $1 1>&2
-echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	if [ $2 = 0 ]
+	then
+		echo "$outputprefix$1"
+	else
+		echo "$outputprefix$1" 1>&2
+	fi
+	if [ "$mail_recipient" != "" ]
+	then
+		echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	fi
 }
 
-# Standard function to log and mail $1, cleanup and return exit code
+# Standard function to cleanup and return exit code
 script_exit()
 {
-mess_log "$1" 
-exec 1>&6 2>&7 6>&- 7>&- # Restore stdin & stdout & close fd's 6 & 7
-sleep 5
-detbckshare
+# FD's 6 & 7 may or may not be open at this point so test individually for closing.
+# This reads lsof with ANDed conditions of suppress warnings, FD 6, output only FD
+# for this current PID and pipe it's output to wc to count the lines. If FD 6 is
+# open, 2 lines result, PID number and f6.
+if [ $(lsof -aw -d 6 -F f -p $$ | wc -l) -gt 0 ]
+then
+	exec 1>&6 6>&-	# Restore stdout and close FD 6
+fi
+if [ $(lsof -aw -d 7 -F f -p $$ | wc -l) -gt 0 ]
+then
+	exec 2>&7 7>&-	# Restore stderr and close FD 7
+fi
+
+# The backup share might or might not be mounted.
+if [ "$(chkbckshare -bt)" = "TRUE" ]
+then
+	detbckshare
+fi
+
 exit $script_exit_code
 }
 
@@ -115,7 +143,8 @@ exit $script_exit_code
 trap_exit()
 {
 script_exit_code=67
-script_exit "Script terminating due to trap received. Code: "$script_exit_code
+output "Script terminating due to trap received." 1
+script_exit
 }
 
 # Setup trap
@@ -128,24 +157,23 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 while getopts :hv arg
 do
 	case $arg in
-		h)	echo "Usage is $0 [options]"
-			echo "	-h displays usage information"
-			echo "	OR"
-			echo "	-v displays version information"
-			;;
-		v)	echo "$0 version "$version
-			;;
-		\?)	echo "Invalid argument -$OPTARG." >&2
-			exit 64
-			;;
+	h)	echo "Usage is $0 [options]"
+		echo "	-h displays usage information"
+		echo "	OR"
+		echo "	-v displays version information"
+		script_exit_code=0
+		script_exit
+		;;
+	v)	echo "$0 version "$version
+		script_exit_code=0
+		script_exit
+		;;
+	\?)	script_exit_code=64
+		output "Invalid argument -$OPTARG." 1
+		script_exit
+		;;
 	esac
 done
-
-# If help or version requested then exit now.
-if [ $# -gt 0 ]
-	then
-		exit 0
-fi
 
 # Read parameters from $etclocation/backups.conf
 IFS="="
@@ -171,15 +199,17 @@ backpath="/mnt/$bckupdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 attbckshare
 status=$?
 if [ $status != "0" ]
-	then
+then
 	script_exit_code=65
-	script_exit "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code
+	output "Failed to mount backup NAS server. Mount error: "$status 1
+	script_exit
 fi
 
 # Re-direct stdout & stderr to backup logs and write initial entries
 exec 1>> /mnt/$bckupdir/backup.log 2>> /mnt/$bckupdir/backuperror.log
-echo "Attempting to process backup - "$backpath
-mess_log "Attempting to process backup - "$backpath
+
+output "Attempting to process backup - "$backpath 0
+echo "Attempting to process backup - "$backpath 1>&2
 
 date
 date 1>&2
@@ -188,7 +218,7 @@ date 1>&2
 if [ -f $backpath -a -r $backpath \
         -a -w $backpath ]
         then
-                rm $backpath
+        	rm $backpath
 fi
 
 # Get list of sockets for exclusion
@@ -213,12 +243,29 @@ esac
 # Final log entries and restore stdout & stderr
 date
 date 1>&2
-echo "Processing of "$backpath" is complete. Status: "$status
-mess_log "Processing of "$backpath" is complete. Status: "$status
-df -ah # Log disk stats
+output "Processing of "$backpath" is complete. Status: "$status 0
+echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 
-# Was using the line buffered -B switch but this is not available under FreeBSD
-df -ah | mailx -s "$script_short_desc" $mail_recipient # Mail disk stats
+##################################################################
+## It is not clear why the following two lines cause everything ##
+## to hang until charybdis is restarted. It is probably due to  ##
+## the odd wiring relating to the kvm which powers off if	##
+## charybdis or scylla are not powered up. So this only affects	##
+## priam during EOD backup routines which shutdown machines on	##
+## completion. So until fixed test on OS.			##
+##################################################################
+if [ $osname == "FreeBSD" ]
+then
+	df -ah # Log disk stats
+	ls -lht /mnt/$bckupdir
+fi
+
+# Mail disk stats
+df -ah | mailx -s "$script_short_desc" $mail_recipient
+
+# Mail backup file date hierarchy
+ls -lht /mnt/$bckupdir | mailx -s "$script_short_desc" $mail_recipient
+
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
 # Cleanup logs so they only have 1000 lines max
@@ -235,8 +282,7 @@ sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 sleep 5
 
-# Unmount the backup NAS server
-detbckshare
-
 # And exit
-exit 0
+script_exit_code=0
+output "Full Ad Hoc Backup Complete." 0
+script_exit
