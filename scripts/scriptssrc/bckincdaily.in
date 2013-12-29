@@ -254,12 +254,12 @@ rm /mnt/$bckupdir/trashbox/*
 # level 1, effective differential backup each run.
 if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
 	-a -w /mnt/$bckupdir/backup.snar ]
-	then
-		cp /mnt/$bckupdir/backup.snar $snarpath
-	else
-		script_exit_code=66
-		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1
-		script_exit
+then
+	cp /mnt/$bckupdir/backup.snar $snarpath
+else
+	script_exit_code=66
+	output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1
+	script_exit
 fi
 
 # Get list of sockets to exclude

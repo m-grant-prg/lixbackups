@@ -215,10 +215,9 @@ date
 date 1>&2
 
 # Not likely, but if it already exists, delete
-if [ -f $backpath -a -r $backpath \
-        -a -w $backpath ]
-        then
-        	rm $backpath
+if [ -f $backpath -a -r $backpath -a -w $backpath ]
+then
+	rm $backpath
 fi
 
 # Get list of sockets for exclusion
