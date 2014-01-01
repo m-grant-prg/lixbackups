@@ -152,7 +152,7 @@ done
 exec 3<&-
 
 # Check to see if the NAS backup server is mounted, if it is, unmount
-if [ "$(mount | grep "/mnt/$bckupdir")" != "" ]
+if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
 	umount /mnt/$bckupdir
 	status=$?

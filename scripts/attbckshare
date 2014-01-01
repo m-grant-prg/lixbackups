@@ -220,7 +220,7 @@ then
 fi
 
 # Check to see if the NAS backup server is mounted, if not, mount
-if [ "$(mount | grep "/mnt/$bckupdir")" == "" ]
+if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
 	case $osname in
 	FreeBSD)
