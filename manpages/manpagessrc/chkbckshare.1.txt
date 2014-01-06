@@ -12,7 +12,7 @@ OPTIONS
 
 -t	(Terse) Removes prepending scriptname from output
 
--v	prints version information
+-V	prints version information
 EXIT STATUS
 0
 if OK,

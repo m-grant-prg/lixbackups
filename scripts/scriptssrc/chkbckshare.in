@@ -17,7 +17,7 @@
 ## 	on								##
 ## 	/mnt/charybdisbck						##
 ##									##
-## Syntax:	chkbckshare [-b || -h || -t || -v]			##
+## Syntax:	chkbckshare [-b || -h || -t || -V]			##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -88,7 +88,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with getopts.
-while getopts :bhtv arg
+while getopts :bhtV arg
 do
 	case $arg in
 	b)	bool="TRUE"
@@ -100,14 +100,14 @@ do
 		echo "	OR"
 		echo "	-t removes prepending script name from the output"
 		echo "	OR"
-		echo "	-v displays version information"
+		echo "	-V displays version information"
 		script_exit_code=0
 		script_exit
 		;;
 	t)	terse="TRUE"
 		outputprefix=""
 		;;
-	v)	echo "$0 version "$version
+	V)	echo "$0 version "$version
 		script_exit_code=0
 		script_exit
 		;;

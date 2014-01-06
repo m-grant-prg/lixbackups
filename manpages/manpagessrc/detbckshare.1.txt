@@ -5,9 +5,11 @@ detbckshare [OPTION]
 DESCRIPTION
 Detaches the pre-determined network samba share used as a backup target location.
 OPTIONS
--h --help  prints usage information
+-h prints usage information
 
--v --version  prints version information
+-v verbose output
+
+-V prints version information
 EXIT STATUS
 0
 if OK,
@@ -38,4 +40,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) umount(8) mount(8) (mount_smbfs(8) on FreeBSD)
+attbckshare(1) chkbckshare(1) umount(8) mount(8) (mount_smbfs(8) on FreeBSD)
