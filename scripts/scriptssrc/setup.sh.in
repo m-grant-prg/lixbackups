@@ -14,7 +14,7 @@
 ## Purpose:								##
 ## To setup the config files for the Backup package.			##
 ##									##
-## Syntax:	setup.sh [-h || --help || -v || --version]		##
+## Syntax:	setup.sh [-h || -V ]					##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -93,9 +93,12 @@
 ##				directory under sysconfdir. Added	##
 ##				exclude files for system, weekly, daily	##
 ##				and data.				##
-## 23/12/2013	MG	1.1.1	Changed stdout & stderr message output	##
+## 10/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
 ##				to use a function directing to one or	##
-##				other based on a status.		##
+##				other based on a status. Changed	##
+##				version option to -V. Added usage of	##
+##				standard error routine. Added		##
+##				interactive=never to rm commands.	##
 ##									##
 ##########################################################################
 
@@ -123,6 +126,16 @@ output()
 	fi
 }
 
+# Standard function to test command error ($1 is $?) and exit if non-zero
+std_cmd_err_handler()
+{
+	if [ $1 != 0 ]
+	then
+		script_exit_code=$1
+		script_exit
+	fi
+}
+
 # Standard function to tidy up and return exit code
 script_exit()
 {
@@ -144,17 +157,17 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with getopts.
-while getopts :hv arg
+while getopts :hV arg
 do
 	case $arg in
 	h)	echo "Usage is $0 [options]"
 		echo "	-h displays usage information"
 		echo "	OR"
-		echo "	-v displays version information"
+		echo "	-V displays version information"
 		script_exit_code=0
 		script_exit
 		;;
-	v)	echo "$0 version "$version
+	V)	echo "$0 version "$version
 		script_exit_code=0
 		script_exit
 		;;
@@ -181,38 +194,58 @@ read -p "User to notify: " notifyuser
 
 # Setup files
 test -d $etclocation || mkdir -p $etclocation
+std_cmd_err_handler $?
 
 # Write ~/.nsmbrc file if necessary
 if [ $osname = "FreeBSD" ]
 then
 	echo "# First define a workgroup." >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "[default]" >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "workgroup="$bckupwg >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "# Then define a server." >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "["$bckupsys"]" \
 		| sed y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/ \
 		>>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "addr="$bckupsys >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "# Then define a server / user pair." >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "["$bckupsys":"$bckupusr"]" \
 		| sed y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/ \
 		>>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "# Use persistent password cache for user." >>~/.nsmbrc
+	std_cmd_err_handler $?
 	echo "password="$bckuppwd >>~/.nsmbrc
+	std_cmd_err_handler $?
 fi
 
 # Write $etclocation/backups.conf file
 echo "server="$bckupsys >>$etclocation/backups.conf
+std_cmd_err_handler $?
 echo "dir="$bckupdir >>$etclocation/backups.conf
+std_cmd_err_handler $?
 echo "user="$bckupusr >>$etclocation/backups.conf
+std_cmd_err_handler $?
 echo "password="$bckuppwd >>$etclocation/backups.conf
+std_cmd_err_handler $?
 echo "notifyuser="$notifyuser >> $etclocation/backups.conf
+std_cmd_err_handler $?
 
 # Create $etclocation/backups inclde and exclude files
 touch $etclocation/bckfullweekly.exclude
+std_cmd_err_handler $?
 touch $etclocation/bckincdaily.exclude
+std_cmd_err_handler $?
 touch $etclocation/bckdatadaily.files
+std_cmd_err_handler $?
 touch $etclocation/bckdatadaily.exclude
+std_cmd_err_handler $?
 
 script_exit_code=0
 output "Files set up." 0
