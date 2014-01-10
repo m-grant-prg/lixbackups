@@ -15,7 +15,7 @@
 ## Backs up directories and files specified in backup.files file.	##
 ## The timing element is expected to be delivered via cron.		##
 ##									##
-## Syntax:	bckincdaily [-h || -v]					##
+## Syntax:	bckincdaily [-h || -V]					##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -51,9 +51,12 @@
 ##				of the tar command as this adds the	##
 ##				root directory as a backup start point	##
 ##				in addition to --files-from.		##
-## 22/12/2013	MG	1.1.1	Changed stdout & stderr message output	##
+## 10/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
 ##				to use a function directing to one or	##
-##				other based on a status.		##
+##				other based on a status. Changed	##
+##				version option to -V. Added usage of	##
+##				standard error routine. Added		##
+##				interactive=never to rm commands.	##
 ##									##
 ##########################################################################
 
@@ -89,6 +92,16 @@ output()
 	if [ "$mail_recipient" != "" ]
 	then
 		echo $1 | mailx -s "$script_short_desc" $mail_recipient
+	fi
+}
+
+# Standard function to test command error ($1 is $?) and exit if non-zero
+std_cmd_err_handler()
+{
+	if [ $1 != 0 ]
+	then
+		script_exit_code=$1
+		script_exit
 	fi
 }
 
@@ -132,17 +145,17 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with getopts.
-while getopts :hv arg
+while getopts :hV arg
 do
 	case $arg in
 	h)	echo "Usage is $0 [options]"
 		echo "	-h displays usage information"
 		echo "	OR"
-		echo "	-v displays version information"
+		echo "	-V displays version information"
 		script_exit_code=0
 		script_exit
 		;;
-	v)	echo "$0 version "$version
+	V)	echo "$0 version "$version
 		script_exit_code=0
 		script_exit
 		;;
@@ -174,13 +187,10 @@ exec 3<&-
 backpath="/mnt/$bckupdir/backupdata"$(date +%a)".tar.gz"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare
-status=$?
-if [ $status != "0" -a $status != "66" ]
+if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
-	script_exit_code=65
-	output "Failed to mount backup NAS server. Mount error: "$status 1
-	script_exit
+	attbckshare
+	std_cmd_err_handler $?
 fi
 
 # Re-direct stdout & stderr to backup logs and write initial entries
@@ -194,13 +204,15 @@ date 1>&2
 
 # If the backup file exists, delete.
 # (Just in case full backup has not done this)
-if [ -f $backpath -a -r $backpath -a -w $backpath ]
+if [ -f $backpath ]
 then
-	rm $backpath
+	rm --interactive=never $backpath
+	std_cmd_err_handler $?
 fi
 
 # Empty the NAS trashbox
-rm /mnt/$bckupdir/trashbox/*
+rm --interactive=never -r /mnt/$bckupdir/trashbox/*
+std_cmd_err_handler $?
 
 # Get list of sockets to exclude
 find / -type s > /mnt/$bckupdir/sockets.exclude
@@ -255,16 +267,22 @@ exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
 # Cleanup logs so they only have 1000 lines max
 tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log
+std_cmd_err_handler $?
 sleep 5
-rm /mnt/$bckupdir/backup.log
+rm --interactive=never /mnt/$bckupdir/backup.log
+std_cmd_err_handler $?
 sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log
+std_cmd_err_handler $?
 sleep 5
 tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log
+std_cmd_err_handler $?
 sleep 5
-rm /mnt/$bckupdir/backuperror.log
+rm --interactive=never /mnt/$bckupdir/backuperror.log
+std_cmd_err_handler $?
 sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
+std_cmd_err_handler $?
 sleep 5
 
 # And exit

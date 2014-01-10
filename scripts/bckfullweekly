@@ -14,12 +14,11 @@
 ## Purpose:								##
 ## Runs a level 0 incremental (ie full) backup of entire        	##
 ## file system. It allows for a cycle of 5 backups for weekly   	##
-## coverage, designated by 1 - 5 which identifier is calculated 	##
-## by day of month / 7 + 1                                      	##
+## coverage, designated by 1 - 5.					##
 ## The weekly timing element is expected to be delivered via    	##
 ## cron.                                                        	##
 ##                                                              	##
-## Syntax:      bckfullweekly [-h || --help || -v || --version]		##
+## Syntax:      bckfullweekly [-h || -V ]				##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -95,9 +94,12 @@
 ## 30/10/2013	MG	1.0.21	Removed '-' prepending operations in	##
 ##				the tar command. Added --exclude-caches	##
 ##				to the tar command.			##
-## 29/12/2013	MG	1.1.1	Changed stdout & stderr message output	##
+## 10/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
 ##				to use a function directing to one or	##
-##				other based on a status.		##
+##				other based on a status. Changed	##
+##				version option to -V. Added usage of	##
+##				standard error routine. Added		##
+##				interactive=never to rm commands.	##
 ##									##
 ##########################################################################
 
@@ -150,6 +152,16 @@ output()
 	fi
 }
 
+# Standard function to test command error ($1 is $?) and exit if non-zero
+std_cmd_err_handler()
+{
+	if [ $1 != 0 ]
+	then
+		script_exit_code=$1
+		script_exit
+	fi
+}
+
 # Standard function to cleanup and return exit code
 script_exit()
 {
@@ -190,17 +202,17 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with getopts.
-while getopts :hv arg
+while getopts :hV arg
 do
 	case $arg in
 	h)	echo "Usage is $0 [options]"
 		echo "	-h displays usage information"
 		echo "	OR"
-		echo "	-v displays version information"
+		echo "	-V displays version information"
 		script_exit_code=0
 		script_exit
 		;;
-	v)	echo "$0 version "$version
+	V)	echo "$0 version "$version
 		script_exit_code=0
 		script_exit
 		;;
@@ -233,13 +245,10 @@ backpath="/mnt/$bckupdir/backup"$bckseq".tar.gz"
 snarpath="/mnt/$bckupdir/backup.snar"
 
 # Check to see if the NAS backup server is mounted, if not, mount
-attbckshare
-status=$?
-if [ $status != "0" ]
+if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
-	script_exit_code=65
-	output "Failed to mount backup NAS server. Mount error: "$status 1
-	script_exit
+	attbckshare
+	std_cmd_err_handler $?
 fi
 
 # Re-direct stdout & stderr to backup logs and write initial entries
@@ -252,19 +261,22 @@ date
 date 1>&2
 
 # If the backup file exists, delete
-if [ -f $backpath -a -r $backpath -a -w $backpath ]
+if [ -f $backpath ]
 then
-	rm $backpath
+	rm --interactive=never $backpath
+	std_cmd_err_handler $?
 fi
 
 # If the level 0 incremental file exists, delete
-if [ -f $snarpath -a -r $snarpath -a -w $snarpath ]
+if [ -f $snarpath ]
 then
-	rm $snarpath
+	rm --interactive=never $snarpath
+	std_cmd_err_handler $?
 fi
 
 # Empty the NAS trashbox
-rm /mnt/$bckupdir/trashbox/*
+rm --interactive=never -r /mnt/$bckupdir/trashbox/*
+std_cmd_err_handler $?
 
 # Get list of sockets to exclude
 find / -type s > /mnt/$bckupdir/sockets.exclude
@@ -319,16 +331,22 @@ exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
 # Cleanup logs so they only have 1000 lines max
 tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log
+std_cmd_err_handler $?
 sleep 5
-rm /mnt/$bckupdir/backup.log
+rm --interactive=never /mnt/$bckupdir/backup.log
+std_cmd_err_handler $?
 sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log
+std_cmd_err_handler $?
 sleep 5
 tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log
+std_cmd_err_handler $?
 sleep 5
-rm /mnt/$bckupdir/backuperror.log
+rm --interactive=never /mnt/$bckupdir/backuperror.log
+std_cmd_err_handler $?
 sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
+std_cmd_err_handler $?
 sleep 5
 
 # And exit
