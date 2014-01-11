@@ -260,7 +260,7 @@ then
 fi
 
 # Empty the NAS trashbox
-rm --interactive=never -r /mnt/$bckupdir/trashbox/*
+rm -fr /mnt/$bckupdir/trashbox/*
 std_cmd_err_handler $?
 
 # Copy level 0 incremental file in order to perform a

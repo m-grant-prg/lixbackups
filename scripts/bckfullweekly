@@ -275,7 +275,7 @@ then
 fi
 
 # Empty the NAS trashbox
-rm --interactive=never -r /mnt/$bckupdir/trashbox/*
+rm -fr /mnt/$bckupdir/trashbox/*
 std_cmd_err_handler $?
 
 # Get list of sockets to exclude
