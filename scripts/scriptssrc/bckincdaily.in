@@ -98,8 +98,7 @@
 ##				to use a function directing to one or	##
 ##				other based on a status. Changed	##
 ##				version option to -V. Added usage of	##
-##				standard error routine. Added		##
-##				interactive=never to rm commands.	##
+##				standard error routine.			##
 ##									##
 ##########################################################################
 
@@ -249,13 +248,13 @@ date 1>&2
 # (Just in case full backup has not done this)
 if [ -f $backpath ]
 then
-	rm --interactive=never $backpath
+	rm $backpath
 	std_cmd_err_handler $?
 fi
 
 if [ -f $snarpath ]
 then
-	rm --interactive=never $snarpath
+	rm $snarpath
 	std_cmd_err_handler $?
 fi
 
@@ -331,7 +330,7 @@ exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log
 std_cmd_err_handler $?
 sleep 5
-rm --interactive=never /mnt/$bckupdir/backup.log
+rm /mnt/$bckupdir/backup.log
 std_cmd_err_handler $?
 sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log
@@ -340,7 +339,7 @@ sleep 5
 tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log
 std_cmd_err_handler $?
 sleep 5
-rm --interactive=never /mnt/$bckupdir/backuperror.log
+rm /mnt/$bckupdir/backuperror.log
 std_cmd_err_handler $?
 sleep 5
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log

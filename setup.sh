@@ -97,8 +97,7 @@
 ##				to use a function directing to one or	##
 ##				other based on a status. Changed	##
 ##				version option to -V. Added usage of	##
-##				standard error routine. Added		##
-##				interactive=never to rm commands.	##
+##				standard error routine.			##
 ##									##
 ##########################################################################
 
