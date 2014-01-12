@@ -165,6 +165,7 @@ fi
 # The backup share might or might not be mounted.
 if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
+	sleep 45
 	detbckshare
 fi
 
@@ -329,22 +330,21 @@ exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 # Cleanup logs so they only have 1000 lines max
 tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log
 std_cmd_err_handler $?
-sleep 5
+sleep 45
 rm /mnt/$bckupdir/backup.log
 std_cmd_err_handler $?
-sleep 5
+sleep 45
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log
 std_cmd_err_handler $?
-sleep 5
+sleep 45
 tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log
 std_cmd_err_handler $?
-sleep 5
+sleep 45
 rm /mnt/$bckupdir/backuperror.log
 std_cmd_err_handler $?
-sleep 5
+sleep 45
 mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
 std_cmd_err_handler $?
-sleep 5
 
 # And exit
 script_exit_code=0
