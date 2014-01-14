@@ -51,11 +51,14 @@
 ##				of the tar command as this adds the	##
 ##				root directory as a backup start point	##
 ##				in addition to --files-from.		##
-## 10/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
+## 14/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
 ##				to use a function directing to one or	##
 ##				other based on a status. Changed	##
 ##				version option to -V. Added usage of	##
-##				standard error routine.			##
+##				standard error routine. Introduced	##
+##				function to repeat commands to overcome	##
+##				latency issues on NAS mount from	##
+##				either mount_smbfs or slow hardware.	##
 ##									##
 ##########################################################################
 
@@ -79,7 +82,7 @@ script_short_desc=$(uname -n)" "$(date +%A)" Daily Data Backup"
 ## Functions ##
 ###############
 
-# Output $1 to stdout or stderr depending on $2 and mail to recipient
+# Output $1 to stdout or stderr depending on $2
 output()
 {
 	if [ $2 = 0 ]
@@ -88,10 +91,26 @@ output()
 	else
 		echo "$outputprefix$1" 1>&2
 	fi
-	if [ "$mail_recipient" != "" ]
-	then
-		echo $1 | mailx -s "$script_short_desc" $mail_recipient
-	fi
+#	if [ "$mail_recipient" != "" ]
+#	then
+#		echo $1 | mailx -s "$script_short_desc" $mail_recipient
+#	fi
+}
+
+# Function to repeat commands to overcome latency issues on NAS mount from
+# either mount_smbfs or slow hardware.
+latency_compensate()
+{
+	loopcount=0
+	status=1
+	while [ $status -gt 0 -a $loopcount -lt 60 ]
+	do
+		((loopcount = loopcount + 1))
+		sleep 5
+		eval "$1 2>/dev/null" 
+		status=$?
+	done
+	output "$1 status $status after $loopcount attempts" $status
 }
 
 # Standard function to test command error ($1 is $?) and exit if non-zero
@@ -123,8 +142,7 @@ fi
 # The backup share might or might not be mounted.
 if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
-	sleep 45
-	detbckshare
+	latency_compensate "detbckshare"
 fi
 
 exit $script_exit_code
@@ -193,6 +211,8 @@ then
 	std_cmd_err_handler $?
 fi
 
+output "Attempting to process backup - "$backpath 0 
+
 # Re-direct stdout & stderr to backup logs and write initial entries
 exec 1>> /mnt/$bckupdir/backup.log 2>> /mnt/$bckupdir/backuperror.log
 
@@ -251,11 +271,11 @@ echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 ## priam during EOD backup routines which shutdown machines on	##
 ## completion. So until fixed test on OS.			##
 ##################################################################
-if [ $osname == "FreeBSD" ]
-then
-	df -ah # Log disk stats
-	ls -lht /mnt/$bckupdir
-fi
+#if [ $osname == "FreeBSD" ]
+#then
+#	df -ah # Log disk stats
+#	ls -lht /mnt/$bckupdir
+#fi
 
 # Mail disk stats
 df -ah | mailx -s "$script_short_desc" $mail_recipient
@@ -265,24 +285,26 @@ ls -lht /mnt/$bckupdir | mailx -s "$script_short_desc" $mail_recipient
 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
+output "Processing of "$backpath" is complete. Status: "$status $status 
+
 # Cleanup logs so they only have 1000 lines max
-tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log
-std_cmd_err_handler $?
-sleep 45
-rm /mnt/$bckupdir/backup.log
-std_cmd_err_handler $?
-sleep 45
-mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log
-std_cmd_err_handler $?
-sleep 45
-tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log
-std_cmd_err_handler $?
-sleep 45
-rm /mnt/$bckupdir/backuperror.log
-std_cmd_err_handler $?
-sleep 45
-mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log
-std_cmd_err_handler $?
+latency_compensate "tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log"
+std_cmd_err_handler $status
+
+latency_compensate "rm /mnt/$bckupdir/backup.log"
+std_cmd_err_handler $status
+
+latency_compensate "mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log"
+std_cmd_err_handler $status
+
+latency_compensate "tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log"
+std_cmd_err_handler $status
+
+latency_compensate "rm /mnt/$bckupdir/backuperror.log"
+std_cmd_err_handler $status
+
+latency_compensate "mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log"
+std_cmd_err_handler $status
 
 # And exit
 script_exit_code=0
