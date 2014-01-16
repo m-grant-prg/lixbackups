@@ -91,10 +91,6 @@ output()
 	else
 		echo "$outputprefix$1" 1>&2
 	fi
-#	if [ "$mail_recipient" != "" ]
-#	then
-#		echo $1 | mailx -s "$script_short_desc" $mail_recipient
-#	fi
 }
 
 # Function to repeat commands to overcome latency issues on NAS mount from
@@ -262,20 +258,6 @@ date
 date 1>&2
 output "Processing of "$backpath" is complete. Status: "$status 0
 echo "Processing of "$backpath" is complete. Status: "$status 1>&2
-
-##################################################################
-## It is not clear why the following two lines cause everything ##
-## to hang until charybdis is restarted. It is probably due to  ##
-## the odd wiring relating to the kvm which powers off if	##
-## charybdis or scylla are not powered up. So this only affects	##
-## priam during EOD backup routines which shutdown machines on	##
-## completion. So until fixed test on OS.			##
-##################################################################
-#if [ $osname == "FreeBSD" ]
-#then
-#	df -ah # Log disk stats
-#	ls -lht /mnt/$bckupdir
-#fi
 
 # Mail disk stats
 df -ah | mailx -s "$script_short_desc" $mail_recipient
