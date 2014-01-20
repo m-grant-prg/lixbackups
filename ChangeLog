@@ -1,3 +1,18 @@
+2014-01-20 v 1.1.1 Mark Grant <m.grant.prg@gmail.com>
+	* Changed stdout & stderr message output to use a function directing to
+	one or other based on a status. Changed version option to -V. Added
+	usage of standard error routine. Introduced function to repeat commands
+	to overcome latency issues on NAS mount from either mount_smbfs or
+	slow hardware.
+	attbckshare		Now at version 1.1.1
+	bckdatadaily		Now at version 1.1.1
+	bckfulladhoc		Now at version 1.1.1
+	bckfullweekly		Now at version 1.1.1
+	bckincdaily		Now at version 1.1.1
+	chkbckshare		Now at version 1.1.1
+	detbckshare		Now at version 1.1.1
+	setup.sh		Now at version 1.1.1
+
 2013-10-30 v 1.0.27 Mark Grant <m.grant.prg@gmail.com>
 	* Removed '-' prepending operations in the tar command.
 	Added --exclude-caches to the tar command. Also changed backup command
