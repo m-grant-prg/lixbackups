@@ -1,0 +1,16 @@
+/autom4te.cache/
+/aclocal.*
+/config.*
+/configure
+/Makefile
+/Makefile.in
+/INSTALL
+/install-sh
+/*/Makefile
+/*/Makefile.in
+/*/*/Makefile
+/*/*/Makefile.in
+/*/*/*/Makefile
+/*/*/*/Makefile.in
+/*/*/*/*/Makefile
+/*/*/*/*/Makefile.in
