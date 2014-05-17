@@ -1,14 +1,24 @@
 The INSTALL file in this directory contains more detailed generic instructions
 to install this package but here is a simple sequence to follow:
 
-1 ... cd to this directory.
+1 ... Extract the tarball (.tar.gz file) preserving the directory structure.
 
-2 ... Type './configure'
+2 ... cd to the directory created.
 
-3 ... Type 'Make Install Clean'
+3 ... Type './configure'
 
-4 ... Type './setup.sh'
+4 ... Type 'make install clean'
 
-5 ... Answer the questions posed by ./setusp.sh
+5 ... Type './setup.sh'
+
+6 ... Answer the questions posed by ./setusp.sh
 
 (Quote marks are for textual clarity only).
+
+
+
+To uninstall the package:
+
+1 ... cd to the directory created in the above install process.
+
+2 ... Type 'make uninstall clean'
