@@ -5,11 +5,11 @@ to install this package but here is a simple sequence to follow:
 
 2 ... cd to the directory created.
 
-3 ... Type './configure'
+3 ... As root or sudo, type './configure'
 
-4 ... Type 'make install clean'
+4 ... As root or sudo, type 'make install clean'
 
-5 ... Type './setup.sh'
+5 ... As root or sudo, type './setup.sh'
 
 6 ... Answer the questions posed by ./setusp.sh
 
@@ -21,4 +21,4 @@ To uninstall the package:
 
 1 ... cd to the directory created in the above install process.
 
-2 ... Type 'make uninstall clean'
+2 ... As root or sudo, type 'make uninstall clean'
