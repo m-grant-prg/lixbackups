@@ -4,8 +4,10 @@
 /configure
 /Makefile
 /Makefile.in
+/missing
 /INSTALL
 /install-sh
+/*.tar.gz
 /*/Makefile
 /*/Makefile.in
 /*/*/Makefile

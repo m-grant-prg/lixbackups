@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: ./Makefile.am						##
+## Script ID: src/conffiles/Makefile.am					##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate IXBackups project from source.	##
+## Automake script file to install IXBackups configuration files.	##
 ##									##
 ##########################################################################
 
@@ -20,25 +20,8 @@
 ##########################################################################
 
 
-SUBDIRS = src/scripts src/manpages src/conffiles
+appfilesdir = $(sysconfdir)/backups
 
-edit = sed \
-	-e 's|@bindir[@]|$(bindir)|g' \
-	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
-	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
-	-e 's|@prefix[@]|$(prefix)|g'
+appfiles_DATA = bcksystem.exclude
 
-scriptssrcdir = $(srcdir)/src/scripts
-
-setup.sh: Makefile
-	rm -f $@ $@.tmp
-	test -f ./$@.in || scriptssrcdir=$(scriptssrcdir)/; \
-	$(edit) $${scriptssrcdir}$@.in >$@.tmp
-
-	mv $@.tmp $@
-
-	chmod a+x $@
-
-setup.sh: $(scriptssrcdir)/setup.sh.in
-
-EXTRA_DIST = $(scriptssrcdir)/setup.sh.in
+EXTRA_DIST = bcksystem.exclude
