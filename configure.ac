@@ -21,7 +21,7 @@
 
 
 AC_PREREQ([2.65])
-AC_INIT([Backup Scripts], [1.1.1], [m.grant.prg@gmail.com])
+AC_INIT([Backup Scripts], [1.1.2], [m.grant.prg@gmail.com])
 
 AM_INIT_AUTOMAKE
 

@@ -1,3 +1,15 @@
+2014-06-16 v 1.1.2 Mark Grant <m.grant.prg@gmail.com>
+	* Improved directory structure in source and which files Git tracks. Added configure
+	check for txt2man.
+	attbckshare		Still at version 1.1.1
+	bckdatadaily		Still at version 1.1.1
+	bckfulladhoc		Still at version 1.1.1
+	bckfullweekly		Still at version 1.1.1
+	bckincdaily		Still at version 1.1.1
+	chkbckshare		Still at version 1.1.1
+	detbckshare		Still at version 1.1.1
+	setup.sh		Still at version 1.1.1
+
 2014-01-20 v 1.1.1 Mark Grant <m.grant.prg@gmail.com>
 	* Changed stdout & stderr message output to use a function directing to
 	one or other based on a status. Changed version option to -V. Added
