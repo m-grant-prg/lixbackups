@@ -30,7 +30,7 @@ scriptssrcdir = $(srcdir)
 
 ../../scripts/attbckshare ../../scripts/detbckshare ../../scripts/chkbckshare \
 	../../scripts/bckfulladhoc ../../scripts/bckfullweekly \
-	../../scripts/bckdatadaily ../../scripts/bckincdaily: Makefile
+	../../scripts/bckdatadaily ../../scripts/bckincdaily ../../setup.sh: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	test -f ./$@.in || scriptssrcdir=$(scriptssrcdir)/; \
@@ -47,12 +47,15 @@ bckfulladhoc: $(scriptssrcdir)/bckfulladhoc.in
 bckfullweekly: $(scriptssrcdir)/bckfullweekly.in
 bckdatadaily: $(scriptssrcdir)/bckdatadaily.in
 bckincdaily: $(scriptssrcdir)/bckincdaily.in
+setup.sh: $(scriptssrcdir)/setup.sh.in
 
 sbin_SCRIPTS = ../../scripts/attbckshare ../../scripts/detbckshare ../../scripts/chkbckshare \
 	../../scripts/bckfulladhoc ../../scripts/bckfullweekly \
 	../../scripts/bckdatadaily ../../scripts/bckincdaily
 
+noinst_SCRIPTS = ../../setup.sh
+
 EXTRA_DIST = $(scriptssrcdir)/attbckshare.in $(scriptssrcdir)/detbckshare.in \
 	$(scriptssrcdir)/chkbckshare.in $(scriptssrcdir)/bckfulladhoc.in \
 	$(scriptssrcdir)/bckfullweekly.in $(scriptssrcdir)/bckdatadaily.in \
-	$(scriptssrcdir)/bckincdaily.in
+	$(scriptssrcdir)/bckincdaily.in $(scriptssrcdir)/setup.sh.in
