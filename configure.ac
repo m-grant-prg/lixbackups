@@ -27,7 +27,8 @@ AM_INIT_AUTOMAKE
 
 AC_CONFIG_FILES([Makefile
 		 src/scripts/Makefile
-		 src/manpages/Makefile
+		 src/manpages/man1/Makefile
+		 src/manpages/man5/Makefile
 		 src/conffiles/Makefile])
 
 # Checks for programs.

@@ -1,10 +1,10 @@
 NAME
-bckfullweekly - perform a full weekly backup
+bckdatadaily - perform a backup of the files named in backup.files.
 SYNOPSIS
-bckfullweekly [OPTION]
+bckdatadaily [OPTION]
 DESCRIPTION
-Perform a full weeekly designated backup to a backup file on the network
-attached backup share.
+Perform a backup based on files named in backup.files to a backup file on the
+network attached backup share.
 OPTIONS
 -h  prints usage information
 
@@ -27,7 +27,7 @@ Backup share already mounted.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
-Report bugs to <m.grant.prg@btinternet.com>
+Report bugs to <m.grant.prg@gmail.com>
 COPYRIGHT
 Copyright 2010 Mark Grant.
 .br
@@ -39,4 +39,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8)
+attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) bckfulladhoc(1) bckfullweekly(1) bckincdaily(1) backups.conf(5) bckdatadaily.exclude(5) bckdatadaily.files(5) bckfullweekly.exclude(5) bckincdaily.exclude(5) bcksystem.exclude(5)
