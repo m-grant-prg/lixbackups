@@ -5,11 +5,12 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## To perform some string manipulation not possible in Makefile.am	##
-## on parameters to be passed to txt2man.				##
+## Wrapper for txt2man to perform some string manipulation not possible	##
+## in Makefile.am on parameters to be passed to txt2man.		##
 ##									##
-## Syntax:	cnv2man TargetFileName SourceTextFileFullName \		##
-##					TargetManualFullFileName	##
+## Syntax:	cnv2man MakefileTargetFileName ManualVolumeName \	##
+##				MakefileSourceTextFileFullName \	##
+##				MakefileTargetManualFullFileName	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -71,7 +72,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 
-txt2man -t ${1%.*} -s 5 -v "Backup Scripts Manual" $2 > $3
+txt2man -t ${1%.*} -s 5 -v $2 $3 > $4
 txt2man_exit_code=$?
 
 if [ $txt2man_exit_code = 0 ]
@@ -84,5 +85,3 @@ else
 fi
 
 script_exit
-
-

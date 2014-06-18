@@ -29,7 +29,7 @@ manpagessrcdir = $(srcdir)
 	../../../manpages/man5/bcksystem.exclude.5: Makefile
 	mkdir -p $(@D)
 	rm -vf $@
-	./cnv2man $(@F) $(manpagessrcdir)/$(@F).txt $@
+	./cnv2man $(@F) "Backup Scripts Manual" $(manpagessrcdir)/$(@F).txt $@
 
 backups.conf.5: $(manpagessrcdir)/backups.conf.5.txt
 bckdatadaily.exclude.5: $(manpagessrcdir)/bckdatadaily.exclude.5.txt
