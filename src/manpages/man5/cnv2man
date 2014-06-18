@@ -72,7 +72,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 
-txt2man -t ${1%.*} -s 5 -v $2 $3 > $4
+txt2man -t ${1%.*} -s 5 -v "$2" $3 > $4
 txt2man_exit_code=$?
 
 if [ $txt2man_exit_code = 0 ]
