@@ -1,5 +1,5 @@
-Release 1.1.2 2014-06-16
-Improved directory structure in source and which files Git tracks. Added configure check for txt2man.
+Release 1.1.2 2014-06-18
+Improved directory structure in source and which files Git tracks. Added configure check for txt2man. Added manual entries for files.
 
 Release 1.1.1 2014-01-20
 Changed stdout & stderr message output to use a function directing to one or
