@@ -5,7 +5,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate IXBackup manual pages from source.	##
+## Automake script file to generate LUXBackup manual pages from source.	##
 ##									##
 ##########################################################################
 
@@ -16,6 +16,8 @@
 ## Date		Author	Version	Description				##
 ##									##
 ## 17/06/2014	MG	1.0.1	Started versioning of this script.	##
+## 01/08/2014	MG	1.0.2	Change project name from IXBackups to	##
+##				LUXBackups.				##
 ##									##
 ##########################################################################
 

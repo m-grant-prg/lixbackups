@@ -5,7 +5,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Autoconfigure script file to configure IXBackups project.		##
+## Autoconfigure script file to configure LUXBackups project.		##
 ##									##
 ##########################################################################
 
@@ -21,6 +21,8 @@
 ##				as there is at least 1 commit, even	##
 ##				with no tags. If no commits then	##
 ##				'Pre-Release' is used.			##
+## 01/08/2014	MG	1.0.3	Change project name from IXBackups to	##
+##				LUXBackups.				##
 ##									##
 ##########################################################################
 
