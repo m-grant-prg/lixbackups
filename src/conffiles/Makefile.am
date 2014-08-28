@@ -21,9 +21,10 @@
 ##									##
 ##########################################################################
 
+appfilessrcdir = $(srcdir)
 
 appfilesdir = $(sysconfdir)/backups
 
-appfiles_DATA = bcksystem.exclude
+appfiles_DATA = $(appfilessrcdir)/bcksystem.exclude
 
-EXTRA_DIST = bcksystem.exclude
+EXTRA_DIST = $(appfilessrcdir)/bcksystem.exclude
