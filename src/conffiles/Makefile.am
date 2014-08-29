@@ -32,6 +32,6 @@ conffilesdir = $(sysconfdir)/backups
 
 bcksystem.exclude: $(confsrcdir)/bcksystem.exclude.in
 
-conffiles_DATA = ../../conffiles/bcksystem.exclude
+dist_conffiles_DATA = ../../conffiles/bcksystem.exclude
 
 EXTRA_DIST = bcksystem.exclude.in
