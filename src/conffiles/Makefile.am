@@ -21,9 +21,17 @@
 ##									##
 ##########################################################################
 
+confsrcdir = $(srcdir)
 
-appfilesdir = $(sysconfdir)/backups
+conffilesdir = $(sysconfdir)/backups
 
-appfiles_DATA = bcksystem.exclude
+../../conffiles/bcksystem.exclude: Makefile
+	mkdir -p $(@D)
+	rm -f $@
+	cp $(confsrcdir)/$(@F).in $@
 
-EXTRA_DIST = bcksystem.exclude
+bcksystem.exclude: $(confsrcdir)/bcksystem.exclude.in
+
+conffiles_DATA = ../../conffiles/bcksystem.exclude
+
+EXTRA_DIST = bcksystem.exclude.in
