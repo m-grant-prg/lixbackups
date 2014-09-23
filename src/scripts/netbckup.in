@@ -1,0 +1,453 @@
+#! /usr/bin/env bash
+##########################################################################
+##									##
+##	netbckup is automatically generated,				##
+##		please do not modify!					##
+##									##
+##########################################################################
+
+##########################################################################
+##									##
+## Script ID: netbckup							##
+## Author: Mark Grant							##
+##									##
+## Purpose:								##
+## Depending on command line arguments runs:-				##
+##	a full ad hoc backup.						##
+##	a level 0 --listed-incremental (ie full) backup of entire file	##
+##		system. It allows for a cycle of 5 backups for weekly	##
+##		coverage, designated by 1 - 5.				##
+##	a level 1 --listed-incremental backup to produce a differential	##
+##		backup.							##
+##	a level 1 - n --listed-incremental backup to produce an		##
+##		incremental backup.					##
+##	a selective backup.						##
+##                                                              	##
+## Syntax:      netbckup [ -d || -f || -h || -i || -s || -V || -w ]	##
+##									##
+## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
+##		0 - success						##
+##		64 - Invalid arguments					##
+##		65 - Failed mounting backup NAS server			##
+##		66 - backup.snar non-existent or inaccesssible		##
+##		67 - trap received					##
+##									##
+##########################################################################
+
+##########################################################################
+##									##
+## Changelog								##
+##									##
+## Date		Author	Version	Description				##
+##									##
+## 22/09/2014	MG	1.0.1	Created from consolidation of seperate	##
+##				full, weekly, daily and data scripts.	##
+##									##
+##########################################################################
+
+exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
+
+####################
+## Init variables ##
+####################
+script_exit_code=0
+version="1.0.1"				# set version variable
+etclocation=@sysconfdir@/backups	# Path to etc directory
+outputprefix="netbckup: "
+differential=FALSE
+fulladhoc=FALSE
+incremental=FALSE
+selective=FALSE
+weekly=FALSE
+bckuptype=""				# Selected backup type
+bckupCL=""				# Backup command line
+
+# Get system name for implementing OS differeneces.
+osname=$(uname -s)
+
+###############
+## Functions ##
+###############
+
+# Output $1 to stdout or stderr depending on $2
+output()
+{
+	if [ $2 = 0 ]
+	then
+		echo "$outputprefix$1"
+	else
+		echo "$outputprefix$1" 1>&2
+	fi
+}
+
+# Function to repeat commands to overcome latency issues on NAS mount from
+# either mount_smbfs or slow hardware.
+latency_compensate()
+{
+	loopcount=0
+	status=1
+	while [ $status -gt 0 -a $loopcount -lt 60 ]
+	do
+		((loopcount = loopcount + 1))
+		sleep 5
+		eval "$1 2>/dev/null" 
+		status=$?
+	done
+	output "$1 status $status after $loopcount attempts" $status
+}
+
+# Standard function to test command error ($1 is $?) and exit if non-zero
+std_cmd_err_handler()
+{
+	if [ $1 != 0 ]
+	then
+		script_exit_code=$1
+		script_exit
+	fi
+}
+
+# Standard function to cleanup and return exit code
+script_exit()
+{
+# FD's 6 & 7 may or may not be open at this point so test individually for closing.
+# This reads lsof with ANDed conditions of suppress warnings, FD 6, output only FD
+# for this current PID and pipe it's output to wc to count the lines. If FD 6 is
+# open, 2 lines result, PID number and f6.
+if [ $(lsof -aw -d 6 -F f -p $$ | wc -l) -gt 0 ]
+then
+	exec 1>&6 6>&-	# Restore stdout and close FD 6
+fi
+if [ $(lsof -aw -d 7 -F f -p $$ | wc -l) -gt 0 ]
+then
+	exec 2>&7 7>&-	# Restore stderr and close FD 7
+fi
+
+# The backup share might or might not be mounted.
+if [ "$(chkbckshare -bt)" = "TRUE" ]
+then
+	latency_compensate "detbckshare"
+fi
+
+exit $script_exit_code
+}
+
+# Standard trap exit function
+trap_exit()
+{
+script_exit_code=67
+output "Script terminating due to trap received." 1
+script_exit
+}
+
+# Setup trap
+trap trap_exit SIGHUP SIGINT SIGTERM
+
+##########
+## Main ##
+##########
+# Process command line arguments with getopts.
+while getopts :dfhisVw arg
+do
+	case $arg in
+	d)	if [ $fulladhoc = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+		then
+			script_exit_code=64
+			output "Options d, f, i, s and w are all mutually exclusive." 1
+			script_exit
+		fi
+		differential=TRUE
+		bckuptype="differential"
+		;;
+	f)	if [ $differential = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+		then
+			script_exit_code=64
+			output "Options f, i, s, w and d are all mutually exclusive." 1
+			script_exit
+		fi
+		fulladhoc=TRUE
+		bckuptype="fulladhoc"
+		;;
+	h)	echo "Usage is $0 [options]"
+		echo "	-d perform a differential backup"
+		echo "	-f perform a full ad hoc backup"
+		echo "	-h displays usage information"
+		echo "	-i perform an incremental backup"
+		echo "	-s perform a selective backup"
+		echo "	-V displays version information"
+		echo "	OR"
+		echo "	-w perform a weekly full backup"
+		script_exit_code=0
+		script_exit
+		;;
+	i)	if [ $fulladhoc = TRUE -o $differential = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+		then
+			script_exit_code=64
+			output "Options i, s, w, d and f are all mutually exclusive." 1
+			script_exit
+		fi
+		incremental=TRUE
+		bckuptype="incremental"
+		;;
+	s)	if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $weekly = TRUE ]
+		then
+			script_exit_code=64
+			output "Options s, w, d, f and i are all mutually exclusive." 1
+			script_exit
+		fi
+		selective=TRUE
+		bckuptype="selective"
+		;;
+	V)	echo "$0 version "$version
+		script_exit_code=0
+		script_exit
+		;;
+	w)	if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $selective = TRUE ]
+		then
+			script_exit_code=64
+			output "Options w, d, f, i and s are all mutually exclusive." 1
+			script_exit
+		fi
+		weekly=TRUE
+		bckuptype="weekly"
+		;;
+	\?)	script_exit_code=64
+		output "Invalid argument -$OPTARG." 1
+		script_exit
+		;;
+	esac
+done
+
+# One option has to be selected.
+if [ $differential = FALSE -a $fulladhoc = FALSE -a $incremental = FALSE \
+	-a $selective = FALSE -a $weekly = FALSE ]
+then
+	script_exit_code=64
+	output "Either d, f, i, s or w must be set." 1
+	script_exit
+fi
+
+# Check for unrecognised arguments.
+if [ $# -eq $OPTIND -o $# -gt $OPTIND ]
+then
+	script_exit_code=64
+	output "Unrecognised argument." 1
+	script_exit
+fi
+
+# Read parameters from $etclocation/backups.conf
+IFS="="
+
+exec 3<$etclocation/backups.conf
+while read -u3 -ra input
+do
+	case ${input[0]} in
+	dir)
+		bckupdir=${input[1]}
+		;;
+	notifyuser)
+		mail_recipient=${input[1]}
+		;;
+	esac
+done
+exec 3<&-
+
+# Check to see if the NAS backup server is mounted, if not, mount
+if [ "$(chkbckshare -bt)" = "FALSE" ]
+then
+	attbckshare
+	std_cmd_err_handler $?
+fi
+
+# Start build of backup command
+case $osname in
+FreeBSD)
+	bckupCL="gtar "
+;;
+Linux)
+	bckupCL="tar "
+;;
+esac
+bckupCL=$bckupCL"cpzf "
+
+case $bckuptype in
+differential)
+	script_short_desc=$(uname -n)" "$(date +%A)" Daily Differential Backup"
+	
+	# Build the backup & incremental file names and paths
+	backpath="/mnt/$bckupdir/backup"$(date +%a)".tar.gz"
+	snarpath="/mnt/$bckupdir/backup"$(date +%a)".snar"
+	
+	# If the incremental files exists, delete.
+	# (Just in case full backup has not done this)
+	if [ -f $snarpath ] ; then
+		rm $snarpath
+		std_cmd_err_handler $?
+	fi
+	
+	# Copy level 0 incremental file in order to perform a
+	# level 1, effective differential backup each run.
+	if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
+		-a -w /mnt/$bckupdir/backup.snar ] ; then
+		cp /mnt/$bckupdir/backup.snar $snarpath
+		std_cmd_err_handler $?
+	else
+		script_exit_code=66
+		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1
+		script_exit
+	fi
+	
+	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
+	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
+	;;
+fulladhoc)
+	script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
+	
+	# Build the backup file name and path
+	backpath="/mnt/$bckupdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
+	
+	bckupCL=$bckupCL"$backpath "
+	;;
+incremental)
+	script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
+	
+	# Build the backup & incremental file names and paths
+	backpath="/mnt/$bckupdir/backup"$(date +%a)".tar.gz"
+	snarpath="/mnt/$bckupdir/backup.snar"
+	
+	# Check that the incremental file exists.
+	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ] ; then
+		script_exit_code=66
+		output $snarpath" does not exist or is not accessible. Exit code "$script_exit_code 1
+		script_exit
+	fi
+	
+	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
+	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
+	;;
+selective)
+	script_short_desc=$(uname -n)" "$(date +%A)" Selective Backup"
+	# Build the backup file name and path
+	backpath="/mnt/$bckupdir/backupsel"$(date +%a)".tar.gz"
+	
+	bckupCL=$bckupCL"$backpath --files-from=$etclocation/bckseldaily.files "
+	bckupCL=$bckupCL"--exclude-from=$etclocation/bckseldaily.exclude "
+	;;
+weekly)
+	# Calculate backup sequence number.
+	# Remove leading zeros otherwise thinks it is octal
+	day=$(date +%d)
+	day=$(echo $day | sed 's/^0*//')
+	bckseq=1
+	if [ $day -gt 28 ]; then
+		bckseq=5
+	elif [ $day -gt 21 ] ; then
+		bckseq=4
+	elif [ $day -gt 14 ] ; then
+		bckseq=3
+	elif [ $day -gt 7 ] ; then
+		bckseq=2
+	fi
+	script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
+	
+	# Build the backup & incremental file names and paths
+	backpath="/mnt/$bckupdir/backup"$bckseq".tar.gz"
+	snarpath="/mnt/$bckupdir/backup.snar"
+	
+	# If the level 0 incremental file exists, delete
+	if [ -f $snarpath ]
+	then
+		rm $snarpath
+		std_cmd_err_handler $?
+	fi
+
+	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
+	bckupCL=$bckupCL"--exclude-from=$etclocation/bckweekly.exclude "
+	;;
+esac
+
+# If the backup file exists, delete
+if [ -f $backpath ]
+then
+	rm $backpath
+	std_cmd_err_handler $?
+fi
+
+output $script_short_desc 0
+output "Attempting to process backup - "$backpath 0 
+
+# Re-direct stdout & stderr to backup logs and write initial entries
+exec 1>> /mnt/$bckupdir/backup.log 2>> /mnt/$bckupdir/backuperror.log
+
+output $script_short_desc 0
+echo $script_short_desc 1>&2
+output "Attempting to process backup - "$backpath 0
+echo "Attempting to process backup - "$backpath 1>&2
+
+date
+date 1>&2
+
+# Empty the NAS trashbox
+rm -fr /mnt/$bckupdir/trashbox/*
+std_cmd_err_handler $?
+
+# Get list of sockets to exclude
+find / -type s > /mnt/$bckupdir/sockets.exclude
+
+# Run the backup excluding system directories
+bckupCL=$bckupCL"--exclude-from=$etclocation/bcksystem.exclude "
+bckupCL=$bckupCL"--exclude-from=/mnt/$bckupdir/sockets.exclude "
+
+# If selective backup then uses --files-from so doesn't need starting node (root)
+if [ $selective = TRUE ] ; then
+	bckupCL=$bckupCL"--exclude-caches"
+else
+	bckupCL=$bckupCL"--exclude-caches /"
+fi
+
+output "Command used:- $bckupCL" 0
+echo "Command used:- $bckupCL" 1>&2
+eval "$bckupCL"
+status=$?
+
+# Final log entries and restore stdout & stderr
+date
+date 1>&2
+output $script_short_desc" completed with status "$status 0
+echo $script_short_desc" completed with status "$status 1>&2
+output "Processing of "$backpath" is complete. Status: "$status 0
+echo "Processing of "$backpath" is complete. Status: "$status 1>&2
+
+# Mail disk stats
+df -ah | mailx -s "$script_short_desc" $mail_recipient
+
+# Mail backup file date hierarchy
+ls -lht /mnt/$bckupdir | mailx -s "$script_short_desc" $mail_recipient
+
+exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
+
+output $script_short_desc" completed with status "$status $status
+output "Processing of "$backpath" is complete. Status: "$status $status 
+
+# Cleanup logs so they only have 1000 lines max
+latency_compensate "tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log"
+std_cmd_err_handler $status
+
+latency_compensate "rm /mnt/$bckupdir/backup.log"
+std_cmd_err_handler $status
+
+latency_compensate "mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log"
+std_cmd_err_handler $status
+
+latency_compensate "tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log"
+std_cmd_err_handler $status
+
+latency_compensate "rm /mnt/$bckupdir/backuperror.log"
+std_cmd_err_handler $status
+
+latency_compensate "mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log"
+std_cmd_err_handler $status
+
+# And exit
+script_exit_code=0
+output "Script Complete." 0
+script_exit

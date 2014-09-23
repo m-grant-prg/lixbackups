@@ -98,6 +98,10 @@
 ##				other based on a status. Changed	##
 ##				version option to -V. Added usage of	##
 ##				standard error routine.			##
+## 22/09/2014	MG	1.1.2	Changed --exclude-from and --files-from	##
+##				file names to more meaningful names	##
+##				introduced with the consolidated	##
+##				netbckup script.			##
 ##									##
 ##########################################################################
 
@@ -107,7 +111,7 @@
 script_exit_code=0
 outputprefix="setup.sh: "
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.1"				# set version variable
+version="1.1.2"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 
 ###############
@@ -237,13 +241,13 @@ echo "notifyuser="$notifyuser >> $etclocation/backups.conf
 std_cmd_err_handler $?
 
 # Create $etclocation/backups inclde and exclude files
-touch $etclocation/bckfullweekly.exclude
+touch $etclocation/bckweekly.exclude
 std_cmd_err_handler $?
-touch $etclocation/bckincdaily.exclude
+touch $etclocation/bckdaily.exclude
 std_cmd_err_handler $?
-touch $etclocation/bckdatadaily.files
+touch $etclocation/bckseldaily.files
 std_cmd_err_handler $?
-touch $etclocation/bckdatadaily.exclude
+touch $etclocation/bckseldaily.exclude
 std_cmd_err_handler $?
 
 script_exit_code=0
