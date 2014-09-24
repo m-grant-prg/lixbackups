@@ -40,7 +40,7 @@
 ##									##
 ## Date		Author	Version	Description				##
 ##									##
-## 22/09/2014	MG	1.0.1	Created from consolidation of seperate	##
+## 24/09/2014	MG	1.0.1	Created from consolidation of seperate	##
 ##				full, weekly, daily and data scripts.	##
 ##									##
 ##########################################################################
@@ -390,8 +390,35 @@ date 1>&2
 rm -fr /mnt/$bckupdir/trashbox/*
 std_cmd_err_handler $?
 
-# Get list of sockets to exclude
-find / -type s > /mnt/$bckupdir/sockets.exclude
+# Produce list of sockets to exclude
+# ignoring directories appearing in bcksystem.exclude
+# If the directory being excluded is explicit then use wholename option so
+# the path has to be an exact match.
+# If the directory is quoted then use -name which matches any part of the full path.
+
+findCL="find / -type d '(' "
+count=0
+exec 3</usr/local/etc/backups/bcksystem.exclude
+while read -u3 -ra input
+do
+	if [ $count != 0 ] ; then
+		findCL=$findCL" -o "
+	fi
+	nameoption=$(echo $input | awk '{if (substr($0,1,1)=="'"'"'")
+				print "-name "
+				else
+				print "-wholename ";}')
+	findCL=$findCL$nameoption$input
+	((count = count + 1))
+done
+exec 3<&-
+
+findCL=$findCL" ')' -prune -o -type s -print > "/mnt/$bckupdir/sockets.exclude
+
+output "Find command used:- $findCL" 0
+echo "Find command used:- $findCL" 1>&2
+
+eval "$findCL"
 
 # Run the backup excluding system directories
 bckupCL=$bckupCL"--exclude-from=$etclocation/bcksystem.exclude "
@@ -404,8 +431,8 @@ else
 	bckupCL=$bckupCL"--exclude-caches /"
 fi
 
-output "Command used:- $bckupCL" 0
-echo "Command used:- $bckupCL" 1>&2
+output "Backup command used:- $bckupCL" 0
+echo "Backup command used:- $bckupCL" 1>&2
 eval "$bckupCL"
 status=$?
 

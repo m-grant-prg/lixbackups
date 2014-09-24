@@ -23,6 +23,7 @@
 ##				'Pre-Release' is used.			##
 ## 01/08/2014	MG	1.0.3	Change project name from IXBackups to	##
 ##				LUXBackups.				##
+## 24/09/2014	MG	1.0.4	Added check for awk due to netbckup.	##
 ##									##
 ##########################################################################
 
@@ -48,6 +49,11 @@ fi
 AC_CHECK_PROG(TAR, tar, yes, no)
 if test "x$TAR" = "xno" ; then
    	AC_MSG_ERROR([tar not found])
+fi
+
+AC_CHECK_PROG(AWK, awk, yes, no)
+if test "x$AWK" = "xno" ; then
+   	AC_MSG_ERROR([awk not found])
 fi
 
 AC_CHECK_PROG(TXT2MAN, txt2man, yes, no)
