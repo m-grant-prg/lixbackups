@@ -1,0 +1,22 @@
+NAME
+bckseldaily.exclude - Daily selective backup exclusions file.
+DESCRIPTION
+bckseldaily.exclude contains one line for each file or directory to be skipped during a daily selective backup.
+FILES
+bckseldaily.exclude	The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/backups/bckseldaily.exclude.
+AUTHOR
+Written by Mark Grant.
+REPORTING BUGS
+Report bugs to <m.grant.prg@gmail.com>
+COPYRIGHT
+Copyright 2014 Mark Grant.
+.br
+License GPLv3+: GNU GPL version 3 or later
+.br
+<http://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+.br
+There is NO WARRANTY, to the extent permitted by law.
+SEE ALSO
+attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) netbckup(1) backups.conf(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)

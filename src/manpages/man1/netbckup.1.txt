@@ -1,14 +1,23 @@
 NAME
-bckfulladhoc - perform a full backup at anytime
+netbckup - perform an option-defined level of backup to NAS
 SYNOPSIS
-bckfulladhoc [OPTION]
+netbckup [OPTION]
 DESCRIPTION
-Perform a full backup to a unique time-stamped backup file on the network
-attached backup share.
+Perform an option-defined backup to a network attached backup share.
 OPTIONS
+-d  perform a daily differential backup
+
+-f  perform a full ad hoc backup
+
 -h  prints usage information
 
+-i  perform a daily incremental backup
+
+-s  perform a daily selective backup
+
 -V  prints version information
+
+-w  perform a full weekly backup
 EXIT STATUS
 0
 if OK,
@@ -39,4 +48,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) bckfullweekly(1) bckdatadaily(1) bckincdaily(1) backups.conf(5) bckdatadaily.exclude(5) bckdatadaily.files(5) bckfullweekly.exclude(5) bckincdaily.exclude(5) bcksystem.exclude(5)
+attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) backups.conf(5) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)

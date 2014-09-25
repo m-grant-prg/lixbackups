@@ -20,6 +20,8 @@
 ##				manpages to allow for man 5 pages.	##
 ## 01/08/2014	MG	1.0.3	Change project name from IXBackups to	##
 ##				LUXBackups.				##
+## 25/09/2014	MG	1.0.4	Update to reflect script consolidation	##
+##				to netbckup.				##
 ##									##
 ##########################################################################
 
@@ -27,9 +29,8 @@
 manpagessrcdir = $(srcdir)
 
 ../../../manpages/man1/attbckshare ../../../manpages/man1/detbckshare \
-	../../../manpages/man1/chkbckshare ../../../manpages/man1/bckfulladhoc \
-	../../../manpages/man1/bckfullweekly ../../../manpages/man1/bckdatadaily \
-	../../../manpages/man1/bckincdaily: Makefile
+	../../../manpages/man1/chkbckshare \
+	../../../manpages/man1/netbckup: Makefile
 	mkdir -p $(@D)
 	rm -vf $@
 	txt2man -t $(@F) -s 1 -v "Backup Scripts Manual" \
@@ -38,17 +39,10 @@ manpagessrcdir = $(srcdir)
 attbckshare: $(manpagessrcdir)/attbckshare.1.txt
 detbckshare: $(manpagessrcdir)/detbckshare.1.txt
 chkbckshare: $(manpagessrcdir)/chkbckshare.1.txt
-bckfulladhoc: $(manpagessrcdir)/bckfulladhoc.1.txt
-bckfullweekly: $(manpagessrcdir)/bckfullweekly.1.txt
-bckdatadaily: $(manpagessrcdir)/bckdatadaily.1.txt
-bckincdaily: $(manpagessrcdir)/bckincdaily.1.txt
+netbckup: $(manpagessrcdir)/netbckup.1.txt
 
 man1_MANS = ../../../manpages/man1/attbckshare ../../../manpages/man1/detbckshare \
-		../../../manpages/man1/chkbckshare ../../../manpages/man1/bckfulladhoc \
-		../../../manpages/man1/bckfullweekly ../../../manpages/man1/bckdatadaily \
-		../../../manpages/man1/bckincdaily
+		../../../manpages/man1/chkbckshare ../../../manpages/man1/netbckup
 
 EXTRA_DIST = $(manpagessrcdir)/attbckshare.1.txt $(manpagessrcdir)/detbckshare.1.txt \
-		$(manpagessrcdir)/chkbckshare.1.txt $(manpagessrcdir)/bckfulladhoc.1.txt \
-		$(manpagessrcdir)/bckfullweekly.1.txt $(manpagessrcdir)/bckdatadaily.1.txt \
-		$(manpagessrcdir)/bckincdaily.1.txt
+		$(manpagessrcdir)/chkbckshare.1.txt $(manpagessrcdir)/netbckup.1.txt
