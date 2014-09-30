@@ -42,6 +42,9 @@
 ##									##
 ## 24/09/2014	MG	1.0.1	Created from consolidation of seperate	##
 ##				full, weekly, daily and data scripts.	##
+## 28/09/2014	MG	1.0.2	Changed latency_compensate function to	##
+##				attempt 1 execution of command without	##
+##				causing a sleep.			##
 ##									##
 ##########################################################################
 
@@ -51,7 +54,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.1"				# set version variable
+version="1.0.2"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -84,8 +87,10 @@ output()
 # either mount_smbfs or slow hardware.
 latency_compensate()
 {
-	loopcount=0
-	status=1
+	# Perform first try without sleep
+	eval "$1 2>/dev/null" 
+	status=$?
+	loopcount=1
 	while [ $status -gt 0 -a $loopcount -lt 60 ]
 	do
 		((loopcount = loopcount + 1))
