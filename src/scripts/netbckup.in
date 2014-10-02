@@ -45,6 +45,16 @@
 ## 28/09/2014	MG	1.0.2	Changed latency_compensate function to	##
 ##				attempt 1 execution of command without	##
 ##				causing a sleep.			##
+## 30/09/2014	MG	1.0.3	If the root account is accessible, ('P'	##
+##				from passwd -S), then deny login access	##
+##				to non-root users for the duration of	##
+##				the backup. If root is not accessible,	##
+##				then do not deny access as it would be	##
+##				dangerous if for some reason it is not	##
+##				re-allowed. Only root would have access.##
+##				(Even though shutdown clears the	##
+##				restriction, this script does not	##
+##				demand a shutdown).			##
 ##									##
 ##########################################################################
 
@@ -54,7 +64,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.2"				# set version variable
+version="1.0.3"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -132,6 +142,16 @@ if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
 	latency_compensate "detbckshare"
 fi
+
+# Re-Allow logins
+case $osname in
+FreeBSD)
+	rm -f /var/run/nologin
+	;;
+Linux)
+	rm -f /etc/nologin
+	;;
+esac
 
 exit $script_exit_code
 }
@@ -237,6 +257,35 @@ then
 	script_exit_code=64
 	output "Unrecognised argument." 1
 	script_exit
+fi
+
+# Check to see if root account is accessible, if so, prohibit non-root login
+# FreeBSD has no passwd -S option
+case $osname in
+FreeBSD)
+	pwdstatus=$(cat /etc/master.passwd | awk -F: '{ if ($1 == "root" && $2 != "*")
+			print "P" ;}')
+	;;
+Linux)
+	pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
+			print $2 ;}')
+	;;
+esac
+output "Root password status is "$pwdstatus 0
+
+if [ $pwdstatus = "P" ]
+then
+	output "Denying non-root login access." 0
+	case $osname in
+	FreeBSD)
+		echo "Login refused. Backup in progress." > /var/run/nologin
+		;;
+	Linux)
+		echo "Login refused. Backup in progress." > /etc/nologin
+		;;
+	esac
+else
+	output "Login access not being denied." 0
 fi
 
 # Read parameters from $etclocation/backups.conf
