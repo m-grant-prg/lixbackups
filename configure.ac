@@ -24,12 +24,13 @@
 ## 01/08/2014	MG	1.0.3	Change project name from IXBackups to	##
 ##				LUXBackups.				##
 ## 24/09/2014	MG	1.0.4	Added check for awk due to netbckup.	##
+## 04/10/2014	MG	1.0.5	Change package name to lixbackups.	##
 ##									##
 ##########################################################################
 
 
 AC_PREREQ([2.65])
-AC_INIT([Unix / Linux Backup Scripts], m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null && git describe --always | tr -d '\n' || echo 'Pre-Release' | tr -d '\n']), [m.grant.prg@gmail.com], [backup-scripts])
+AC_INIT([Linux / Unix (LIX) Backup Scripts], m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null && git describe --always | tr -d '\n' || echo 'Pre-Release' | tr -d '\n']), [m.grant.prg@gmail.com], [lixbackups])
 
 AM_INIT_AUTOMAKE
 
