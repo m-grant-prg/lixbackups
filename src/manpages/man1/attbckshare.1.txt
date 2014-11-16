@@ -6,11 +6,11 @@ DESCRIPTION
 Attaches a pre-determined network samba share as a target location for backup
 files.
 OPTIONS
--h prints usage information
+-h, --help  prints usage information
 
--v verbose output
+-v, --verbose  produce verbose output
 
--V prints version information
+-V, --version  prints version information
 EXIT STATUS
 0
 if OK,

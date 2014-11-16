@@ -17,7 +17,7 @@
 ## 	on								##
 ## 	/mnt/charybdisbck						##
 ##									##
-## Syntax:	attbckshare [-h || -v || -V ]				##
+## Syntax:	attbckshare [-h --help || -v --verbose || -V --version ]##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -112,6 +112,8 @@
 ##				other based on a status. Changed	##
 ##				version option to -V. Added verbose	##
 ##				option -v.				##
+## 16/11/2014	MG	1.1.2	Switched from getopts to GNU getopt to	##
+##				allow long options.			##
 ##									##
 ##########################################################################
 
@@ -121,8 +123,16 @@
 script_exit_code=0
 outputprefix="attbckshare: "
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.1"				# set version variable
+version="1.1.2"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
+
+# See getopt comments at the start of "Main"
+binlocation=""				# Path to bin directory
+if [ $osname = "FreeBSD" ]
+then
+	binlocation=@bindir@"/"
+fi
+
 verbosity=""
 
 ###############
@@ -140,6 +150,16 @@ output()
 		fi
 	else
 		echo "$outputprefix$1" 1>&2
+	fi
+}
+
+# Standard function to test command error ($1 is $?) and exit if non-zero
+std_cmd_err_handler()
+{
+	if [ $1 != 0 ]
+	then
+		script_exit_code=$1
+		script_exit
 	fi
 }
 
@@ -163,31 +183,59 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ##########
 ## Main ##
 ##########
-# Process command line arguments with getopts.
-while getopts :hvV arg
+# Process command line arguments with GNU getopt.
+# (FreeBSD includes, out of the box, a dodgy, feature lacking getopt program
+# installed in /usr/bin. A GNU compatable getopt package is available to install
+# and this gets installed in the bindir, ie /usr/local/bin. This means that the
+# dodgy getopt version is always found first on the PATH. In order to invoke the
+# correct program, $binlocation, (from Makefile bindir), is inserted in the command
+# line below to specify the full path). (Linux GNU getopt can be found on PATH so
+# binlocation ="").
+
+GETOPTTEMP=`"$binlocation"getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
+std_cmd_err_handler $?
+
+eval set -- "$GETOPTTEMP"
+std_cmd_err_handler $?
+
+while true
 do
-	case $arg in
-	h)	echo "Usage is $0 [options]"
-		echo "	-h displays usage information"
+	case "$1" in
+	-h|--help)	echo "Usage is $0 [options]"
+		echo "	-h or --help displays usage information"
 		echo "	OR"
-		echo "	-v verbose output"
+		echo "	-v or --verbose verbose output"
 		echo "	OR"
-		echo "	-V displays version information"
+		echo "	-V or --version displays version information"
+		shift
 		script_exit_code=0
 		script_exit
 		;;
-	v)	verbosity="-v"
+	-v|--verbose)	verbosity="-v"
+		shift
 		;;
-	V)	echo "$0 version "$version
+	-V|--version)	echo "$0 version "$version
+		shift
 		script_exit_code=0
 		script_exit
 		;;
-	\?)	script_exit_code=64
-		output "Invalid argument -$OPTARG." 1
+	--)	shift
+		break
+		;;
+	*)	script_exit_code=1
+		output "Internal error." 1
 		script_exit
 		;;
 	esac
 done
+
+# Script does not accept other arguments.
+if [ $# -gt 0 ]
+then
+	script_exit_code=64
+	output "Invalid argument." 1
+	script_exit
+fi
 
 # Read parameters from $etclocation/backups.conf
 IFS="="
