@@ -114,6 +114,8 @@
 ##				option -v.				##
 ## 16/11/2014	MG	1.1.2	Switched from getopts to GNU getopt to	##
 ##				allow long options.			##
+## 17/11/2014	MG	1.1.3	Change FreeBSD specifics to *BSD and	##
+##				change Linux to be the default.		##
 ##									##
 ##########################################################################
 
@@ -123,7 +125,7 @@
 script_exit_code=0
 outputprefix="attbckshare: "
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.2"				# set version variable
+version="1.1.3"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 
 # See getopt comments at the start of "Main"
