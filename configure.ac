@@ -47,7 +47,8 @@ AC_CANONICAL_HOST
 # Checks for programs.
 AC_MSG_NOTICE([checking for required $host_os specific programs])
 case $host_os in
-	*bsd*)	AC_CHECK_PROG(GTAR, gtar, yes, no)
+	*bsd*)	AC_MSG_NOTICE([using $host_os...])
+		AC_CHECK_PROG(GTAR, gtar, yes, no)
 		if test "x$GTAR" = "xno" ; then
 			AC_MSG_ERROR([gtar not found])
 		fi
@@ -56,7 +57,9 @@ case $host_os in
 			AC_MSG_ERROR([getopt not found])
 		fi
 		;;
-	linux*)	AC_CHECK_PROG(TAR, tar, yes, no)
+	# linux*)	Allow fall through for now as the defaults are linux.
+	*)	AC_MSG_NOTICE([using defaults...])
+		AC_CHECK_PROG(TAR, tar, yes, no)
 		if test "x$TAR" = "xno" ; then
 			AC_MSG_ERROR([tar not found])
 		fi
