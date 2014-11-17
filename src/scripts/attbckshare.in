@@ -31,9 +31,9 @@
 ##									##
 ## In order to make the package portable all the necessary parameters	##
 ## are stored in a $PREFIX/etc/backups.conf file.			##
-## On FreeBSD mounting a NAS share uses the mount_smbfs command rather	##
+## On BSD mounting a NAS share uses the mount_smbfs command rather	##
 ## than the mount.cifs command on Linux. This difference means that on	##
-## FreeBSD we also utilise the ~/.nsmbrc file.				##
+## BSD we also utilise the ~/.nsmbrc file.				##
 ## The format of the backups.conf file is below:			##
 ##	# NAS server name						##
 ##	bckupsys=MyServer						##
@@ -127,11 +127,13 @@ version="1.1.2"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 
 # See getopt comments at the start of "Main"
-binlocation=""				# Path to bin directory
-if [ $osname = "FreeBSD" ]
-then
-	binlocation=@bindir@"/"
-fi
+case $osname in
+*BSD)	binlocation=@bindir@"/"
+	;;
+# Linux)	Allow fall through for now as the defaults are linux.
+*)	binlocation=""
+	;;
+esac
 
 verbosity=""
 
@@ -184,7 +186,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with GNU getopt.
-# (FreeBSD includes, out of the box, a dodgy, feature lacking getopt program
+# (BSD includes, out of the box, a dodgy, feature lacking getopt program
 # installed in /usr/bin. A GNU compatable getopt package is available to install
 # and this gets installed in the bindir, ie /usr/local/bin. This means that the
 # dodgy getopt version is always found first on the PATH. In order to invoke the
@@ -260,12 +262,10 @@ do
 done
 exec 3<&-
 
-# If FreeBSD we also need the workgroup which can be obtained from
+# If BSD we also need the workgroup which can be obtained from
 # the ~/.nsmbrc file
-
-if [ $osname = "FreeBSD" ]
-then
-	exec 3<~/.nsmbrc
+case $osname in
+*BSD)	exec 3<~/.nsmbrc
 	while read -u3 -ra input
 	do
 		case ${input[0]} in
@@ -275,19 +275,21 @@ then
 		esac
 	done
 	exec 3<&-
-fi
+	;;
+# Linux)	Allow fall through for now as the defaults are linux.
+*)	;;
+esac
 
 # Check to see if the NAS backup server is mounted, if not, mount
 if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
 	case $osname in
-	FreeBSD)
-		mount_smbfs -I $bckupsys -N -U $bckupusr -W $bckupwg \
+	*BSD)	mount_smbfs -I $bckupsys -N -U $bckupusr -W $bckupwg \
         		//$bckupusr@$bckupsys/$bckupdir /mnt/$bckupdir
 		status=$?
 	;;
-	Linux)
-		mount -t cifs -o user=$bckupusr,password=$bckuppwd \
+	# Linux)	Allow fall through for now as the defaults are linux.
+	*)	mount -t cifs -o user=$bckupusr,password=$bckuppwd \
 	        	//$bckupsys/$bckupdir /mnt/$bckupdir
 	        status=$?
 	;;
