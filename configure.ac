@@ -5,7 +5,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Autoconfigure script file to configure LUXBackups project.		##
+## Autoconfigure script file to configure LIXBackups project.		##
 ##									##
 ##########################################################################
 
@@ -25,6 +25,8 @@
 ##				LUXBackups.				##
 ## 24/09/2014	MG	1.0.4	Added check for awk due to netbckup.	##
 ## 04/10/2014	MG	1.0.5	Change package name to lixbackups.	##
+## 17/11/2014	MG	1.0.6	Re-structure to cope with OS		##
+##				differences. Add check for GNU getopt.	##
 ##									##
 ##########################################################################
 
@@ -40,16 +42,35 @@ AC_CONFIG_FILES([Makefile
 		 src/manpages/man5/Makefile
 		 src/conffiles/Makefile])
 
-# Checks for programs.
+AC_CANONICAL_HOST
 
+# Checks for programs.
+AC_MSG_NOTICE([checking for required $host_os specific programs])
+case $host_os in
+	*bsd*)	AC_CHECK_PROG(GTAR, gtar, yes, no)
+		if test "x$GTAR" = "xno" ; then
+			AC_MSG_ERROR([gtar not found])
+		fi
+		AC_CHECK_PROG(GETOPT, getopt, yes, no, path = '/usr/local/bin')
+		if test "x$GETOPT" = "xno" ; then
+			AC_MSG_ERROR([getopt not found])
+		fi
+		;;
+	linux*)	AC_CHECK_PROG(TAR, tar, yes, no)
+		if test "x$TAR" = "xno" ; then
+			AC_MSG_ERROR([tar not found])
+		fi
+		AC_CHECK_PROG(GETOPT, getopt, yes, no)
+		if test "x$GETOPT" = "xno" ; then
+			AC_MSG_ERROR([getopt not found])
+		fi
+		;;
+esac
+
+AC_MSG_NOTICE([checking for required generic programs])
 AC_CHECK_PROG(BASH, bash, yes, no)
 if test "x$BASH" = "xno" ; then
    	AC_MSG_ERROR([bash not found])
-fi
-
-AC_CHECK_PROG(TAR, tar, yes, no)
-if test "x$TAR" = "xno" ; then
-   	AC_MSG_ERROR([tar not found])
 fi
 
 AC_CHECK_PROG(AWK, awk, yes, no)
