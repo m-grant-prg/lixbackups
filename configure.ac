@@ -25,8 +25,9 @@
 ##				LUXBackups.				##
 ## 24/09/2014	MG	1.0.4	Added check for awk due to netbckup.	##
 ## 04/10/2014	MG	1.0.5	Change package name to lixbackups.	##
-## 17/11/2014	MG	1.0.6	Re-structure to cope with OS		##
+## 21/11/2014	MG	1.0.6	Re-structure to cope with OS		##
 ##				differences. Add check for GNU getopt.	##
+##				Add check for mailx.			##
 ##									##
 ##########################################################################
 
@@ -84,6 +85,11 @@ fi
 AC_CHECK_PROG(TXT2MAN, txt2man, yes, no)
 if test "x$TXT2MAN" = "xno" ; then
    	AC_MSG_ERROR([txt2man not found])
+fi
+
+AC_CHECK_PROG(MAILX, mailx, yes, no)
+if test "x$MAILX" = "xno" ; then
+   	AC_MSG_ERROR([mailx not found])
 fi
 
 # Checks for libraries.
