@@ -6,13 +6,13 @@ DESCRIPTION
 Checks to see if a pre-determined network samba share is mounted as a target
 location for backup files.
 OPTIONS
--b	(Boolean) Changes output from mount information to TRUE or FALSE
+-b, --boolean	(Boolean) Changes output from mount information to TRUE or FALSE
 
--h	prints usage information
+-h, --help	prints usage information
 
--t	(Terse) Removes prepending scriptname from output
+-t, --terse	(Terse) Removes prepending scriptname from output
 
--V	prints version information
+-V, --version	prints version information
 EXIT STATUS
 0
 if OK,
