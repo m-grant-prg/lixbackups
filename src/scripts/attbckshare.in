@@ -116,6 +116,7 @@
 ##				allow long options.			##
 ## 17/11/2014	MG	1.1.3	Change FreeBSD specifics to *BSD and	##
 ##				change Linux to be the default.		##
+## 22/11/2014	MG	1.1.4	Add overall package version to -V.	##
 ##									##
 ##########################################################################
 
@@ -125,8 +126,9 @@
 script_exit_code=0
 outputprefix="attbckshare: "
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.3"				# set version variable
+version="1.1.4"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
+packageversion=@pkgversion@		# Version of the complete package
 
 # See getopt comments at the start of "Main"
 case $osname in
@@ -218,7 +220,8 @@ do
 	-v|--verbose)	verbosity="-v"
 		shift
 		;;
-	-V|--version)	echo "$0 version "$version
+	-V|--version)	echo "$0 Script version "$version
+		echo "$0 Package version "$packageversion
 		shift
 		script_exit_code=0
 		script_exit
