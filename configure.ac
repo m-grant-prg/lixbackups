@@ -28,12 +28,16 @@
 ## 21/11/2014	MG	1.0.6	Re-structure to cope with OS		##
 ##				differences. Add check for GNU getopt.	##
 ##				Add check for mailx.			##
+## 22/11/2014	MG	1.0.7	Add support for passing overall package	##
+##				version to Makefiles.			##
 ##									##
 ##########################################################################
 
 
 AC_PREREQ([2.65])
 AC_INIT([Linux / Unix (LIX) Backup Scripts], m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null && git describe --always | tr -d '\n' || echo 'Pre-Release' | tr -d '\n']), [m.grant.prg@gmail.com], [lixbackups])
+
+AC_SUBST(pkgversion, m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null && git describe --always | tr -d '\n' || echo 'Pre-Release' | tr -d '\n']))
 
 AM_INIT_AUTOMAKE
 
