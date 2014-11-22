@@ -23,7 +23,10 @@
 ##		incremental backup.					##
 ##	a selective backup.						##
 ##                                                              	##
-## Syntax:      netbckup [ -d || -f || -h || -i || -s || -V || -w ]	##
+## Syntax:      netbckup [ -d or --differential || -f or --full ||	##
+##			-h or --help || -i or --incremental ||		##
+##			-s or --selective || -V or --version ||		##
+##			-w or --weekly ]				##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
@@ -56,6 +59,8 @@
 ##				restriction, this script does not	##
 ##				demand a shutdown).			##
 ## 22/11/2014	MG	1.0.4	Add overall package version to -V.	##
+## 22/11/2014	MG	1.0.5	Switched from getopts to GNU getopt to	##
+##				allow long options.			##
 ##									##
 ##########################################################################
 
@@ -65,8 +70,9 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.4"				# set version variable
+version="1.0.5"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
+osname=$(uname -s)			# Get system name for OS differentiation
 outputprefix="netbckup: "
 differential=FALSE
 fulladhoc=FALSE
@@ -77,8 +83,15 @@ bckuptype=""				# Selected backup type
 bckupCL=""				# Backup command line
 packageversion=@pkgversion@		# Version of the complete package
 
-# Get system name for implementing OS differeneces.
-osname=$(uname -s)
+# See getopt comments at the start of "Main"
+case $osname in
+*BSD)	binlocation=@bindir@"/"
+	;;
+# Linux)	Allow fall through for now as the defaults are linux.
+*)	binlocation=""
+	;;
+esac
+
 
 ###############
 ## Functions ##
@@ -172,11 +185,27 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ##########
 ## Main ##
 ##########
-# Process command line arguments with getopts.
-while getopts :dfhisVw arg
+# Process command line arguments with GNU getopt.
+# (BSD includes, out of the box, a dodgy, feature lacking getopt program
+# installed in /usr/bin. A GNU compatable getopt package is available to install
+# and this gets installed in the bindir, ie /usr/local/bin. This means that the
+# dodgy getopt version is always found first on the PATH. In order to invoke the
+# correct program, $binlocation, (from Makefile bindir), is inserted in the command
+# line below to specify the full path). (Linux GNU getopt can be found on PATH so
+# binlocation ="").
+
+GETOPTTEMP=`"$binlocation"getopt -o dfhisVw \
+		--long differential,full,help,incremental,selective,version,weekly -n "$0" -- "$@"`
+std_cmd_err_handler $?
+
+eval set -- "$GETOPTTEMP"
+std_cmd_err_handler $?
+
+while true
 do
-	case $arg in
-	d)	if [ $fulladhoc = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+	case "$1" in
+	-d|--differential)
+		if [ $fulladhoc = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
 			output "Options d, f, i, s and w are all mutually exclusive." 1
@@ -184,8 +213,10 @@ do
 		fi
 		differential=TRUE
 		bckuptype="differential"
+		shift
 		;;
-	f)	if [ $differential = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+	-f|--full)
+		if [ $differential = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
 			output "Options f, i, s, w and d are all mutually exclusive." 1
@@ -193,20 +224,24 @@ do
 		fi
 		fulladhoc=TRUE
 		bckuptype="fulladhoc"
+		shift
 		;;
-	h)	echo "Usage is $0 [options]"
-		echo "	-d perform a differential backup"
-		echo "	-f perform a full ad hoc backup"
-		echo "	-h displays usage information"
-		echo "	-i perform an incremental backup"
-		echo "	-s perform a selective backup"
-		echo "	-V displays version information"
+	-h|--help)
+		echo "Usage is $0 [options]"
+		echo "	-d or --differential - perform a differential backup"
+		echo "	-f or --full - perform a full ad hoc backup"
+		echo "	-h or --help displays usage information"
+		echo "	-i or --incremental - perform an incremental backup"
+		echo "	-s or --selective - perform a selective backup"
+		echo "	-V or --version displays version information"
 		echo "	OR"
-		echo "	-w perform a weekly full backup"
+		echo "	-w or --weekly - perform a weekly full backup"
+		shift
 		script_exit_code=0
 		script_exit
 		;;
-	i)	if [ $fulladhoc = TRUE -o $differential = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+	-i|--incremental)
+		if [ $fulladhoc = TRUE -o $differential = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
 			output "Options i, s, w, d and f are all mutually exclusive." 1
@@ -214,8 +249,10 @@ do
 		fi
 		incremental=TRUE
 		bckuptype="incremental"
+		shift
 		;;
-	s)	if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $weekly = TRUE ]
+	-s|--selective)
+		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
 			output "Options s, w, d, f and i are all mutually exclusive." 1
@@ -223,13 +260,16 @@ do
 		fi
 		selective=TRUE
 		bckuptype="selective"
+		shift
 		;;
-	V)	echo "$0 Script version "$version
+	-V|--version)	echo "$0 Script version "$version
 		echo "$0 Package version "$packageversion
+		shift
 		script_exit_code=0
 		script_exit
 		;;
-	w)	if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $selective = TRUE ]
+	-w|--weekly)
+		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $selective = TRUE ]
 		then
 			script_exit_code=64
 			output "Options w, d, f, i and s are all mutually exclusive." 1
@@ -237,13 +277,25 @@ do
 		fi
 		weekly=TRUE
 		bckuptype="weekly"
+		shift
 		;;
-	\?)	script_exit_code=64
-		output "Invalid argument -$OPTARG." 1
+	--)	shift
+		break
+		;;
+	*)	script_exit_code=1
+		output "Internal error." 1
 		script_exit
 		;;
 	esac
 done
+
+# Script does not accept other arguments.
+if [ $# -gt 0 ]
+then
+	script_exit_code=64
+	output "Invalid argument." 1
+	script_exit
+fi
 
 # One option has to be selected.
 if [ $differential = FALSE -a $fulladhoc = FALSE -a $incremental = FALSE \
@@ -254,23 +306,14 @@ then
 	script_exit
 fi
 
-# Check for unrecognised arguments.
-if [ $# -eq $OPTIND -o $# -gt $OPTIND ]
-then
-	script_exit_code=64
-	output "Unrecognised argument." 1
-	script_exit
-fi
-
 # Check to see if root account is accessible, if so, prohibit non-root login
 # FreeBSD has no passwd -S option
 case $osname in
-FreeBSD)
-	pwdstatus=$(cat /etc/master.passwd | awk -F: '{ if ($1 == "root" && $2 != "*")
+*BSD)	pwdstatus=$(cat /etc/master.passwd | awk -F: '{ if ($1 == "root" && $2 != "*")
 			print "P" ;}')
 	;;
-Linux)
-	pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
+# Linux)	Allow fall through for now as the defaults are linux.
+*)	pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 			print $2 ;}')
 	;;
 esac
@@ -280,11 +323,10 @@ if [ $pwdstatus = "P" ]
 then
 	output "Denying non-root login access." 0
 	case $osname in
-	FreeBSD)
-		echo "Login refused. Backup in progress." > /var/run/nologin
+	*BSD)	echo "Login refused. Backup in progress." > /var/run/nologin
 		;;
-	Linux)
-		echo "Login refused. Backup in progress." > /etc/nologin
+	#Linux)	Allow fall through for now as the defaults are linux.
+	*)	echo "Login refused. Backup in progress." > /etc/nologin
 		;;
 	esac
 else
@@ -317,11 +359,10 @@ fi
 
 # Start build of backup command
 case $osname in
-FreeBSD)
-	bckupCL="gtar "
+*BSD)	bckupCL="gtar "
 ;;
-Linux)
-	bckupCL="tar "
+#Linux)	Allow fall through for now as the defaults are linux.
+*)	bckupCL="tar "
 ;;
 esac
 bckupCL=$bckupCL"cpzf "

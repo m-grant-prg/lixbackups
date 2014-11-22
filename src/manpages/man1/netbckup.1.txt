@@ -5,19 +5,19 @@ netbckup [OPTION]
 DESCRIPTION
 Perform an option-defined backup to a network attached backup share.
 OPTIONS
--d  perform a daily differential backup
+-d, --differential  perform a daily differential backup
 
--f  perform a full ad hoc backup
+-f, --full  perform a full ad hoc backup
 
--h  prints usage information
+-h, --help  prints usage information
 
--i  perform a daily incremental backup
+-i, --incremental  perform a daily incremental backup
 
--s  perform a daily selective backup
+-s, --selective  perform a daily selective backup
 
--V  prints version information
+-V, --version  prints version information
 
--w  perform a full weekly backup
+-w, --weekly  perform a full weekly backup
 EXIT STATUS
 0
 if OK,
