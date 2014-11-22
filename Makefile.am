@@ -5,7 +5,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate LUXBackups project from source.	##
+## Automake script file to generate LIXBackups project from source.	##
 ##									##
 ##########################################################################
 

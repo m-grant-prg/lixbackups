@@ -5,7 +5,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to install LUXBackups configuration files.	##
+## Automake script file to install LIXBackups configuration files.	##
 ##									##
 ##########################################################################
 
