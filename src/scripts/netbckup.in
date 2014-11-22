@@ -55,6 +55,7 @@
 ##				(Even though shutdown clears the	##
 ##				restriction, this script does not	##
 ##				demand a shutdown).			##
+## 22/11/2014	MG	1.0.4	Add overall package version to -V.	##
 ##									##
 ##########################################################################
 
@@ -64,7 +65,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.3"				# set version variable
+version="1.0.4"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -74,6 +75,7 @@ selective=FALSE
 weekly=FALSE
 bckuptype=""				# Selected backup type
 bckupCL=""				# Backup command line
+packageversion=@pkgversion@		# Version of the complete package
 
 # Get system name for implementing OS differeneces.
 osname=$(uname -s)
@@ -222,7 +224,8 @@ do
 		selective=TRUE
 		bckuptype="selective"
 		;;
-	V)	echo "$0 version "$version
+	V)	echo "$0 Script version "$version
+		echo "$0 Package version "$packageversion
 		script_exit_code=0
 		script_exit
 		;;

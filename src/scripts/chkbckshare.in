@@ -37,6 +37,7 @@
 ## Date		Author	Version	Description				##
 ##									##
 ## 21/12/2013	MG	1.1.1	First release.				##
+## 22/11/2014	MG	1.1.2	Add overall package version to -V.	##
 ##									##
 ##########################################################################
 
@@ -49,8 +50,9 @@ outputprefix="chkbckshare: "
 mountoutput=""
 script_exit_code=0
 osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.1"				# set version variable
+version="1.1.2"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
+packageversion=@pkgversion@		# Version of the complete package
 
 ###############
 ## Functions ##
@@ -107,7 +109,8 @@ do
 	t)	terse="TRUE"
 		outputprefix=""
 		;;
-	V)	echo "$0 version "$version
+	V)	echo "$0 Script version "$version
+		echo "$0 Package version "$packageversion
 		script_exit_code=0
 		script_exit
 		;;

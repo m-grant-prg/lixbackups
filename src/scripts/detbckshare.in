@@ -71,6 +71,7 @@
 ##				other based on a status. Changed	##
 ##				version option to -V. Added verbose	##
 ##				option -v.				##
+## 22/11/2014	MG	1.1.2	Add overall package version to -V.	##
 ##									##
 ##########################################################################
 
@@ -79,9 +80,10 @@
 ####################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.1.1"				# set version variable
+version="1.1.2"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 verbosity=""
+packageversion=@pkgversion@		# Version of the complete package
 
 ###############
 ## Functions ##
@@ -136,7 +138,8 @@ do
 		;;
 	v)	verbosity="-v"
 		;;
-	V)	echo "$0 version "$version
+	V)	echo "$0 Script version "$version
+		echo "$0 Package version "$packageversion
 		script_exit_code=0
 		script_exit
 		;;
