@@ -1,3 +1,11 @@
+Release 1.1.4 2014-11-30
+Add support for including overall package version in script --version.
+Switch to use of GNU getopt to allow long options and implement them.
+Allow for FreeBSD quirk of 2 different getopt programs on PATH. See comments in
+script at the start of "Main".
+Structure OS specific requirements to test for generic *BSD OSs and use Linux as
+the default.
+
 Release 1.1.3 2014-10-04
 Consolidate backup scripts into one netbckup script. Restrict login during
 backup if safe to do so. Change package name to LIXBackups. Change
