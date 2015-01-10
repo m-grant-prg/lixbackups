@@ -23,7 +23,7 @@
 ##		0 - success						##
 ##		64 - Invalid arguments					##
 ##		65 - Failed mounting backup NAS server			##
-##		66 - Backcup share already mounted			##
+##		66 - Backup share already mounted			##
 ##		67 - trap received					##
 ##									##
 ## Further Info:							##
