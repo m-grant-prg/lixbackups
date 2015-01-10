@@ -242,6 +242,9 @@ echo "password="$bckuppwd >>$etclocation/backups.conf
 std_cmd_err_handler $?
 echo "notifyuser="$notifyuser >> $etclocation/backups.conf
 std_cmd_err_handler $?
+# The way the file is read requires the last line to have a new line.
+echo "" >> $etclocation/backups.conf
+std_cmd_err_handler $?
 
 # Create $etclocation/backups inclde and exclude files
 touch $etclocation/bckweekly.exclude
