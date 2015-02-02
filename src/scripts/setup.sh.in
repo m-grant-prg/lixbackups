@@ -30,10 +30,7 @@
 ## 	/mnt/charybdisbck						##
 ## In order to make the package portable all the necessary parameters	##
 ## are stored in a $PREFIX/etc/backups.conf file.			##
-## On FreeBSD mounting a NAS share uses the mount_smbfs command rather	##
-## than the mount.cifs command on Linux. This difference means that on	##
-## FreeBSD we also utilise the ~/.nsmbrc file.				##
-## This script will create one or both files as necessary. It will NOT	##
+## This script will create the conf files as necessary. It will NOT	##
 ## maintain the files once created, post-installation the files should	##
 ## be maintained by using an editor.					##
 ## The format of the backups.conf file is below:			##
@@ -50,26 +47,8 @@
 ##	# NAS backup user password					##
 ##	bckuppwd=mybackuppassword					##
 ##									##
-##	# Backup workgroup						##
-##	bckupwg=MyWorkgroup						##
-##									##
 ##	# Notify user							##
 ##	notifyuser=root							##
-##									##
-## The format of the ~/.nsmbrc file is below:-				##
-##	# First define a workgroup.					##
-##	[default]							##
-##	workgroup=MyWorkgroup						##
-##									##
-##	# Then define a server.						##
-##	[MYSERVER]							##
-##	addr=MyServer							##
-##									##
-##	# Then define a server / user pair.				##
-##	[MYSERVER:MYBACKUPUSER]						##
-##	# Use persistent password cache for user 'mybackupuser'		##
-##			on system 'MyServer'.				##
-##	password=mybackuppassword					##
 ##									##
 ##########################################################################
 
@@ -103,6 +82,7 @@
 ##				introduced with the consolidated	##
 ##				netbckup script.			##
 ## 22/11/2014	MG	1.1.3	Add overall package version to -V.	##
+## 02/02/2015	MG	1.1.4	Remove BSD support.			##
 ##									##
 ##########################################################################
 
@@ -111,8 +91,7 @@
 ####################
 script_exit_code=0
 outputprefix="setup.sh: "
-osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.3"				# set version variable
+version="1.1.4"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -184,7 +163,7 @@ do
 	esac
 done
 
-if test -f ~/.nsmbrc || test -f $etclocation/backups.conf
+if test -f $etclocation/backups.conf
 then
 	script_exit_code=65
 	output "File(s) exist, they must be maintained with an editor." 1
@@ -195,41 +174,11 @@ read -p "NAS server name: " bckupsys
 read -p "NAS and mount backup directory: " bckupdir
 read -p "NAS user profile: " bckupusr
 read -p "NAS password for user profile: " bckuppwd
-read -p "Workgroup name: " bckupwg
 read -p "User to notify: " notifyuser
 
-# Setup files
+# Setup location
 test -d $etclocation || mkdir -p $etclocation
 std_cmd_err_handler $?
-
-# Write ~/.nsmbrc file if necessary
-if [ $osname = "FreeBSD" ]
-then
-	echo "# First define a workgroup." >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "[default]" >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "workgroup="$bckupwg >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "# Then define a server." >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "["$bckupsys"]" \
-		| sed y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/ \
-		>>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "addr="$bckupsys >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "# Then define a server / user pair." >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "["$bckupsys":"$bckupusr"]" \
-		| sed y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/ \
-		>>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "# Use persistent password cache for user." >>~/.nsmbrc
-	std_cmd_err_handler $?
-	echo "password="$bckuppwd >>~/.nsmbrc
-	std_cmd_err_handler $?
-fi
 
 # Write $etclocation/backups.conf file
 echo "server="$bckupsys >>$etclocation/backups.conf
