@@ -23,9 +23,10 @@
 ##		67 - trap received					##
 ##									##
 ## Further Info:							##
-## The backup package mounts a NAS share as a target for the backup.	##
+## The backup package mounts a share as a target for the backup.	##
 ## Something like:-							##
 ## 	the NAS share \\Ambrosia\charybdisbck				##
+##	or the NFS share hermes:/srv/backups/charybdis			##
 ## 	mounted on							##
 ## 	/mnt/charybdisbck						##
 ## In order to make the package portable all the necessary parameters	##
@@ -33,22 +34,16 @@
 ## This script will create the conf files as necessary. It will NOT	##
 ## maintain the files once created, post-installation the files should	##
 ## be maintained by using an editor.					##
-## The format of the backups.conf file is below:			##
-##	# NAS server name						##
-##	bckupsys=MyServer						##
-##									##
-##	# NAS directory for backups (also used for mount point eg	##
-##	#				/mnt/$bckupdir)			##
-##	bckupdir=mybackupdirectory					##
-##									##
-##	# NAS backup user						##
-##	bckupusr=mybackupuser						##
-##									##
-##	# NAS backup user password					##
-##	bckuppwd=mybackuppassword					##
-##									##
-##	# Notify user							##
-##	notifyuser=root							##
+## Please refer to the man page for the structure of the backups.conf	##
+## file.								##
+## This script creates the following files:				##
+##	backups.conf							##
+##	Weekly CIFS share credentials file - if required		##
+##	Ad hoc CIFS share credentials file - if required		##
+##	bckweekly.exclude (empty)					##
+##	bckdaily.exclude (empty)					##
+##	bckseldaily.files (empty)					##
+##	bckseldaily.exclude (empty)					##
 ##									##
 ##########################################################################
 
@@ -83,6 +78,9 @@
 ##				netbckup script.			##
 ## 22/11/2014	MG	1.1.3	Add overall package version to -V.	##
 ## 02/02/2015	MG	1.1.4	Remove BSD support.			##
+## 02/02/2015	MG	1.2.1	Add support for NFS target shares. Add	##
+##				support for different targets for	##
+##				weekly and ad hoc backups.		##
 ##									##
 ##########################################################################
 
@@ -91,9 +89,24 @@
 ####################
 script_exit_code=0
 outputprefix="setup.sh: "
-version="1.1.4"				# set version variable
+version="1.2.1"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
+
+weeklysharetype=""
+weeklytarget=""
+weeklydir=""
+weeklycredfile=""
+weeklyusr=""
+weeklypwd=""
+weeklynotifyuser=""
+adhocsharetype=""
+adhoctarget=""
+adhocdir=""
+adhoccredfile=""
+adhocusr=""
+adhocpwd=""
+adhocnotifyuser=""
 
 ###############
 ## Functions ##
@@ -163,37 +176,83 @@ do
 	esac
 done
 
-if test -f $etclocation/backups.conf
+if [ -f $etclocation/backups.conf ]
 then
 	script_exit_code=65
 	output "File(s) exist, they must be maintained with an editor." 1
 	script_exit
 fi
 
-read -p "NAS server name: " bckupsys
-read -p "NAS and mount backup directory: " bckupdir
-read -p "NAS user profile: " bckupusr
-read -p "NAS password for user profile: " bckuppwd
-read -p "User to notify: " notifyuser
+read -p "Weekly backup share type: " weeklysharetype
+read -p "Weekly backup target: " weeklytarget
+read -p "Weekly mount backup directory: " weeklydir
+if [ $weeklysharetype = "CIFS" ]
+then
+	read -p "Weekly credential file: " weeklycredfile
+	read -p "Weekly user profile: " weeklyusr
+	read -p "Weekly password for user profile: " weeklypwd
+fi
+read -p "Weekly user to notify: " weeklynotifyuser
+
+read -p "Ad hoc backup share type: " adhocsharetype
+read -p "Ad hoc backup target: " adhoctarget
+read -p "Ad hoc mount backup directory: " adhocdir
+if [ $adhocsharetype = "CIFS" ]
+then
+	read -p "Ad hoc credential file: " adhoccredfile
+	read -p "Ad hoc user profile: " adhocusr
+	read -p "Ad hoc password for user profile: " adhocpwd
+fi
+read -p "Ad hoc user to notify: " adhocnotifyuser
 
 # Setup location
 test -d $etclocation || mkdir -p $etclocation
 std_cmd_err_handler $?
 
 # Write $etclocation/backups.conf file
-echo "server="$bckupsys >>$etclocation/backups.conf
+echo "weeklytype="$weeklysharetype >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "dir="$bckupdir >>$etclocation/backups.conf
+echo "weeklytarget="$weeklytarget >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "user="$bckupusr >>$etclocation/backups.conf
+echo "weeklydir="$weeklydir >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "password="$bckuppwd >>$etclocation/backups.conf
+echo "weeklycredfile="$weeklycredfile >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "notifyuser="$notifyuser >> $etclocation/backups.conf
+echo "weeklynotifyuser="$weeklynotifyuser >> $etclocation/backups.conf
 std_cmd_err_handler $?
-# The way the file is read requires the last line to have a new line.
-echo "" >> $etclocation/backups.conf
+
+echo "adhoctype="$adhocsharetype >>$etclocation/backups.conf
 std_cmd_err_handler $?
+echo "adhoctarget="$adhoctarget >>$etclocation/backups.conf
+std_cmd_err_handler $?
+echo "adhocdir="$adhocdir >>$etclocation/backups.conf
+std_cmd_err_handler $?
+echo "adhoccredfile="$adhoccredfile >>$etclocation/backups.conf
+std_cmd_err_handler $?
+echo "adhocnotifyuser="$adhocnotifyuser >> $etclocation/backups.conf
+std_cmd_err_handler $?
+
+# Write weekly CIFS credential file.
+if [ $weeklysharetype = "CIFS" ]
+then
+	echo "username="$weeklyusr >>/root/$weeklycredfile
+	std_cmd_err_handler $?
+	echo "password="$weeklypwd >>/root/$weeklycredfile
+	std_cmd_err_handler $?
+	chmod 0600 /root/$weeklycredfile
+	std_cmd_err_handler $?
+fi
+
+# Write ad hoc CIFS credential file.
+if [ $adhocsharetype = "CIFS" ]
+then
+	echo "username="$adhocusr >>/root/$adhoccredfile
+	std_cmd_err_handler $?
+	echo "password="$adhocpwd >>/root/$adhoccredfile
+	std_cmd_err_handler $?
+	chmod 0600 /root/$adhoccredfile
+	std_cmd_err_handler $?
+fi
 
 # Create $etclocation/backups inclde and exclude files
 touch $etclocation/bckweekly.exclude
