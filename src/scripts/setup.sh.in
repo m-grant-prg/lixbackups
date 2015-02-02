@@ -95,18 +95,17 @@ packageversion=@pkgversion@		# Version of the complete package
 
 weeklysharetype=""
 weeklytarget=""
-weeklydir=""
 weeklycredfile=""
 weeklyusr=""
 weeklypwd=""
 weeklynotifyuser=""
 adhocsharetype=""
 adhoctarget=""
-adhocdir=""
 adhoccredfile=""
 adhocusr=""
 adhocpwd=""
 adhocnotifyuser=""
+mntdir=""
 
 ###############
 ## Functions ##
@@ -185,7 +184,6 @@ fi
 
 read -p "Weekly backup share type: " weeklysharetype
 read -p "Weekly backup target: " weeklytarget
-read -p "Weekly mount backup directory: " weeklydir
 if [ $weeklysharetype = "CIFS" ]
 then
 	read -p "Weekly credential file: " weeklycredfile
@@ -196,7 +194,6 @@ read -p "Weekly user to notify: " weeklynotifyuser
 
 read -p "Ad hoc backup share type: " adhocsharetype
 read -p "Ad hoc backup target: " adhoctarget
-read -p "Ad hoc mount backup directory: " adhocdir
 if [ $adhocsharetype = "CIFS" ]
 then
 	read -p "Ad hoc credential file: " adhoccredfile
@@ -204,6 +201,8 @@ then
 	read -p "Ad hoc password for user profile: " adhocpwd
 fi
 read -p "Ad hoc user to notify: " adhocnotifyuser
+
+read -p "Mount backup directory: " mntdir
 
 # Setup location
 test -d $etclocation || mkdir -p $etclocation
@@ -214,22 +213,21 @@ echo "weeklytype="$weeklysharetype >>$etclocation/backups.conf
 std_cmd_err_handler $?
 echo "weeklytarget="$weeklytarget >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "weeklydir="$weeklydir >>$etclocation/backups.conf
-std_cmd_err_handler $?
 echo "weeklycredfile="$weeklycredfile >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "weeklynotifyuser="$weeklynotifyuser >> $etclocation/backups.conf
+echo "weeklynotifyuser="$weeklynotifyuser >>$etclocation/backups.conf
 std_cmd_err_handler $?
 
 echo "adhoctype="$adhocsharetype >>$etclocation/backups.conf
 std_cmd_err_handler $?
 echo "adhoctarget="$adhoctarget >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "adhocdir="$adhocdir >>$etclocation/backups.conf
-std_cmd_err_handler $?
 echo "adhoccredfile="$adhoccredfile >>$etclocation/backups.conf
 std_cmd_err_handler $?
-echo "adhocnotifyuser="$adhocnotifyuser >> $etclocation/backups.conf
+echo "adhocnotifyuser="$adhocnotifyuser >>$etclocation/backups.conf
+std_cmd_err_handler $?
+
+echo "mntdir="$mntdir >>$etclocation/backups.conf
 std_cmd_err_handler $?
 
 # Write weekly CIFS credential file.
