@@ -4,16 +4,26 @@ DESCRIPTION
 backups.conf contains one line for each parameter (Key / Value pair).
 FILES
 backups.conf	The parameters are as follows:-
+
+Weekly Section	weeklytype=NFS or CIFS
 .br
-server=ServerName
+weeklytarget=nfs or cifs target
 .br
-dir=NASBackupDirectoryAndMountDirectory
+weeklydir=local mount directory
 .br
-user=NASUsrProfile
+weeklycredfile=blank or filename to be stored under /root
 .br
-password=NASPassword
+weeklynotifyuser=user to be notified by email
+
+Ad Hoc Section	adhoctype=NFS or CIFS
 .br
-notifyuser=UserToBeNotifiedByMailOnSystemBeingBackedUp
+adhoctarget=nfs or cifs target
+.br
+adhocdir=local mount directory
+.br
+adhoccredfile=blank or filename to be stored under /root
+.br
+adhocnotifyuser=user to be notified by email
 
 The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/backups/backups.conf.
 AUTHOR
