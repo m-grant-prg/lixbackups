@@ -31,43 +31,7 @@
 ##									##
 ## In order to make the package portable all the necessary parameters	##
 ## are stored in a $PREFIX/etc/backups.conf file.			##
-## On BSD mounting a NAS share uses the mount_smbfs command rather	##
-## than the mount.cifs command on Linux. This difference means that on	##
-## BSD we also utilise the ~/.nsmbrc file.				##
-## The format of the backups.conf file is below:			##
-##	# NAS server name						##
-##	bckupsys=MyServer						##
-##									##
-##	# NAS directory for backups (also used for mount point eg	##
-##	#				/mnt/$bckupdir)			##
-##	bckupdir=mybackupdirectory					##
-##									##
-##	# NAS backup user						##
-##	bckupusr=mybackupuser						##
-##									##
-##	# NAS backup user password					##
-##	bckuppwd=mybackuppassword					##
-##									##
-##	# Backup workgroup						##
-##	bckupwg=MyWorkgroup						##
-##									##
-##	# Notify user							##
-##	notifyuser=root							##
-##									##
-## The format of the ~/.nsmbrc file is below:-				##
-##	# First define a workgroup.					##
-##	[default]							##
-##	workgroup=MyWorkgroup						##
-##									##
-##	# Then define a server.						##
-##	[MYSERVER]							##
-##	addr=MyServer							##
-##									##
-##	# Then define a server / user pair.				##
-##	[MYSERVER:MYBACKUPUSER]						##
-##	# Use persistent password cache for user 'mybackupuser'		##
-##			on system 'MyServer'.				##
-##	password=mybackuppassword					##
+## For further information please consult the backups.conf man page.	##
 ##									##
 ##########################################################################
 
@@ -117,6 +81,7 @@
 ## 17/11/2014	MG	1.1.3	Change FreeBSD specifics to *BSD and	##
 ##				change Linux to be the default.		##
 ## 22/11/2014	MG	1.1.4	Add overall package version to -V.	##
+## 02/02/2015	MG	1.1.5	Remove BSD support.			##
 ##									##
 ##########################################################################
 
@@ -125,19 +90,9 @@
 ####################
 script_exit_code=0
 outputprefix="attbckshare: "
-osname=$(uname -s)			# Get system name for OS differentiation
-version="1.1.4"				# set version variable
+version="1.1.5"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
-
-# See getopt comments at the start of "Main"
-case $osname in
-*BSD)	binlocation=@bindir@"/"
-	;;
-# Linux)	Allow fall through for now as the defaults are linux.
-*)	binlocation=""
-	;;
-esac
 
 verbosity=""
 
@@ -190,15 +145,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with GNU getopt.
-# (BSD includes, out of the box, a dodgy, feature lacking getopt program
-# installed in /usr/bin. A GNU compatable getopt package is available to install
-# and this gets installed in the bindir, ie /usr/local/bin. This means that the
-# dodgy getopt version is always found first on the PATH. In order to invoke the
-# correct program, $binlocation, (from Makefile bindir), is inserted in the command
-# line below to specify the full path). (Linux GNU getopt can be found on PATH so
-# binlocation ="").
-
-GETOPTTEMP=`"$binlocation"getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
+GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
 std_cmd_err_handler $?
 
 eval set -- "$GETOPTTEMP"
@@ -267,38 +214,12 @@ do
 done
 exec 3<&-
 
-# If BSD we also need the workgroup which can be obtained from
-# the ~/.nsmbrc file
-case $osname in
-*BSD)	exec 3<~/.nsmbrc
-	while read -u3 -ra input
-	do
-		case ${input[0]} in
-		workgroup)
-			bckupwg=${input[1]}
-			;;
-		esac
-	done
-	exec 3<&-
-	;;
-# Linux)	Allow fall through for now as the defaults are linux.
-*)	;;
-esac
-
 # Check to see if the NAS backup server is mounted, if not, mount
 if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
-	case $osname in
-	*BSD)	mount_smbfs -I $bckupsys -N -U $bckupusr -W $bckupwg \
-        		//$bckupusr@$bckupsys/$bckupdir /mnt/$bckupdir
-		status=$?
-	;;
-	# Linux)	Allow fall through for now as the defaults are linux.
-	*)	mount -t cifs -o user=$bckupusr,password=$bckuppwd \
-	        	//$bckupsys/$bckupdir /mnt/$bckupdir
-	        status=$?
-	;;
-	esac
+	mount -t cifs -o user=$bckupusr,password=$bckuppwd \
+	       	//$bckupsys/$bckupdir /mnt/$bckupdir
+	status=$?
 	if [ $status != 0 ]
 	then
 		script_exit_code=65
