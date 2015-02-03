@@ -186,7 +186,7 @@ read -p "Weekly backup share type: " weeklysharetype
 read -p "Weekly backup target: " weeklytarget
 if [ $weeklysharetype = "CIFS" ]
 then
-	read -p "Weekly credential file: " weeklycredfile
+	read -p "Weekly credential file (full path): " weeklycredfile
 	read -p "Weekly user profile: " weeklyusr
 	read -p "Weekly password for user profile: " weeklypwd
 fi
@@ -196,7 +196,7 @@ read -p "Ad hoc backup share type: " adhocsharetype
 read -p "Ad hoc backup target: " adhoctarget
 if [ $adhocsharetype = "CIFS" ]
 then
-	read -p "Ad hoc credential file: " adhoccredfile
+	read -p "Ad hoc credential file (full path): " adhoccredfile
 	read -p "Ad hoc user profile: " adhocusr
 	read -p "Ad hoc password for user profile: " adhocpwd
 fi
@@ -233,22 +233,22 @@ std_cmd_err_handler $?
 # Write weekly CIFS credential file.
 if [ $weeklysharetype = "CIFS" ]
 then
-	echo "username="$weeklyusr >>/root/$weeklycredfile
+	echo "username="$weeklyusr >>$weeklycredfile
 	std_cmd_err_handler $?
-	echo "password="$weeklypwd >>/root/$weeklycredfile
+	echo "password="$weeklypwd >>$weeklycredfile
 	std_cmd_err_handler $?
-	chmod 0600 /root/$weeklycredfile
+	chmod 0600 $weeklycredfile
 	std_cmd_err_handler $?
 fi
 
 # Write ad hoc CIFS credential file.
 if [ $adhocsharetype = "CIFS" ]
 then
-	echo "username="$adhocusr >>/root/$adhoccredfile
+	echo "username="$adhocusr >>$adhoccredfile
 	std_cmd_err_handler $?
-	echo "password="$adhocpwd >>/root/$adhoccredfile
+	echo "password="$adhocpwd >>$adhoccredfile
 	std_cmd_err_handler $?
-	chmod 0600 /root/$adhoccredfile
+	chmod 0600 $adhoccredfile
 	std_cmd_err_handler $?
 fi
 
