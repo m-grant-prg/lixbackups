@@ -12,22 +12,24 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## To mount the backup share on the NAS server. E.g.			##
-## 	\\Ambrosia\charybdisbck						##
+## To mount a CIFS or NFS backup share. E.g.				##
+## 	\\Ambrosia\charybdisbck or hermes:/srv/backups/charybdis	##
 ## 	on								##
 ## 	/mnt/charybdisbck						##
 ##									##
-## Syntax:	attbckshare [-h --help || -v --verbose || -V --version ]##
+## Syntax:	attbckshare [ -a --adhoc || -h --help || -v --verbose	##
+##				|| -V --version || -w --weekly ]	##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
 ##		64 - Invalid arguments					##
-##		65 - Failed mounting backup NAS server			##
+##		65 - Failed mounting backup share			##
 ##		66 - Backup share already mounted			##
 ##		67 - trap received					##
 ##									##
 ## Further Info:							##
-## This script mounts a NAS share as a target for the backup scripts.	##
+## This script mounts a CIFS or NFS share as a target for the backup	##
+## scripts.								##
 ##									##
 ## In order to make the package portable all the necessary parameters	##
 ## are stored in a $PREFIX/etc/backups.conf file.			##
@@ -82,6 +84,8 @@
 ##				change Linux to be the default.		##
 ## 22/11/2014	MG	1.1.4	Add overall package version to -V.	##
 ## 02/02/2015	MG	1.1.5	Remove BSD support.			##
+## 02/02/2015	MG	1.2.1	Add support for NFS shares. Add support	##
+##				for different weekly and ad hoc targets.##
 ##									##
 ##########################################################################
 
@@ -90,11 +94,23 @@
 ####################
 script_exit_code=0
 outputprefix="attbckshare: "
-version="1.1.5"				# set version variable
+version="1.2.1"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
 verbosity=""
+adhoc=FALSE
+weekly=FALSE
+weeklytype=""
+weeklytarget=""
+weeklycredfile=""
+weeklynotifyuser=""
+adhoctype=""
+adhoctarget=""
+adhoccredfile=""
+adhocnotifyuser=""
+mntdir=""
+bckuptype=""
 
 ###############
 ## Functions ##
@@ -145,7 +161,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with GNU getopt.
-GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
+GETOPTTEMP=`getopt -o ahvVw --long adhoc,help,verbose,version,weekly -n "$0" -- "$@"`
 std_cmd_err_handler $?
 
 eval set -- "$GETOPTTEMP"
@@ -154,24 +170,53 @@ std_cmd_err_handler $?
 while true
 do
 	case "$1" in
-	-h|--help)	echo "Usage is $0 [options]"
+	-a|--adhoc)
+		if [ $weekly = TRUE ]
+		then
+			script_exit_code=64
+			output "Options a and w are mutually exclusive." 1
+			script_exit
+		fi
+		adhoc=TRUE
+		bckuptype="adhoc"
+		shift
+		;;
+	-h|--help)
+		echo "Usage is $0 [options]"
+		echo "	-a or --adhoc mount the ad hoc backup target share"
+		echo "	OR"
 		echo "	-h or --help displays usage information"
 		echo "	OR"
 		echo "	-v or --verbose verbose output"
 		echo "	OR"
 		echo "	-V or --version displays version information"
+		echo "	OR"
+		echo "	-w or --weekly mount the weekly target backup share"
 		shift
 		script_exit_code=0
 		script_exit
 		;;
-	-v|--verbose)	verbosity="-v"
+	-v|--verbose)
+		verbosity="-v"
 		shift
 		;;
-	-V|--version)	echo "$0 Script version "$version
+	-V|--version)
+		echo "$0 Script version "$version
 		echo "$0 Package version "$packageversion
 		shift
 		script_exit_code=0
 		script_exit
+		;;
+	-w|--weekly)
+		if [ $adhoc = TRUE ]
+		then
+			script_exit_code=64
+			output "Options a and w are mutually exclusive." 1
+			script_exit
+		fi
+		weekly=TRUE
+		bckuptype="weekly"
+		shift
 		;;
 	--)	shift
 		break
@@ -191,6 +236,14 @@ then
 	script_exit
 fi
 
+# One option has to be selected.
+if [ $adhoc = FALSE -a $weekly = FALSE ]
+then
+	script_exit_code=64
+	output "Either a or w must be set." 1
+	script_exit
+fi
+
 # Read parameters from $etclocation/backups.conf
 IFS="="
 
@@ -198,32 +251,75 @@ exec 3<$etclocation/backups.conf
 while read -u3 -ra input
 do
 	case ${input[0]} in
-	server)
-		bckupsys=${input[1]}
+	weeklytype)
+		weeklytype=${input[1]}
 		;;
-	dir)
-		bckupdir=${input[1]}
+	weeklytarget)
+		weeklytarget=${input[1]}
 		;;
-	user)
-		bckupusr=${input[1]}
+	weeklycredfile)
+		weeklycredfile=${input[1]}
 		;;
-	password)
-		bckuppwd=${input[1]}
+	weeklynotifyuser)
+		weeklynotifyuser=${input[1]}
+		;;
+	adhoctype)
+		adhoctype=${input[1]}
+		;;
+	adhoctarget)
+		adhoctarget=${input[1]}
+		;;
+	adhoccredfile)
+		adhoccredfile=${input[1]}
+		;;
+	adhocnotifyuser)
+		adhocnotifyuser=${input[1]}
+		;;
+	mntdir)
+		mntdir=${input[1]}
 		;;
 	esac
 done
 exec 3<&-
 
+case $bckuptype in
+adhoc)
+	type=$adhoctype
+	target=$adhoctarget
+	credfile=$adhoccredfile
+	notifyuser=$adhocnotifyuser
+	;;
+weekly)
+	type=$weeklytype
+	target=$weeklytarget
+	credfile=$weeklycredfile
+	notifyuser=$weeklynotifyuser
+	;;
+esac
+
+mountCL="mount -t "
+case $type in
+NFS)
+	mountCL=$mountCL"nfs $target $mntdir"
+	;;
+CIFS)
+	mountCL=$mountCL"cifs -o credentials=$credfile $target $mntdir"
+	;;
+*)	script_exit_code=1
+	output "Invalid share type." 1
+	script_exit
+	;;
+esac
+
 # Check to see if the NAS backup server is mounted, if not, mount
 if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
-	mount -t cifs -o user=$bckupusr,password=$bckuppwd \
-	       	//$bckupsys/$bckupdir /mnt/$bckupdir
+	eval "$mountCL"
 	status=$?
 	if [ $status != 0 ]
 	then
 		script_exit_code=65
-		output "Failed to mount backup NAS server. Mount error: "$status" Script exit code: "$script_exit_code 1
+		output "Failed to mount backup share. Mount error: "$status" Script exit code: "$script_exit_code 1
 		script_exit
 	fi
 else
@@ -233,5 +329,5 @@ else
 fi
 
 script_exit_code=0
-output "Share //$bckupsys/$bckupdir mounted on /mnt/$bckupdir" 0
+output "Share $target mounted on $mntdir" 0
 script_exit

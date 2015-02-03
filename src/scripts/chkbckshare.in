@@ -12,8 +12,8 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## To check if the backup share on the NAS server is mounted . E.g.	##
-## 	\\Ambrosia\charybdisbck						##
+## To check if the backup share is mounted . E.g.			##
+## 	\\Ambrosia\charybdisbck or hermes:/srv/backups/charybdis	##					##
 ## 	on								##
 ## 	/mnt/charybdisbck						##
 ##									##
@@ -26,7 +26,7 @@
 ##		67 - trap received					##
 ##									##
 ## Further Info:							##
-## This script checks if a NAS share is mounted as a target for the	##
+## This script checks if a share is mounted as a target for the		##
 ## backup scripts.							##
 ##									##
 ##########################################################################
@@ -42,6 +42,9 @@
 ## 22/11/2014	MG	1.1.3	Switched from getopts to GNU getopt to	##
 ##				allow long options.			##
 ## 02/02/2015	MG	1.1.4	Remove BSD support.			##
+## 02/02/2015	MG	1.2.1	Add support for NFS shares. Add support	##
+##				for different share targets for weekly	##
+##				and adhoc backups.			##
 ##									##
 ##########################################################################
 
@@ -53,9 +56,11 @@ terse="FALSE"
 outputprefix="chkbckshare: "
 mountoutput=""
 script_exit_code=0
-version="1.1.4"				# set version variable
+version="1.2.1"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
+
+mntdir=""
 
 ###############
 ## Functions ##
@@ -112,10 +117,12 @@ std_cmd_err_handler $?
 while true
 do
 	case "$1" in
-	-b|--boolean)	bool="TRUE"
+	-b|--boolean)
+		bool="TRUE"
 		shift
 		;;
-	-h|--help)	echo "Usage is $0 [options]"
+	-h|--help)
+		echo "Usage is $0 [options]"
 		echo "	-b or --boolean displays TRUE or FALSE instead of mount information"
 		echo "	OR"
 		echo "	-h or --help displays usage information"
@@ -127,11 +134,13 @@ do
 		script_exit_code=0
 		script_exit
 		;;
-	-t|--terse)	terse="TRUE"
+	-t|--terse)
+		terse="TRUE"
 		outputprefix=""
 		shift
 		;;
-	-V|--version)	echo "$0 Script version "$version
+	-V|--version)
+		echo "$0 Script version "$version
 		echo "$0 Package version "$packageversion
 		shift
 		script_exit_code=0
@@ -162,24 +171,15 @@ exec 3<$etclocation/backups.conf
 while read -u3 -ra input
 do
 	case ${input[0]} in
-	server)
-		bckupsys=${input[1]}
-		;;
-	dir)
-		bckupdir=${input[1]}
-		;;
-	user)
-		bckupusr=${input[1]}
-		;;
-	password)
-		bckuppwd=${input[1]}
+	mntdir)
+		mntdir=${input[1]}
 		;;
 	esac
 done
 exec 3<&-
 
-# Check to see if the NAS backup server is mounted
-mountoutput=$(mount | grep "/mnt/$bckupdir")
+# Check to see if the backup share is mounted
+mountoutput=$(mount | grep "$mntdir")
 if [ "$bool" = "FALSE" ]
 then
 	if [ "$mountoutput" = "" ]

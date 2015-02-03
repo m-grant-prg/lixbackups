@@ -61,6 +61,7 @@
 ## 22/11/2014	MG	1.0.4	Add overall package version to -V.	##
 ## 22/11/2014	MG	1.0.5	Switched from getopts to GNU getopt to	##
 ##				allow long options.			##
+## 03/02/2015	MG	1.0.6	Remove BSD support.			##
 ##									##
 ##########################################################################
 
@@ -70,9 +71,8 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.0.5"				# set version variable
+version="1.0.6"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
-osname=$(uname -s)			# Get system name for OS differentiation
 outputprefix="netbckup: "
 differential=FALSE
 fulladhoc=FALSE
@@ -82,16 +82,10 @@ weekly=FALSE
 bckuptype=""				# Selected backup type
 bckupCL=""				# Backup command line
 packageversion=@pkgversion@		# Version of the complete package
-
-# See getopt comments at the start of "Main"
-case $osname in
-*BSD)	binlocation=@bindir@"/"
-	;;
-# Linux)	Allow fall through for now as the defaults are linux.
-*)	binlocation=""
-	;;
-esac
-
+weeklynotifyuser=""
+adhocnotifyuser=""
+notifyuser=""
+attachtype=""				# attbckshare  weekly or adhoc
 
 ###############
 ## Functions ##
@@ -159,14 +153,7 @@ then
 fi
 
 # Re-Allow logins
-case $osname in
-FreeBSD)
-	rm -f /var/run/nologin
-	;;
-Linux)
-	rm -f /etc/nologin
-	;;
-esac
+rm -f /etc/nologin
 
 exit $script_exit_code
 }
@@ -186,15 +173,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ## Main ##
 ##########
 # Process command line arguments with GNU getopt.
-# (BSD includes, out of the box, a dodgy, feature lacking getopt program
-# installed in /usr/bin. A GNU compatable getopt package is available to install
-# and this gets installed in the bindir, ie /usr/local/bin. This means that the
-# dodgy getopt version is always found first on the PATH. In order to invoke the
-# correct program, $binlocation, (from Makefile bindir), is inserted in the command
-# line below to specify the full path). (Linux GNU getopt can be found on PATH so
-# binlocation ="").
-
-GETOPTTEMP=`"$binlocation"getopt -o dfhisVw \
+GETOPTTEMP=`getopt -o dfhisVw \
 		--long differential,full,help,incremental,selective,version,weekly -n "$0" -- "$@"`
 std_cmd_err_handler $?
 
@@ -213,6 +192,7 @@ do
 		fi
 		differential=TRUE
 		bckuptype="differential"
+		attachtype="weekly"
 		shift
 		;;
 	-f|--full)
@@ -224,6 +204,7 @@ do
 		fi
 		fulladhoc=TRUE
 		bckuptype="fulladhoc"
+		attachtype="adhoc"
 		shift
 		;;
 	-h|--help)
@@ -249,6 +230,7 @@ do
 		fi
 		incremental=TRUE
 		bckuptype="incremental"
+		attachtype="weekly"
 		shift
 		;;
 	-s|--selective)
@@ -260,6 +242,7 @@ do
 		fi
 		selective=TRUE
 		bckuptype="selective"
+		attachtype="adhoc"
 		shift
 		;;
 	-V|--version)	echo "$0 Script version "$version
@@ -277,6 +260,7 @@ do
 		fi
 		weekly=TRUE
 		bckuptype="weekly"
+		attachtype="weekly"
 		shift
 		;;
 	--)	shift
@@ -307,28 +291,14 @@ then
 fi
 
 # Check to see if root account is accessible, if so, prohibit non-root login
-# FreeBSD has no passwd -S option
-case $osname in
-*BSD)	pwdstatus=$(cat /etc/master.passwd | awk -F: '{ if ($1 == "root" && $2 != "*")
-			print "P" ;}')
-	;;
-# Linux)	Allow fall through for now as the defaults are linux.
-*)	pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
-			print $2 ;}')
-	;;
-esac
+pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
+		print $2 ;}')
 output "Root password status is "$pwdstatus 0
 
 if [ $pwdstatus = "P" ]
 then
 	output "Denying non-root login access." 0
-	case $osname in
-	*BSD)	echo "Login refused. Backup in progress." > /var/run/nologin
-		;;
-	#Linux)	Allow fall through for now as the defaults are linux.
-	*)	echo "Login refused. Backup in progress." > /etc/nologin
-		;;
-	esac
+	echo "Login refused. Backup in progress." > /etc/nologin
 else
 	output "Login access not being denied." 0
 fi
@@ -340,40 +310,43 @@ exec 3<$etclocation/backups.conf
 while read -u3 -ra input
 do
 	case ${input[0]} in
-	dir)
-		bckupdir=${input[1]}
+	mntdir)
+		mntdir=${input[1]}
 		;;
-	notifyuser)
-		mail_recipient=${input[1]}
+	weeklynotifyuser)
+		weeklynotifyuser=${input[1]}
+		;;
+	adhocnotifyuser)
+		adhocnotifyuser=${input[1]}
 		;;
 	esac
 done
 exec 3<&-
 
+if [ $attachtype = "weekly" ]
+then
+	notifyuser=$weeklynotifyuser
+else
+	notifyuser=$adhocnotifyuser
+fi
+
 # Check to see if the NAS backup server is mounted, if not, mount
 if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
-	attbckshare
+	attbckshare --$attachtype
 	std_cmd_err_handler $?
 fi
 
 # Start build of backup command
-case $osname in
-*BSD)	bckupCL="gtar "
-;;
-#Linux)	Allow fall through for now as the defaults are linux.
-*)	bckupCL="tar "
-;;
-esac
-bckupCL=$bckupCL"cpzf "
+bckupCL="tar cpzf "
 
 case $bckuptype in
 differential)
 	script_short_desc=$(uname -n)" "$(date +%A)" Daily Differential Backup"
 	
 	# Build the backup & incremental file names and paths
-	backpath="/mnt/$bckupdir/backup"$(date +%a)".tar.gz"
-	snarpath="/mnt/$bckupdir/backup"$(date +%a)".snar"
+	backpath="$mntdir/backup"$(date +%a)".tar.gz"
+	snarpath="$mntdir/backup"$(date +%a)".snar"
 	
 	# If the incremental files exists, delete.
 	# (Just in case full backup has not done this)
@@ -384,9 +357,9 @@ differential)
 	
 	# Copy level 0 incremental file in order to perform a
 	# level 1, effective differential backup each run.
-	if [ -f /mnt/$bckupdir/backup.snar -a -r /mnt/$bckupdir/backup.snar \
-		-a -w /mnt/$bckupdir/backup.snar ] ; then
-		cp /mnt/$bckupdir/backup.snar $snarpath
+	if [ -f $mntdir/backup.snar -a -r $mntdir/backup.snar \
+		-a -w $mntdir/backup.snar ] ; then
+		cp $mntdir/backup.snar $snarpath
 		std_cmd_err_handler $?
 	else
 		script_exit_code=66
@@ -401,7 +374,7 @@ fulladhoc)
 	script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
 	
 	# Build the backup file name and path
-	backpath="/mnt/$bckupdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
+	backpath="$mntdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 	
 	bckupCL=$bckupCL"$backpath "
 	;;
@@ -409,8 +382,8 @@ incremental)
 	script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
 	
 	# Build the backup & incremental file names and paths
-	backpath="/mnt/$bckupdir/backup"$(date +%a)".tar.gz"
-	snarpath="/mnt/$bckupdir/backup.snar"
+	backpath="$mntdir/backup"$(date +%a)".tar.gz"
+	snarpath="$mntdir/backup.snar"
 	
 	# Check that the incremental file exists.
 	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ] ; then
@@ -425,7 +398,7 @@ incremental)
 selective)
 	script_short_desc=$(uname -n)" "$(date +%A)" Selective Backup"
 	# Build the backup file name and path
-	backpath="/mnt/$bckupdir/backupsel"$(date +%a)".tar.gz"
+	backpath="$mntdir/backupsel"$(date +%a)".tar.gz"
 	
 	bckupCL=$bckupCL"$backpath --files-from=$etclocation/bckseldaily.files "
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckseldaily.exclude "
@@ -448,8 +421,8 @@ weekly)
 	script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
 	
 	# Build the backup & incremental file names and paths
-	backpath="/mnt/$bckupdir/backup"$bckseq".tar.gz"
-	snarpath="/mnt/$bckupdir/backup.snar"
+	backpath="$mntdir/backup"$bckseq".tar.gz"
+	snarpath="$mntdir/backup.snar"
 	
 	# If the level 0 incremental file exists, delete
 	if [ -f $snarpath ]
@@ -474,7 +447,7 @@ output $script_short_desc 0
 output "Attempting to process backup - "$backpath 0 
 
 # Re-direct stdout & stderr to backup logs and write initial entries
-exec 1>> /mnt/$bckupdir/backup.log 2>> /mnt/$bckupdir/backuperror.log
+exec 1>> $mntdir/backup.log 2>> $mntdir/backuperror.log
 
 output $script_short_desc 0
 echo $script_short_desc 1>&2
@@ -485,7 +458,7 @@ date
 date 1>&2
 
 # Empty the NAS trashbox
-rm -fr /mnt/$bckupdir/trashbox/*
+rm -fr $mntdir/trashbox/*
 std_cmd_err_handler $?
 
 # Produce list of sockets to exclude
@@ -496,7 +469,7 @@ std_cmd_err_handler $?
 
 findCL="find / -type d '(' "
 count=0
-exec 3</usr/local/etc/backups/bcksystem.exclude
+exec 3<$etclocation/bcksystem.exclude
 while read -u3 -ra input
 do
 	if [ $count != 0 ] ; then
@@ -511,7 +484,7 @@ do
 done
 exec 3<&-
 
-findCL=$findCL" ')' -prune -o -type s -print > "/mnt/$bckupdir/sockets.exclude
+findCL=$findCL" ')' -prune -o -type s -print > "$mntdir/sockets.exclude
 
 output "Find command used:- $findCL" 0
 echo "Find command used:- $findCL" 1>&2
@@ -520,7 +493,7 @@ eval "$findCL"
 
 # Run the backup excluding system directories
 bckupCL=$bckupCL"--exclude-from=$etclocation/bcksystem.exclude "
-bckupCL=$bckupCL"--exclude-from=/mnt/$bckupdir/sockets.exclude "
+bckupCL=$bckupCL"--exclude-from=$mntdir/sockets.exclude "
 
 # If selective backup then uses --files-from so doesn't need starting node (root)
 if [ $selective = TRUE ] ; then
@@ -543,10 +516,10 @@ output "Processing of "$backpath" is complete. Status: "$status 0
 echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 
 # Mail disk stats
-df -ah | mailx -s "$script_short_desc" $mail_recipient
+df -ah | mailx -s "$script_short_desc" $notifyuser
 
 # Mail backup file date hierarchy
-ls -lht /mnt/$bckupdir | mailx -s "$script_short_desc" $mail_recipient
+ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
@@ -554,22 +527,22 @@ output $script_short_desc" completed with status "$status $status
 output "Processing of "$backpath" is complete. Status: "$status $status 
 
 # Cleanup logs so they only have 1000 lines max
-latency_compensate "tail -n 1000 /mnt/$bckupdir/backup.log > /mnt/$bckupdir/tmp.log"
+latency_compensate "tail -n 1000 $mntdir/backup.log > $mntdir/tmp.log"
 std_cmd_err_handler $status
 
-latency_compensate "rm /mnt/$bckupdir/backup.log"
+latency_compensate "rm $mntdir/backup.log"
 std_cmd_err_handler $status
 
-latency_compensate "mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backup.log"
+latency_compensate "mv $mntdir/tmp.log $mntdir/backup.log"
 std_cmd_err_handler $status
 
-latency_compensate "tail -n 1000 /mnt/$bckupdir/backuperror.log > /mnt/$bckupdir/tmp.log"
+latency_compensate "tail -n 1000 $mntdir/backuperror.log > $mntdir/tmp.log"
 std_cmd_err_handler $status
 
-latency_compensate "rm /mnt/$bckupdir/backuperror.log"
+latency_compensate "rm $mntdir/backuperror.log"
 std_cmd_err_handler $status
 
-latency_compensate "mv /mnt/$bckupdir/tmp.log /mnt/$bckupdir/backuperror.log"
+latency_compensate "mv $mntdir/tmp.log $mntdir/backuperror.log"
 std_cmd_err_handler $status
 
 # And exit

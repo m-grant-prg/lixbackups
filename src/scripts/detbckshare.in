@@ -12,17 +12,17 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## To unmount the backup share on the NAS server. E.g.			##
+## To unmount the backup share. E.g.					##
 ##	/mnt/mybackupdirectory						##
 ##	from								##
-## 	\\MyServer\mybackupdirectory					##
+## 	\\MyServer\mybackupdirectory or hermes:/srv/backups/charybdis	##
 ##									##
 ## Syntax:	detbckshare [-h --help || -v --verbose || -V --version ]##
 ##									##
 ## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
 ##		0 - success						##
 ##		64 - Invalid arguments					##
-##		65 - Failed to unmount backup NAS server		##
+##		65 - Failed to unmount backup share			##
 ##		66 - Backup share not mounted				##
 ##		67 - trap received					##
 ##									##
@@ -75,6 +75,9 @@
 ## 22/11/2014	MG	1.1.3	Switched from getopts to GNU getopt to	##
 ##				allow long options.			##
 ## 03/02/2015	MG	1.1.4	Remove BSD support.			##
+## 03/02/2015	MG	1.2.1	Add NFS share support. Add support for	##
+##				different targets for weekly and ad hoc	##
+##				backups.				##
 ##									##
 ##########################################################################
 
@@ -83,10 +86,11 @@
 ####################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.1.4"				# set version variable
+version="1.2.1"				# set version variable
 etclocation=@sysconfdir@/backups	# Path to etc directory
 verbosity=""
 packageversion=@pkgversion@		# Version of the complete package
+mntdir=""
 
 ###############
 ## Functions ##
@@ -193,22 +197,22 @@ exec 3<$etclocation/backups.conf
 while read -u3 -ra input
 do
 	case ${input[0]} in
-	dir)
-		bckupdir=${input[1]}
+	mntdir)
+		mntdir=${input[1]}
 		;;
 	esac
 done
 exec 3<&-
 
-# Check to see if the NAS backup server is mounted, if it is, unmount
+# Check to see if the backup share is mounted, if it is, unmount
 if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
-	umount /mnt/$bckupdir
+	umount $mntdir
 	status=$?
 	if [ $status != 0 ]
 	then
 		script_exit_code=65
-		output "Failed to unmount backup NAS server. Umount error: "$status" Script exit code: "$script_exit_code 1
+		output "Failed to unmount backup share. Umount error: "$status" Script exit code: "$script_exit_code 1
 		script_exit
 	fi
 else
@@ -218,5 +222,5 @@ else
 fi
 
 script_exit_code=0
-output "Share unmounted from /mnt/$bckupdir" 0
+output "Share unmounted from $mntdir" 0
 script_exit
