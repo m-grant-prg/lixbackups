@@ -30,6 +30,7 @@
 ## 22/11/2014	MG	1.0.7	Add support for passing overall package	##
 ##				version to Makefiles.			##
 ## 29/11/2014	MG	1.0.8	Remove redundant hashpling.		##
+## 03/02/2015	MG	1.0.9	Remove BSD support.			##
 ##									##
 ##########################################################################
 
@@ -47,35 +48,18 @@ AC_CONFIG_FILES([Makefile
 		 src/manpages/man5/Makefile
 		 src/conffiles/Makefile])
 
-AC_CANONICAL_HOST
-
 # Checks for programs.
-AC_MSG_NOTICE([checking for required $host_os specific programs])
-case $host_os in
-	*bsd*)	AC_MSG_NOTICE([using $host_os...])
-		AC_CHECK_PROG(GTAR, gtar, yes, no)
-		if test "x$GTAR" = "xno" ; then
-			AC_MSG_ERROR([gtar not found])
-		fi
-		AC_CHECK_PROG(GETOPT, getopt, yes, no, path = '/usr/local/bin')
-		if test "x$GETOPT" = "xno" ; then
-			AC_MSG_ERROR([getopt not found])
-		fi
-		;;
-	# linux*)	Allow fall through for now as the defaults are linux.
-	*)	AC_MSG_NOTICE([using defaults...])
-		AC_CHECK_PROG(TAR, tar, yes, no)
-		if test "x$TAR" = "xno" ; then
-			AC_MSG_ERROR([tar not found])
-		fi
-		AC_CHECK_PROG(GETOPT, getopt, yes, no)
-		if test "x$GETOPT" = "xno" ; then
-			AC_MSG_ERROR([getopt not found])
-		fi
-		;;
-esac
+AC_MSG_NOTICE([checking for programs required by this application])
+AC_CHECK_PROG(TAR, tar, yes, no)
+if test "x$TAR" = "xno" ; then
+	AC_MSG_ERROR([tar not found])
+fi
 
-AC_MSG_NOTICE([checking for required generic programs])
+AC_CHECK_PROG(GETOPT, getopt, yes, no)
+if test "x$GETOPT" = "xno" ; then
+	AC_MSG_ERROR([getopt not found])
+fi
+
 AC_CHECK_PROG(BASH, bash, yes, no)
 if test "x$BASH" = "xno" ; then
    	AC_MSG_ERROR([bash not found])
