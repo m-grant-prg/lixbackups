@@ -9,7 +9,7 @@ Weekly Section	weeklytype=NFS or CIFS
 .br
 weeklytarget=nfs or cifs target
 .br
-weeklycredfile=blank or filename to be stored under /root
+weeklycredfile=blank or full path. (E.g. /root/.hostbackupcredentials)
 .br
 weeklynotifyuser=user to be notified by email
 
@@ -17,7 +17,7 @@ Ad Hoc Section	adhoctype=NFS or CIFS
 .br
 adhoctarget=nfs or cifs target
 .br
-adhoccredfile=blank or filename to be stored under /root
+adhoccredfile=blank or full path. (E.g. /root/.hostbackupcredentials)
 .br
 adhocnotifyuser=user to be notified by email
 
