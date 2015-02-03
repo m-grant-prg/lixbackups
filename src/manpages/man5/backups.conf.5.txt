@@ -20,8 +20,8 @@ adhoctarget=nfs or cifs target
 adhoccredfile=blank or filename to be stored under /root
 .br
 adhocnotifyuser=user to be notified by email
-.br
-mntdir=local mount directory
+
+General Section		mntdir=local mount directory
 
 The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/backups/backups.conf.
 AUTHOR
