@@ -230,6 +230,10 @@ std_cmd_err_handler $?
 echo "mntdir="$mntdir >>$etclocation/backups.conf
 std_cmd_err_handler $?
 
+# Ensure there is a new line
+echo "" >>$etclocation/backups.conf
+std_cmd_err_handler $?
+
 # Write weekly CIFS credential file.
 if [ $weeklysharetype = "CIFS" ]
 then
