@@ -23,6 +23,8 @@ adhocnotifyuser=user to be notified by email
 
 General Section		mntdir=local mount directory
 
+The last line of this file must be terminated with a NewLine.
+
 The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/backups/backups.conf.
 AUTHOR
 Written by Mark Grant.
@@ -39,4 +41,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) netbckup(1) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)
+attbckshare(1) chkbckshare(1) detbckshare(1) mount(8) umount(8) netbckup(1) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)

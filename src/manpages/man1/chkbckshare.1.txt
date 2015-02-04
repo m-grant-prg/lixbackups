@@ -3,7 +3,7 @@ chkbckshare - check if network share is mounted for backups
 SYNOPSIS
 chkbckshare [OPTION]
 DESCRIPTION
-Checks to see if a pre-determined network samba share is mounted as a target
+Checks to see if a pre-determined network share is mounted as a target
 location for backup files.
 OPTIONS
 -b, --boolean	(Boolean) Changes output from mount information to TRUE or FALSE
@@ -40,4 +40,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) detbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) netbckup(1) backups.conf(5) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)
+attbckshare(1) detbckshare(1) mount(8) umount(8) netbckup(1) backups.conf(5) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)

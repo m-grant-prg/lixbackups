@@ -1,9 +1,9 @@
 NAME
-detbckshare - detach the network share for backups
+detbckshare - detach the network backup share
 SYNOPSIS
 detbckshare [OPTION]
 DESCRIPTION
-Detaches the pre-determined network samba share used as a backup target location.
+Detaches the pre-determined network share used as a backup target location.
 OPTIONS
 -h, --help  prints usage information
 
@@ -40,4 +40,4 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) chkbckshare(1) mount(8) (mount_smbfs(8) on FreeBSD) umount(8) netbckup(1) backups.conf(5) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)
+attbckshare(1) chkbckshare(1) mount(8) umount(8) netbckup(1) backups.conf(5) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)
