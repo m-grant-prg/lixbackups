@@ -311,7 +311,7 @@ CIFS)
 	;;
 esac
 
-# Check to see if the NAS backup server is mounted, if not, mount
+# Check to see if the network backup share is mounted, if not, mount
 if [ "$(chkbckshare -bt)" = "FALSE" ]
 then
 	eval "$mountCL"
