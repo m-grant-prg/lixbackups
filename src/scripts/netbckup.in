@@ -65,7 +65,9 @@
 ## 03/02/2015	MG	1.2.1	Add support for NFS backup shares. Add	##
 ##				support for different backup share	##
 ##				targets for weekly and ad hoc type	##
-##				backups.				##
+##				backups. Remove latency_compensate	##
+##				function as improved hardware or	##
+##				removal of BSD has cured the problem.	##
 ##									##
 ##########################################################################
 
@@ -106,24 +108,6 @@ output()
 	fi
 }
 
-# Function to repeat commands to overcome latency issues on NAS mount from
-# either mount_smbfs or slow hardware.
-latency_compensate()
-{
-	# Perform first try without sleep
-	eval "$1 2>/dev/null" 
-	status=$?
-	loopcount=1
-	while [ $status -gt 0 -a $loopcount -lt 60 ]
-	do
-		((loopcount = loopcount + 1))
-		sleep 5
-		eval "$1 2>/dev/null" 
-		status=$?
-	done
-	output "$1 status $status after $loopcount attempts" $status
-}
-
 # Standard function to test command error ($1 is $?) and exit if non-zero
 std_cmd_err_handler()
 {
@@ -153,7 +137,8 @@ fi
 # The backup share might or might not be mounted.
 if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
-	latency_compensate "detbckshare"
+	detbckshare
+	std_cmd_err_handler $?
 fi
 
 # Re-Allow logins
@@ -531,25 +516,25 @@ output $script_short_desc" completed with status "$status $status
 output "Processing of "$backpath" is complete. Status: "$status $status 
 
 # Cleanup logs so they only have 1000 lines max
-latency_compensate "tail -n 1000 $mntdir/backup.log > $mntdir/tmp.log"
-std_cmd_err_handler $status
+tail -n 1000 $mntdir/backup.log > $mntdir/tmp.log
+std_cmd_err_handler $?
 
-latency_compensate "rm $mntdir/backup.log"
-std_cmd_err_handler $status
+rm $mntdir/backup.log
+std_cmd_err_handler $?
 
-latency_compensate "mv $mntdir/tmp.log $mntdir/backup.log"
-std_cmd_err_handler $status
+mv $mntdir/tmp.log $mntdir/backup.log
+std_cmd_err_handler $?
 
-latency_compensate "tail -n 1000 $mntdir/backuperror.log > $mntdir/tmp.log"
-std_cmd_err_handler $status
+tail -n 1000 $mntdir/backuperror.log > $mntdir/tmp.log
+std_cmd_err_handler $?
 
-latency_compensate "rm $mntdir/backuperror.log"
-std_cmd_err_handler $status
+rm $mntdir/backuperror.log
+std_cmd_err_handler $?
 
-latency_compensate "mv $mntdir/tmp.log $mntdir/backuperror.log"
-std_cmd_err_handler $status
+mv $mntdir/tmp.log $mntdir/backuperror.log
+std_cmd_err_handler $?
 
 # And exit
-script_exit_code=0
-output "Script Complete." 0
+script_exit_code=$status
+output "Script Complete." $script_exit_code
 script_exit
