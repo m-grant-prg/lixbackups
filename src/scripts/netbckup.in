@@ -282,14 +282,13 @@ fi
 # Check to see if root account is accessible, if so, prohibit non-root login
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 		print $2 ;}')
-output "Root password status is "$pwdstatus 0
 
 if [ $pwdstatus = "P" ]
 then
-	output "Denying non-root login access." 0
+	output "Root password status is "$pwdstatus". Denying non-root login access." 0
 	echo "Login refused. Backup in progress." > /etc/nologin
 else
-	output "Login access not being denied." 0
+	output "Root password status is "$pwdstatus". Login access not being denied." 0
 fi
 
 # Read parameters from $etclocation/backups.conf
@@ -513,7 +512,6 @@ ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
 output $script_short_desc" completed with status "$status $status
-output "Processing of "$backpath" is complete. Status: "$status $status 
 
 # Cleanup logs so they only have 1000 lines max
 tail -n 1000 $mntdir/backup.log > $mntdir/tmp.log
@@ -534,7 +532,6 @@ std_cmd_err_handler $?
 mv $mntdir/tmp.log $mntdir/backuperror.log
 std_cmd_err_handler $?
 
-# And exit
+# And exit. (status is set from actual backup command).
 script_exit_code=$status
-output "Script Complete." $script_exit_code
 script_exit
