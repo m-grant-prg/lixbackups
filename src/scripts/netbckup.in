@@ -92,6 +92,7 @@ weeklynotifyuser=""
 adhocnotifyuser=""
 notifyuser=""
 attachtype=""				# attbckshare  weekly or adhoc
+bcktargetlocation=""
 
 ###############
 ## Functions ##
@@ -318,12 +319,15 @@ else
 	notifyuser=$adhocnotifyuser
 fi
 
-# Check to see if the network backup share is mounted, if not, mount
-if [ "$(chkbckshare -bt)" = "FALSE" ]
+# Check to see if the network backup share is mounted, if so umount as it could
+# be mounted using different parameters, then mount
+if [ "$(chkbckshare -bt)" = "TRUE" ]
 then
-	attbckshare --$attachtype
+	detbckshare
 	std_cmd_err_handler $?
 fi
+bcktargetlocation=$(attbckshare --$attachtype --verbose)
+std_cmd_err_handler $?
 
 # Start build of backup command
 bckupCL="tar cpzf "
@@ -432,6 +436,7 @@ then
 fi
 
 output $script_short_desc 0
+output $bcktargetlocation 0
 output "Attempting to process backup - "$backpath 0 
 
 # Re-direct stdout & stderr to backup logs and write initial entries
@@ -441,6 +446,7 @@ output $script_short_desc 0
 echo $script_short_desc 1>&2
 output "Attempting to process backup - "$backpath 0
 echo "Attempting to process backup - "$backpath 1>&2
+output $bcktargetlocation 0
 
 date
 date 1>&2
