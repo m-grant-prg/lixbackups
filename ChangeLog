@@ -1,3 +1,16 @@
+2015-02-12 v 1.2.1 Mark Grant <m.grant.prg@gmail.com>
+	* Add support for NFS shares.
+	Add support for different targets for weekly and ad hoc type backups.
+	Remove BSD support.
+	Remove latency_compensate function as better hardware and / or removal
+	of BSD support means it is redundant.
+	Improve security by using a credential file on CIFS shares.
+	attbckshare		Now at version 1.2.1
+	chkbckshare		Now at version 1.2.1
+	detbckshare		Now at version 1.2.1
+	netbckup		Now at version 1.2.1
+	setup.sh		Now at version 1.2.1
+
 2014-11-30 v 1.1.4 Mark Grant <m.grant.prg@gmail.com>
 	* Add support for including overall package version in script --version.
 	Switch to use of GNU getopt to allow long options and implement them.
