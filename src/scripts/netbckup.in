@@ -68,6 +68,9 @@
 ##				backups. Remove latency_compensate	##
 ##				function as improved hardware or	##
 ##				removal of BSD has cured the problem.	##
+## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
+##				lixbackups to limit risk of conflict	##
+##				with other backup packages.		##
 ##									##
 ##########################################################################
 
@@ -77,8 +80,8 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.2.1"				# set version variable
-etclocation=@sysconfdir@/backups	# Path to etc directory
+version="1.2.2"				# set version variable
+etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
 fulladhoc=FALSE

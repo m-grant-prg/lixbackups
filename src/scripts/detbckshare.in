@@ -78,6 +78,9 @@
 ## 03/02/2015	MG	1.2.1	Add NFS share support. Add support for	##
 ##				different targets for weekly and ad hoc	##
 ##				backups.				##
+## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
+##				lixbackups to limit risk of conflict	##
+##				with other backup packages.		##
 ##									##
 ##########################################################################
 
@@ -86,8 +89,8 @@
 ####################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.2.1"				# set version variable
-etclocation=@sysconfdir@/backups	# Path to etc directory
+version="1.2.2"				# set version variable
+etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 verbosity=""
 packageversion=@pkgversion@		# Version of the complete package
 mntdir=""

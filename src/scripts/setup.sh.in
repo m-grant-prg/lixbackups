@@ -30,7 +30,7 @@
 ## 	mounted on							##
 ## 	/mnt/charybdisbck						##
 ## In order to make the package portable all the necessary parameters	##
-## are stored in a $PREFIX/etc/backups.conf file.			##
+## are stored in a $PREFIX/etc/lixbackups/backups.conf file.		##
 ## This script will create the conf files as necessary. It will NOT	##
 ## maintain the files once created, post-installation the files should	##
 ## be maintained by using an editor.					##
@@ -81,6 +81,9 @@
 ## 02/02/2015	MG	1.2.1	Add support for NFS target shares. Add	##
 ##				support for different targets for	##
 ##				weekly and ad hoc backups.		##
+## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
+##				lixbackups to limit risk of conflict	##
+##				with other backup packages.		##
 ##									##
 ##########################################################################
 
@@ -89,8 +92,8 @@
 ####################
 script_exit_code=0
 outputprefix="setup.sh: "
-version="1.2.1"				# set version variable
-etclocation=@sysconfdir@/backups	# Path to etc directory
+version="1.2.2"				# set version variable
+etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
 weeklysharetype=""

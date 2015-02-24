@@ -17,12 +17,15 @@
 ##									##
 ## 16/06/2014	MG	1.0.1	Started versioning of this script.	##
 ## 01/08/2014	MG	1.0.2	Change project name from IXBackups to	##
-##				LUXBackups.				##
+##				LIXBackups.				##
+## 24/02/2015	MG	1.0.3	Change configuration files directory to	##
+##				lixbackups to limit risk of conflict	##
+##				with other backup packages.		##
 ##									##
 ##########################################################################
 
 confsrcdir = $(srcdir)
-conffilesdir = $(sysconfdir)/backups
+conffilesdir = $(sysconfdir)/lixbackups
 
 conffiles_DATA = $(confsrcdir)/bcksystem.exclude
 
