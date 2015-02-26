@@ -71,6 +71,8 @@
 ## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
 ##				lixbackups to limit risk of conflict	##
 ##				with other backup packages.		##
+## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
+##				syslog.					##
 ##									##
 ##########################################################################
 
@@ -80,7 +82,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.2.2"				# set version variable
+version="1.2.3"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -101,7 +103,8 @@ bcktargetlocation=""
 ## Functions ##
 ###############
 
-# Output $1 to stdout or stderr depending on $2
+# Output $1 to stdout or stderr depending on $2 and write to syslog if required.
+# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
 output()
 {
 	if [ $2 = 0 ]
@@ -109,6 +112,11 @@ output()
 		echo "$outputprefix$1"
 	else
 		echo "$outputprefix$1" 1>&2
+	fi
+	if [ $3 = TRUE ]
+	then
+		logger "$outputprefix$1"
+		std_cmd_err_handler $?
 	fi
 }
 
@@ -155,7 +163,7 @@ exit $script_exit_code
 trap_exit()
 {
 script_exit_code=67
-output "Script terminating due to trap received." 1
+output "Script terminating due to trap received." 1 TRUE
 script_exit
 }
 
@@ -180,7 +188,7 @@ do
 		if [ $fulladhoc = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
-			output "Options d, f, i, s and w are all mutually exclusive." 1
+			output "Options d, f, i, s and w are all mutually exclusive." 1 FALSE
 			script_exit
 		fi
 		differential=TRUE
@@ -192,7 +200,7 @@ do
 		if [ $differential = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
-			output "Options f, i, s, w and d are all mutually exclusive." 1
+			output "Options f, i, s, w and d are all mutually exclusive." 1 FALSE
 			script_exit
 		fi
 		fulladhoc=TRUE
@@ -218,7 +226,7 @@ do
 		if [ $fulladhoc = TRUE -o $differential = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
-			output "Options i, s, w, d and f are all mutually exclusive." 1
+			output "Options i, s, w, d and f are all mutually exclusive." 1 FALSE
 			script_exit
 		fi
 		incremental=TRUE
@@ -230,7 +238,7 @@ do
 		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $weekly = TRUE ]
 		then
 			script_exit_code=64
-			output "Options s, w, d, f and i are all mutually exclusive." 1
+			output "Options s, w, d, f and i are all mutually exclusive." 1 FALSE
 			script_exit
 		fi
 		selective=TRUE
@@ -248,7 +256,7 @@ do
 		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $selective = TRUE ]
 		then
 			script_exit_code=64
-			output "Options w, d, f, i and s are all mutually exclusive." 1
+			output "Options w, d, f, i and s are all mutually exclusive." 1 FALSE
 			script_exit
 		fi
 		weekly=TRUE
@@ -260,7 +268,7 @@ do
 		break
 		;;
 	*)	script_exit_code=1
-		output "Internal error." 1
+		output "Internal error." 1 FALSE
 		script_exit
 		;;
 	esac
@@ -270,7 +278,7 @@ done
 if [ $# -gt 0 ]
 then
 	script_exit_code=64
-	output "Invalid argument." 1
+	output "Invalid argument." 1 FALSE
 	script_exit
 fi
 
@@ -279,7 +287,7 @@ if [ $differential = FALSE -a $fulladhoc = FALSE -a $incremental = FALSE \
 	-a $selective = FALSE -a $weekly = FALSE ]
 then
 	script_exit_code=64
-	output "Either d, f, i, s or w must be set." 1
+	output "Either d, f, i, s or w must be set." 1 FALSE
 	script_exit
 fi
 
@@ -289,10 +297,10 @@ pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 
 if [ $pwdstatus = "P" ]
 then
-	output "Root password status is "$pwdstatus". Denying non-root login access." 0
+	output "Root password status is "$pwdstatus". Denying non-root login access." 0 TRUE
 	echo "Login refused. Backup in progress." > /etc/nologin
 else
-	output "Root password status is "$pwdstatus". Login access not being denied." 0
+	output "Root password status is "$pwdstatus". Login access not being denied." 0 TRUE
 fi
 
 # Read parameters from $etclocation/backups.conf
@@ -358,7 +366,7 @@ differential)
 		std_cmd_err_handler $?
 	else
 		script_exit_code=66
-		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1
+		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1 TRUE
 		script_exit
 	fi
 	
@@ -383,7 +391,7 @@ incremental)
 	# Check that the incremental file exists.
 	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ] ; then
 		script_exit_code=66
-		output $snarpath" does not exist or is not accessible. Exit code "$script_exit_code 1
+		output $snarpath" does not exist or is not accessible. Exit code "$script_exit_code 1 TRUE
 		script_exit
 	fi
 	
@@ -438,18 +446,18 @@ then
 	std_cmd_err_handler $?
 fi
 
-output $script_short_desc 0
-output $bcktargetlocation 0
-output "Attempting to process backup - "$backpath 0 
+output $script_short_desc 0 TRUE
+output $bcktargetlocation 0 TRUE
+output "Attempting to process backup - "$backpath 0 TRUE
 
 # Re-direct stdout & stderr to backup logs and write initial entries
 exec 1>> $mntdir/backup.log 2>> $mntdir/backuperror.log
 
-output $script_short_desc 0
+output $script_short_desc 0 FALSE
 echo $script_short_desc 1>&2
-output "Attempting to process backup - "$backpath 0
+output "Attempting to process backup - "$backpath 0 FALSE
 echo "Attempting to process backup - "$backpath 1>&2
-output $bcktargetlocation 0
+output $bcktargetlocation 0 FALSE
 
 date
 date 1>&2
@@ -483,7 +491,7 @@ exec 3<&-
 
 findCL=$findCL" ')' -prune -o -type s -print > "$mntdir/sockets.exclude
 
-output "Find command used:- $findCL" 0
+output "Find command used:- $findCL" 0 FALSE
 echo "Find command used:- $findCL" 1>&2
 
 eval "$findCL"
@@ -499,7 +507,7 @@ else
 	bckupCL=$bckupCL"--exclude-caches /"
 fi
 
-output "Backup command used:- $bckupCL" 0
+output "Backup command used:- $bckupCL" 0 FALSE
 echo "Backup command used:- $bckupCL" 1>&2
 eval "$bckupCL"
 status=$?
@@ -507,9 +515,9 @@ status=$?
 # Final log entries and restore stdout & stderr
 date
 date 1>&2
-output $script_short_desc" completed with status "$status 0
+output $script_short_desc" completed with status "$status 0 FALSE
 echo $script_short_desc" completed with status "$status 1>&2
-output "Processing of "$backpath" is complete. Status: "$status 0
+output "Processing of "$backpath" is complete. Status: "$status 0 FALSE
 echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 
 # Mail disk stats
@@ -520,7 +528,7 @@ ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
 
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
-output $script_short_desc" completed with status "$status $status
+output $script_short_desc" completed with status "$status $status TRUE
 
 # Cleanup logs so they only have 1000 lines max
 tail -n 1000 $mntdir/backup.log > $mntdir/tmp.log

@@ -31,6 +31,8 @@
 ##				version to Makefiles.			##
 ## 29/11/2014	MG	1.0.8	Remove redundant hashpling.		##
 ## 03/02/2015	MG	1.0.9	Remove BSD support.			##
+## 26/02/2015	MG	1.0.10	Add check for logger which is in the	##
+##				bsdutils package.			##
 ##									##
 ##########################################################################
 
@@ -78,6 +80,11 @@ fi
 AC_CHECK_PROG(MAILX, mailx, yes, no)
 if test "x$MAILX" = "xno" ; then
    	AC_MSG_ERROR([mailx not found])
+fi
+
+AC_CHECK_PROG(LOGGER, logger, yes, no)
+if test "x$LOGGER" = "xno" ; then
+   	AC_MSG_ERROR([logger not found])
 fi
 
 # Checks for libraries.

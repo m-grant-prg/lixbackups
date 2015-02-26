@@ -81,6 +81,8 @@
 ## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
 ##				lixbackups to limit risk of conflict	##
 ##				with other backup packages.		##
+## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
+##				syslog.					##
 ##									##
 ##########################################################################
 
@@ -89,7 +91,7 @@
 ####################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.2.2"				# set version variable
+version="1.2.3"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 verbosity=""
 packageversion=@pkgversion@		# Version of the complete package
@@ -99,7 +101,8 @@ mntdir=""
 ## Functions ##
 ###############
 
-# Output $1 to stdout or stderr depending on $2
+# Output $1 to stdout or stderr depending on $2 and write to syslog if required.
+# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
 output()
 {
 	if [ $2 = 0 ]
@@ -110,6 +113,11 @@ output()
 		fi
 	else
 		echo "$outputprefix$1" 1>&2
+	fi
+	if [ $3 = TRUE ]
+	then
+		logger "$outputprefix$1"
+		std_cmd_err_handler $?
 	fi
 }
 
@@ -133,7 +141,7 @@ script_exit()
 trap_exit()
 {
 script_exit_code=67
-output "Script terminating due to trap received. Code: "$script_exit_code 1
+output "Script terminating due to trap received. Code: "$script_exit_code 1 TRUE
 script_exit
 }
 
@@ -179,7 +187,7 @@ do
 		break
 		;;
 	*)	script_exit_code=1
-		output "Internal error." 1
+		output "Internal error." 1 FALSE
 		script_exit
 		;;
 	esac
@@ -189,7 +197,7 @@ done
 if [ $# -gt 0 ]
 then
 	script_exit_code=64
-	output "Invalid argument." 1
+	output "Invalid argument." 1 FALSE
 	script_exit
 fi
 
@@ -215,15 +223,15 @@ then
 	if [ $status != 0 ]
 	then
 		script_exit_code=65
-		output "Failed to unmount backup share. Umount error: "$status" Script exit code: "$script_exit_code 1
+		output "Failed to unmount backup share. Umount error: "$status" Script exit code: "$script_exit_code 1 TRUE
 		script_exit
 	fi
 else
 	script_exit_code=66
-	output "Backup share not mounted. Script exit code: "$script_exit_code 1
+	output "Backup share not mounted. Script exit code: "$script_exit_code 1 TRUE
 	script_exit
 fi
 
 script_exit_code=0
-output "Share unmounted from $mntdir" 0
+output "Share unmounted from $mntdir" 0 TRUE
 script_exit
