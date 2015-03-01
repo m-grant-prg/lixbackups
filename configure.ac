@@ -33,6 +33,7 @@
 ## 03/02/2015	MG	1.0.9	Remove BSD support.			##
 ## 26/02/2015	MG	1.0.10	Add check for logger which is in the	##
 ##				bsdutils package.			##
+## 27/02/2015	MG	1.0.11	Add rootconffiles as a sub-directory.	##
 ##									##
 ##########################################################################
 
@@ -48,7 +49,8 @@ AC_CONFIG_FILES([Makefile
 		 src/scripts/Makefile
 		 src/manpages/man1/Makefile
 		 src/manpages/man5/Makefile
-		 src/conffiles/Makefile])
+		 src/conffiles/Makefile
+		 src/rootconffiles/Makefile])
 
 # Checks for programs.
 AC_MSG_NOTICE([checking for programs required by this application])

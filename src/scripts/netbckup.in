@@ -73,6 +73,9 @@
 ##				with other backup packages.		##
 ## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
 ##				syslog.					##
+## 28/02/2015	MG	1.2.4	Use log file in localstatedir/log. Log	##
+##				file management set to use logrotate in	##
+##				this package release.			##
 ##									##
 ##########################################################################
 
@@ -82,7 +85,7 @@ exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.2.3"				# set version variable
+version="1.2.4"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -98,6 +101,7 @@ adhocnotifyuser=""
 notifyuser=""
 attachtype=""				# attbckshare  weekly or adhoc
 bcktargetlocation=""
+loglocation=@localstatedir@/log		# Log file location
 
 ###############
 ## Functions ##
@@ -109,9 +113,9 @@ output()
 {
 	if [ $2 = 0 ]
 	then
-		echo "$outputprefix$1"
+		echo $(date +'[ %a %b %d %T ]')" $outputprefix$1"
 	else
-		echo "$outputprefix$1" 1>&2
+		echo $(date +'[ %a %b %d %T ]')" $outputprefix$1" 1>&2
 	fi
 	if [ $3 = TRUE ]
 	then
@@ -291,6 +295,8 @@ then
 	script_exit
 fi
 
+output "Refer to $loglocation/lixbackups.log for further information." 0 TRUE
+
 # Check to see if root account is accessible, if so, prohibit non-root login
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 		print $2 ;}')
@@ -450,17 +456,14 @@ output $script_short_desc 0 TRUE
 output $bcktargetlocation 0 TRUE
 output "Attempting to process backup - "$backpath 0 TRUE
 
-# Re-direct stdout & stderr to backup logs and write initial entries
-exec 1>> $mntdir/backup.log 2>> $mntdir/backuperror.log
+# Re-direct stdout & stderr to backup log and write initial entries
+mkdir -p $loglocation
+
+exec 1>> $loglocation/lixbackups.log 2>&1
 
 output $script_short_desc 0 FALSE
-echo $script_short_desc 1>&2
 output "Attempting to process backup - "$backpath 0 FALSE
-echo "Attempting to process backup - "$backpath 1>&2
 output $bcktargetlocation 0 FALSE
-
-date
-date 1>&2
 
 # Empty the network trashbox if it exists
 rm -fr $mntdir/trashbox/*
@@ -492,7 +495,6 @@ exec 3<&-
 findCL=$findCL" ')' -prune -o -type s -print > "$mntdir/sockets.exclude
 
 output "Find command used:- $findCL" 0 FALSE
-echo "Find command used:- $findCL" 1>&2
 
 eval "$findCL"
 
@@ -508,17 +510,12 @@ else
 fi
 
 output "Backup command used:- $bckupCL" 0 FALSE
-echo "Backup command used:- $bckupCL" 1>&2
 eval "$bckupCL"
 status=$?
 
 # Final log entries and restore stdout & stderr
-date
-date 1>&2
 output $script_short_desc" completed with status "$status 0 FALSE
-echo $script_short_desc" completed with status "$status 1>&2
 output "Processing of "$backpath" is complete. Status: "$status 0 FALSE
-echo "Processing of "$backpath" is complete. Status: "$status 1>&2
 
 # Mail disk stats
 df -ah | mailx -s "$script_short_desc" $notifyuser
@@ -529,25 +526,6 @@ ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
 exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
 
 output $script_short_desc" completed with status "$status $status TRUE
-
-# Cleanup logs so they only have 1000 lines max
-tail -n 1000 $mntdir/backup.log > $mntdir/tmp.log
-std_cmd_err_handler $?
-
-rm $mntdir/backup.log
-std_cmd_err_handler $?
-
-mv $mntdir/tmp.log $mntdir/backup.log
-std_cmd_err_handler $?
-
-tail -n 1000 $mntdir/backuperror.log > $mntdir/tmp.log
-std_cmd_err_handler $?
-
-rm $mntdir/backuperror.log
-std_cmd_err_handler $?
-
-mv $mntdir/tmp.log $mntdir/backuperror.log
-std_cmd_err_handler $?
 
 # And exit. (status is set from actual backup command).
 script_exit_code=$status

@@ -20,8 +20,9 @@
 ##				of manpages to allow for man 5 pages.	##
 ## 01/08/2014	MG	1.0.3	Change project name from IXBackups to	##
 ##				LUXBackups.				##
+## 27/02/2015	MG	1.0.4	Add rootconffiles as a sub-directory.	##
 ##									##
 ##########################################################################
 
 
-SUBDIRS = src/scripts src/manpages/man1 src/manpages/man5 src/conffiles
+SUBDIRS = src/scripts src/manpages/man1 src/manpages/man5 src/conffiles src/rootconffiles

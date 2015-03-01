@@ -1,0 +1,10 @@
+@localstatedir@/log/lixbackups.log
+{
+	rotate 5
+	weekly
+	missingok
+	notifempty
+	compress
+	delaycompress
+	create 644 root root
+}

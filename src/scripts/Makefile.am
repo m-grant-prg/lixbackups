@@ -23,6 +23,8 @@
 ## 25/09/2014	MG	1.0.4	Remove build info for obsolete scripts.	##
 ## 22/11/2014	MG	1.0.5	Add script substitution variable for	##
 ##				overall package version.		##
+## 27/02/2015	MG	1.0.6	Add script substitution variable for	##
+##				var location for log file.		##
 ##									##
 ##########################################################################
 
@@ -32,7 +34,8 @@ edit = sed \
 	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
 	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
 	-e 's|@prefix[@]|$(prefix)|g' \
-	-e 's|@pkgversion[@]|$(pkgversion)|g'
+	-e 's|@pkgversion[@]|$(pkgversion)|g' \
+	-e 's|@localstatedir[@]|$(localstatedir)|g'
 
 scriptssrcdir = $(srcdir)
 

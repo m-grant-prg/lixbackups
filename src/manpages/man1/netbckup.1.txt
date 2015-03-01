@@ -4,6 +4,7 @@ SYNOPSIS
 netbckup [OPTION]
 DESCRIPTION
 Perform an option-defined level of backup to a network attached backup share.
+netbckup writes a logfile to @localstatedir@/log/lixbackups.log
 OPTIONS
 -d, --differential  perform a daily differential backup
 
