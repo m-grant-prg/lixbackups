@@ -6,5 +6,5 @@
 	notifempty
 	compress
 	delaycompress
-	create 644 root root
+	create 0640 syslog adm
 }

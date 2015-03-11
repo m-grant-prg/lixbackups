@@ -458,6 +458,15 @@ output "Attempting to process backup - "$backpath 0 TRUE
 
 # Re-direct stdout & stderr to backup log and write initial entries
 mkdir -p $loglocation
+if [ ! -f $loglocation/lixbackups.log ]
+then
+	touch $loglocation/lixbackups.log
+	std_cmd_err_handler $?
+	chown syslog:adm $loglocation/lixbackups.log
+	std_cmd_err_handler $?
+	chmod 0640 $loglocation/lixbackups.log
+	std_cmd_err_handler $?
+fi
 
 exec 1>> $loglocation/lixbackups.log 2>&1
 
