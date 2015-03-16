@@ -73,19 +73,18 @@
 ##				with other backup packages.		##
 ## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
 ##				syslog.					##
-## 28/02/2015	MG	1.2.4	Use log file in localstatedir/log. Log	##
+## 01/03/2015	MG	1.2.4	Use log file in localstatedir/log. Log	##
 ##				file management set to use logrotate in	##
 ##				this package release.			##
+## 16/03/2015	MG	1.2.5	Improve logging.			##
 ##									##
 ##########################################################################
-
-exec 6>&1 7>&2 # Immediately make copies of stdout & stderr
 
 ####################
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.2.4"				# set version variable
+version="1.2.5"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -100,7 +99,6 @@ weeklynotifyuser=""
 adhocnotifyuser=""
 notifyuser=""
 attachtype=""				# attbckshare  weekly or adhoc
-bcktargetlocation=""
 loglocation=@localstatedir@/log		# Log file location
 
 ###############
@@ -137,12 +135,23 @@ std_cmd_err_handler()
 # Standard function to cleanup and return exit code
 script_exit()
 {
+# The backup share might or might not be mounted.
+if [ "$(chkbckshare -bt)" = "TRUE" ]
+then
+	detbckshare
+	# No error check cos could loop via std_cmd_err_handler
+fi
+
 # FD's 6 & 7 may or may not be open at this point so test individually for closing.
 # This reads lsof with ANDed conditions of suppress warnings, FD 6, output only FD
 # for this current PID and pipe it's output to wc to count the lines. If FD 6 is
 # open, 2 lines result, PID number and f6.
 if [ $(lsof -aw -d 6 -F f -p $$ | wc -l) -gt 0 ]
 then
+	# Final log entries and restore stdout & stderr
+	output $script_short_desc" completed with status $script_exit_code" $script_exit_code FALSE
+	output "Processing of "$backpath" is complete. Status: $script_exit_code" $script_exit_code FALSE
+	
 	exec 1>&6 6>&-	# Restore stdout and close FD 6
 fi
 if [ $(lsof -aw -d 7 -F f -p $$ | wc -l) -gt 0 ]
@@ -150,15 +159,10 @@ then
 	exec 2>&7 7>&-	# Restore stderr and close FD 7
 fi
 
-# The backup share might or might not be mounted.
-if [ "$(chkbckshare -bt)" = "TRUE" ]
-then
-	detbckshare
-	std_cmd_err_handler $?
-fi
-
 # Re-Allow logins
 rm -f /etc/nologin
+
+output $script_short_desc" completed with status "$script_exit_code $script_exit_code TRUE
 
 exit $script_exit_code
 }
@@ -180,10 +184,18 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o dfhisVw \
 		--long differential,full,help,incremental,selective,version,weekly -n "$0" -- "$@"`
-std_cmd_err_handler $?
+status=$?
+if [ $status != 0 ]
+then
+	exit $status
+fi
 
 eval set -- "$GETOPTTEMP"
-std_cmd_err_handler $?
+status=$?
+if [ $status != 0 ]
+then
+	exit $status
+fi
 
 while true
 do
@@ -191,25 +203,25 @@ do
 	-d|--differential)
 		if [ $fulladhoc = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
-			script_exit_code=64
-			output "Options d, f, i, s and w are all mutually exclusive." 1 FALSE
-			script_exit
+			output "Options d, f, i, s and w are all mutually exclusive." 64 FALSE
+			exit 64
 		fi
 		differential=TRUE
 		bckuptype="differential"
 		attachtype="weekly"
+		script_short_desc=$(uname -n)" "$(date +%A)" Daily Differential Backup"
 		shift
 		;;
 	-f|--full)
 		if [ $differential = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
-			script_exit_code=64
-			output "Options f, i, s, w and d are all mutually exclusive." 1 FALSE
-			script_exit
+			output "Options f, i, s, w and d are all mutually exclusive." 64 FALSE
+			exit 64
 		fi
 		fulladhoc=TRUE
 		bckuptype="fulladhoc"
 		attachtype="adhoc"
+		script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
 		shift
 		;;
 	-h|--help)
@@ -223,57 +235,68 @@ do
 		echo "	OR"
 		echo "	-w or --weekly - perform a weekly full backup"
 		shift
-		script_exit_code=0
-		script_exit
+		exit 0
 		;;
 	-i|--incremental)
 		if [ $fulladhoc = TRUE -o $differential = TRUE -o $selective = TRUE -o $weekly = TRUE ]
 		then
-			script_exit_code=64
-			output "Options i, s, w, d and f are all mutually exclusive." 1 FALSE
-			script_exit
+			output "Options i, s, w, d and f are all mutually exclusive." 64 FALSE
+			exit 64
 		fi
 		incremental=TRUE
 		bckuptype="incremental"
 		attachtype="weekly"
+		script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
 		shift
 		;;
 	-s|--selective)
 		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $weekly = TRUE ]
 		then
-			script_exit_code=64
-			output "Options s, w, d, f and i are all mutually exclusive." 1 FALSE
-			script_exit
+			output "Options s, w, d, f and i are all mutually exclusive." 64 FALSE
+			exit 64
 		fi
 		selective=TRUE
 		bckuptype="selective"
 		attachtype="adhoc"
+		script_short_desc=$(uname -n)" "$(date +%A)" Selective Backup"
 		shift
 		;;
 	-V|--version)	echo "$0 Script version "$version
 		echo "$0 Package version "$packageversion
 		shift
-		script_exit_code=0
-		script_exit
+		exit 0
 		;;
 	-w|--weekly)
 		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $selective = TRUE ]
 		then
-			script_exit_code=64
-			output "Options w, d, f, i and s are all mutually exclusive." 1 FALSE
-			script_exit
+			output "Options w, d, f, i and s are all mutually exclusive." 64 FALSE
+			exit 64
 		fi
 		weekly=TRUE
 		bckuptype="weekly"
 		attachtype="weekly"
+		# Calculate backup sequence number.
+		# Remove leading zeros otherwise thinks it is octal
+		day=$(date +%d)
+		day=$(echo $day | sed 's/^0*//')
+		bckseq=1
+		if [ $day -gt 28 ]; then
+			bckseq=5
+			elif [ $day -gt 21 ] ; then
+				bckseq=4
+				elif [ $day -gt 14 ] ; then
+					bckseq=3
+					elif [ $day -gt 7 ] ; then
+						bckseq=2
+		fi
+		script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
 		shift
 		;;
 	--)	shift
 		break
 		;;
-	*)	script_exit_code=1
-		output "Internal error." 1 FALSE
-		script_exit
+	*)	output "Internal error." 1 FALSE
+		exit 1
 		;;
 	esac
 done
@@ -281,21 +304,40 @@ done
 # Script does not accept other arguments.
 if [ $# -gt 0 ]
 then
-	script_exit_code=64
-	output "Invalid argument." 1 FALSE
-	script_exit
+	output "Invalid argument." 64 FALSE
+	exit 64
 fi
 
 # One option has to be selected.
 if [ $differential = FALSE -a $fulladhoc = FALSE -a $incremental = FALSE \
 	-a $selective = FALSE -a $weekly = FALSE ]
 then
-	script_exit_code=64
-	output "Either d, f, i, s or w must be set." 1 FALSE
-	script_exit
+	output "Either d, f, i, s or w must be set." 64 FALSE
+	exit 64
 fi
 
 output "Refer to $loglocation/lixbackups.log for further information." 0 TRUE
+output "$script_short_desc" 0 TRUE
+
+# Ensure backup log exists.
+mkdir -p $loglocation
+if [ ! -f $loglocation/lixbackups.log ]
+then
+	touch $loglocation/lixbackups.log
+	std_cmd_err_handler $?
+	chown syslog:adm $loglocation/lixbackups.log
+	std_cmd_err_handler $?
+	chmod 0640 $loglocation/lixbackups.log
+	std_cmd_err_handler $?
+fi
+
+# Make copies of stdout & stderr then re-direct stdout & stderr to backup log
+# and write initial entries
+exec 6>&1 7>&2 
+
+exec 1>> $loglocation/lixbackups.log 2>&1
+
+output "$script_short_desc" 0 FALSE
 
 # Check to see if root account is accessible, if so, prohibit non-root login
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
@@ -343,7 +385,7 @@ then
 	detbckshare
 	std_cmd_err_handler $?
 fi
-bcktargetlocation=$(attbckshare --$attachtype --verbose)
+attbckshare --$attachtype --verbose
 std_cmd_err_handler $?
 
 # Start build of backup command
@@ -351,8 +393,6 @@ bckupCL="tar cpzf "
 
 case $bckuptype in
 differential)
-	script_short_desc=$(uname -n)" "$(date +%A)" Daily Differential Backup"
-	
 	# Build the backup & incremental file names and paths
 	backpath="$mntdir/backup"$(date +%a)".tar.gz"
 	snarpath="$mntdir/backup"$(date +%a)".snar"
@@ -380,16 +420,12 @@ differential)
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
 	;;
 fulladhoc)
-	script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
-	
 	# Build the backup file name and path
 	backpath="$mntdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 	
 	bckupCL=$bckupCL"$backpath "
 	;;
 incremental)
-	script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
-	
 	# Build the backup & incremental file names and paths
 	backpath="$mntdir/backup"$(date +%a)".tar.gz"
 	snarpath="$mntdir/backup.snar"
@@ -405,7 +441,6 @@ incremental)
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
 	;;
 selective)
-	script_short_desc=$(uname -n)" "$(date +%A)" Selective Backup"
 	# Build the backup file name and path
 	backpath="$mntdir/backupsel"$(date +%a)".tar.gz"
 	
@@ -413,22 +448,6 @@ selective)
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckseldaily.exclude "
 	;;
 weekly)
-	# Calculate backup sequence number.
-	# Remove leading zeros otherwise thinks it is octal
-	day=$(date +%d)
-	day=$(echo $day | sed 's/^0*//')
-	bckseq=1
-	if [ $day -gt 28 ]; then
-		bckseq=5
-	elif [ $day -gt 21 ] ; then
-		bckseq=4
-	elif [ $day -gt 14 ] ; then
-		bckseq=3
-	elif [ $day -gt 7 ] ; then
-		bckseq=2
-	fi
-	script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
-	
 	# Build the backup & incremental file names and paths
 	backpath="$mntdir/backup"$bckseq".tar.gz"
 	snarpath="$mntdir/backup.snar"
@@ -452,27 +471,7 @@ then
 	std_cmd_err_handler $?
 fi
 
-output $script_short_desc 0 TRUE
-output $bcktargetlocation 0 TRUE
 output "Attempting to process backup - "$backpath 0 TRUE
-
-# Re-direct stdout & stderr to backup log and write initial entries
-mkdir -p $loglocation
-if [ ! -f $loglocation/lixbackups.log ]
-then
-	touch $loglocation/lixbackups.log
-	std_cmd_err_handler $?
-	chown syslog:adm $loglocation/lixbackups.log
-	std_cmd_err_handler $?
-	chmod 0640 $loglocation/lixbackups.log
-	std_cmd_err_handler $?
-fi
-
-exec 1>> $loglocation/lixbackups.log 2>&1
-
-output $script_short_desc 0 FALSE
-output "Attempting to process backup - "$backpath 0 FALSE
-output $bcktargetlocation 0 FALSE
 
 # Empty the network trashbox if it exists
 rm -fr $mntdir/trashbox/*
@@ -520,11 +519,7 @@ fi
 
 output "Backup command used:- $bckupCL" 0 FALSE
 eval "$bckupCL"
-status=$?
-
-# Final log entries and restore stdout & stderr
-output $script_short_desc" completed with status "$status 0 FALSE
-output "Processing of "$backpath" is complete. Status: "$status 0 FALSE
+std_cmd_err_handler $?
 
 # Mail disk stats
 df -ah | mailx -s "$script_short_desc" $notifyuser
@@ -532,10 +527,6 @@ df -ah | mailx -s "$script_short_desc" $notifyuser
 # Mail backup file date hierarchy
 ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
 
-exec 1>&6 2>&7 6>&- 7>&- # Restore stdout & stderr & close fd's 6 & 7
-
-output $script_short_desc" completed with status "$status $status TRUE
-
-# And exit. (status is set from actual backup command).
-script_exit_code=$status
+# And exit.
+script_exit_code=0
 script_exit
