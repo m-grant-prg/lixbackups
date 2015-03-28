@@ -1,3 +1,16 @@
+2015-03-28 v 1.2.2 Mark Grant <m.grant.prg@gmail.com>
+	* Change configuration files directory to lixbackups to limit risk of
+	conflict with other backup packages.
+	Use logger to write key messages to syslog.
+	Change to use log file localstatedir/log/lixbackups.log. Set up
+	management of this log file by logrotate.
+	Change permissions on logfile to 0640 and ownership to syslog:adm
+	attbckshare		Now at version 1.2.3
+	chkbckshare		Now at version 1.2.2
+	detbckshare		Now at version 1.2.3
+	netbckup		Now at version 1.2.5
+	setup.sh		Now at version 1.2.2
+
 2015-02-12 v 1.2.1 Mark Grant <m.grant.prg@gmail.com>
 	* Add support for NFS shares.
 	Add support for different targets for weekly and ad hoc type backups.

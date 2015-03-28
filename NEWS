@@ -1,3 +1,10 @@
+Release 1.2.2 2015-03-28
+Change configuration files directory to lixbackups to limit risk of conflict
+with other backup packages. Use logger to write key messages to syslog.
+Change to use log file localstatedir/log/lixbackups.log. Set up management of
+this log file by logrotate. Change permissions on logfile to 0640 and
+ownership to syslog:adm
+
 Release 1.2.1 2015-02-12
 Add support for NFS shares.
 Add support for different targets for weekly and ad hoc type backups.
