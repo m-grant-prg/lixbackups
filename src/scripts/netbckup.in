@@ -77,6 +77,8 @@
 ##				file management set to use logrotate in	##
 ##				this package release.			##
 ## 16/03/2015	MG	1.2.5	Improve logging.			##
+## 05/06/2015	MG	1.2.6	Reduce df output from df -ah to a more	##
+##				sensible df -h.				##
 ##									##
 ##########################################################################
 
@@ -84,7 +86,7 @@
 ## Init variables ##
 ####################
 script_exit_code=0
-version="1.2.5"				# set version variable
+version="1.2.6"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -522,7 +524,7 @@ eval "$bckupCL"
 std_cmd_err_handler $?
 
 # Mail disk stats
-df -ah | mailx -s "$script_short_desc" $notifyuser
+df -h | mailx -s "$script_short_desc" $notifyuser
 
 # Mail backup file date hierarchy
 ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
