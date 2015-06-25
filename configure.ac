@@ -34,6 +34,7 @@
 ## 26/02/2015	MG	1.0.10	Add check for logger which is in the	##
 ##				bsdutils package.			##
 ## 27/02/2015	MG	1.0.11	Add rootconffiles as a sub-directory.	##
+## 25/06/2015	MG	1.0.12	Increase checking for required commands.##
 ##									##
 ##########################################################################
 
@@ -87,6 +88,31 @@ fi
 AC_CHECK_PROG(LOGGER, logger, yes, no)
 if test "x$LOGGER" = "xno" ; then
    	AC_MSG_ERROR([logger not found])
+fi
+
+AC_CHECK_PROG(MOUNT, mount, yes, no)
+if test "x$MOUNT" = "xno" ; then
+   	AC_MSG_ERROR([mount not found])
+fi
+
+AC_CHECK_PROG(LSOF, lsof, yes, no)
+if test "x$LSOF" = "xno" ; then
+   	AC_MSG_ERROR([lsof not found])
+fi
+
+AC_CHECK_PROG(PASSWD, passwd, yes, no)
+if test "x$PASSWD" = "xno" ; then
+   	AC_MSG_ERROR([passwd not found])
+fi
+
+AC_CHECK_PROG(FIND, find, yes, no)
+if test "x$FIND" = "xno" ; then
+   	AC_MSG_ERROR([find not found])
+fi
+
+AC_CHECK_PROG(DF, df, yes, no)
+if test "x$DF" = "xno" ; then
+   	AC_MSG_ERROR([df not found])
 fi
 
 # Checks for libraries.
