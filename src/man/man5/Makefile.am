@@ -31,7 +31,7 @@ backups.conf.5 bckseldaily.exclude.5 bckseldaily.files.5 bckweekly.exclude.5 \
 	rm -f $@ $@.tmp
 	$(edit) $(srcdir)/$(@F).txt > $@.tmp
 	mv $@.tmp $@
-	txt2manwrap $(@F) 1 "Backup Scripts Manual" $(srcdir)/$(@F).txt $@
+	txt2manwrap $(@F) 5 "Backup Scripts Manual" $(srcdir)/$(@F).txt $@
 	rm -f $@.tmp
 
 backups.conf.5: $(srcdir)/backups.conf.5.txt
