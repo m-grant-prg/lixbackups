@@ -28,8 +28,8 @@
 # First line below will cause make distcheck to fail, so when running this,
 # use 2nd line below.
 
-# confdir = /etc/logrotate.d
-confdir = $(sysconfdir)/logrotate.d
+confdir = /etc/logrotate.d
+# confdir = $(sysconfdir)/logrotate.d
 
 lixbackups: Makefile
 	mkdir -p $(@D)
