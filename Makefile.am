@@ -21,8 +21,13 @@
 ## 01/08/2014	MG	1.0.3	Change project name from IXBackups to	##
 ##				LUXBackups.				##
 ## 27/02/2015	MG	1.0.4	Add rootconffiles as a sub-directory.	##
+## 28/09/2015	MG	1.0.5	Change to conform to AutoTools Template	##
+##				version 1.0.4.				##
 ##									##
 ##########################################################################
 
 
-SUBDIRS = src/scripts src/manpages/man1 src/manpages/man5 src/conffiles src/rootconffiles
+SUBDIRS = src/scripts
+SUBDIRS += src/man/man1 src/man/man5
+SUBDIRS += src/conf/etc src/conf/rootetc
+

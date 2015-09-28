@@ -1,5 +1,6 @@
 /autom4te.cache/
 /aclocal.*
+/m4/
 /config.*
 /configure
 **/Makefile
@@ -9,3 +10,18 @@
 /install-sh
 /*.tar.gz
 /conffiles
+**/*~
+/*.log
+/*.scan
+/depcomp
+/compile
+**/.deps/
+/dist
+/build
+/ar-lib
+/libtool
+/ltmain.sh
+**/*.o
+**/*.lo
+**/*.la
+**/.libs/

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/conffiles/Makefile.am					##
+## Script ID: src/conf/etc/Makefile.am					##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
@@ -21,12 +21,25 @@
 ## 24/02/2015	MG	1.0.3	Change configuration files directory to	##
 ##				lixbackups to limit risk of conflict	##
 ##				with other backup packages.		##
+## 28/09/2015	MG	1.0.4	Change to conform to AutoTools Template	##
+##				version 1.0.4.				##
 ##									##
 ##########################################################################
 
-confsrcdir = $(srcdir)
-conffilesdir = $(sysconfdir)/lixbackups
 
-conffiles_DATA = $(confsrcdir)/bcksystem.exclude
+confdir = $(sysconfdir)/lixbackups
 
-EXTRA_DIST = $(confsrcdir)/bcksystem.exclude
+bcksystem.exclude: Makefile
+	mkdir -p $(@D)
+	rm -f $@ $@.tmp
+	test -f ./$@.in || srcdir=$(srcdir)/; \
+	$(edit) $${srcdir}$(@F).in > $@.tmp
+	mv $@.tmp $@
+bcksystem.exclude: $(srcdir)/bcksystem.exclude.in
+
+conf_DATA = bcksystem.exclude
+
+EXTRA_DIST = $(srcdir)/bcksystem.exclude.in
+
+CLEANFILES = *.tmp bcksystem.exclude
+

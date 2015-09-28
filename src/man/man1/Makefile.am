@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/manpages/man1/Makefile.am				##
+## Script ID: src/man/man1/Makefile.am					##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
@@ -25,37 +25,29 @@
 ## 01/03/2015	MG	1.0.5	Add script substitution variable for	##
 ##				localstatedir to allow netbckup man	##
 ##				page to refer to the log file location.	##
+## 28/09/2015	MG	1.0.6	Change to conform to AutoTools Template	##
+##				version 1.0.4.				##
 ##									##
 ##########################################################################
 
 
-edit = sed \
-	-e 's|@bindir[@]|$(bindir)|g' \
-	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
-	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
-	-e 's|@prefix[@]|$(prefix)|g' \
-	-e 's|@pkgversion[@]|$(pkgversion)|g' \
-	-e 's|@localstatedir[@]|$(localstatedir)|g'
-
-manpagessrcdir = $(srcdir)
-
-../../../manpages/man1/attbckshare ../../../manpages/man1/detbckshare \
-	../../../manpages/man1/chkbckshare \
-	../../../manpages/man1/netbckup: Makefile
+attbckshare.1 detbckshare.1 chkbckshare.1 netbckup.1: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
-	$(edit) $${manpagessrcdir}$(@F).1.txt >$@.tmp
-	txt2man -t $(@F) -s 1 -v "Backup Scripts Manual" \
-		$@.tmp > $@
+	$(edit) $(srcdir)/$(@F).txt > $@.tmp
+	mv $@.tmp $@
+	txt2manwrap $(@F) 1 "Backup Scripts Manual" $(srcdir)/$(@F).txt $@
 	rm -f $@.tmp
 
-attbckshare: $(manpagessrcdir)/attbckshare.1.txt
-detbckshare: $(manpagessrcdir)/detbckshare.1.txt
-chkbckshare: $(manpagessrcdir)/chkbckshare.1.txt
-netbckup: $(manpagessrcdir)/netbckup.1.txt
+attbckshare.1: $(srcdir)/attbckshare.1.txt
+detbckshare.1: $(srcdir)/detbckshare.1.txt
+chkbckshare.1: $(srcdir)/chkbckshare.1.txt
+netbckup.1: $(srcdir)/netbckup.1.txt
 
-man1_MANS = ../../../manpages/man1/attbckshare ../../../manpages/man1/detbckshare \
-		../../../manpages/man1/chkbckshare ../../../manpages/man1/netbckup
+man_MANS = attbckshare.1 detbckshare.1 chkbckshare.1 netbckup.1
 
-EXTRA_DIST = $(manpagessrcdir)/attbckshare.1.txt $(manpagessrcdir)/detbckshare.1.txt \
-		$(manpagessrcdir)/chkbckshare.1.txt $(manpagessrcdir)/netbckup.1.txt
+EXTRA_DIST = $(srcdir)/attbckshare.1.txt $(srcdir)/detbckshare.1.txt \
+		$(srcdir)/chkbckshare.1.txt $(srcdir)/netbckup.1.txt
+
+CLEANFILES = *.tmp attbckshare.1 detbckshare.1 chkbckshare.1 netbckup.1
+

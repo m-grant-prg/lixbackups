@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/rootconffiles/Makefile.am				##
+## Script ID: src/conf/rootetc/Makefile.am				##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
@@ -18,29 +18,30 @@
 ## Date		Author	Version	Description				##
 ##									##
 ## 27/02/2015	MG	1.0.1	Started versioning of this script.	##
+## 28/09/2015	MG	1.0.2	Change to conform to AutoTools Template	##
+##				version 1.0.4.				##
 ##									##
 ##########################################################################
 
-rootconfsrcdir = $(srcdir)
-rootconffilesdir = /etc
-logrotateconffilesdir = $(rootconffilesdir)/logrotate.d
+# True install of this file is needed in /etc/logrotate.d as it is used by
+# another package, so use first line below.
+# First line below will cause make distcheck to fail, so when running this,
+# use 2nd line below.
 
-edit = sed \
-	-e 's|@bindir[@]|$(bindir)|g' \
-	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
-	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
-	-e 's|@prefix[@]|$(prefix)|g' \
-	-e 's|@pkgversion[@]|$(pkgversion)|g' \
-	-e 's|@localstatedir[@]|$(localstatedir)|g'
+# confdir = /etc/logrotate.d
+confdir = $(sysconfdir)/logrotate.d
 
-../../rootconffiles/lixbackups: Makefile
+lixbackups: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
-	test -f ./$@.in || rootconfsrcdir=$(rootconfsrcdir)/; \
-	$(edit) $${rootconfsrcdir}$(@F).in >$@.tmp
+	test -f ./$@.in || srcdir=$(srcdir)/; \
+	$(edit) $${srcdir}$(@F).in > $@.tmp
 	mv $@.tmp $@
-lixbackups: $(rootconfsrcdir)/lixbackups.in
+lixbackups: $(srcdir)/lixbackups.in
 
-logrotateconffiles_DATA = ../../rootconffiles/lixbackups
+conf_DATA = lixbackups
 
-EXTRA_DIST = $(rootconfsrcdir)/lixbackups.in
+EXTRA_DIST = $(srcdir)/lixbackups.in
+
+CLEANFILES = *.tmp lixbackups
+

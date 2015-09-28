@@ -25,42 +25,35 @@
 ##				overall package version.		##
 ## 27/02/2015	MG	1.0.6	Add script substitution variable for	##
 ##				var location for log file.		##
+## 28/09/2015	MG	1.0.4	Change to conform to AutoTools Template	##
+##				version 1.0.4.				##
 ##									##
 ##########################################################################
 
 
-edit = sed \
-	-e 's|@bindir[@]|$(bindir)|g' \
-	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
-	-e 's|@sysconfdir[@]|$(sysconfdir)|g' \
-	-e 's|@prefix[@]|$(prefix)|g' \
-	-e 's|@pkgversion[@]|$(pkgversion)|g' \
-	-e 's|@localstatedir[@]|$(localstatedir)|g'
-
-scriptssrcdir = $(srcdir)
-
-../../scripts/attbckshare ../../scripts/detbckshare ../../scripts/chkbckshare \
-	../../scripts/netbckup ../../setup.sh: Makefile
+attbckshare detbckshare chkbckshare netbckup setup.sh: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
-	test -f ./$@.in || scriptssrcdir=$(scriptssrcdir)/; \
-	$(edit) $${scriptssrcdir}$(@F).in >$@.tmp
+	test -f ./$@.in || srcdir=$(srcdir)/; \
+	$(edit) $${srcdir}$(@F).in > $@.tmp
 
 	mv $@.tmp $@
 
 	chmod a+x $@
 
-attbckshare: $(scriptssrcdir)/attbckshare.in
-detbckshare: $(scriptssrcdir)/detbckshare.in
-chkbckshare: $(scriptssrcdir)/chkbckshare.in
-netbckup: $(scriptssrcdir)/netbckup.in
-setup.sh: $(scriptssrcdir)/setup.sh.in
+attbckshare: $(srcdir)/attbckshare.in
+detbckshare: $(srcdir)/detbckshare.in
+chkbckshare: $(srcdir)/chkbckshare.in
+netbckup: $(srcdir)/netbckup.in
+setup.sh: $(srcdir)/setup.sh.in
 
-sbin_SCRIPTS = ../../scripts/attbckshare ../../scripts/detbckshare ../../scripts/chkbckshare \
-		../../scripts/netbckup
+sbin_SCRIPTS = attbckshare detbckshare chkbckshare netbckup
 
-noinst_SCRIPTS = ../../setup.sh
+noinst_SCRIPTS = setup.sh
 
-EXTRA_DIST = $(scriptssrcdir)/attbckshare.in $(scriptssrcdir)/detbckshare.in \
-	$(scriptssrcdir)/chkbckshare.in $(scriptssrcdir)/netbckup.in \
-	$(scriptssrcdir)/setup.sh.in
+EXTRA_DIST = $(srcdir)/attbckshare.in $(srcdir)/detbckshare.in \
+	$(srcdir)/chkbckshare.in $(srcdir)/netbckup.in \
+	$(srcdir)/setup.sh.in
+
+CLEANFILES = *.tmp attbckshare detbckshare chkbckshare netbckup setup.sh
+
