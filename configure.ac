@@ -6,8 +6,12 @@
 ## Purpose:								##
 ## Autoconfigure script file to configure LIXBackups project.		##
 ##									##
-## configure cmd line syntax: ./configure				##
-##									##
+## configure cmd line syntax: ./configure [--enable-distchk]		##
+##	--enable-distchk utilises a substitute target file path for	##
+##	targets normally defined from /. This is really only useful	##
+##	when running make distcheck as it fails with these paths.	##
+##	To use this facility run:-					##
+##	make distcheck DISTCHECK_CONFIGURE_FLAGS=--enable-distchk	##
 ##									##
 ##########################################################################
 
@@ -40,10 +44,12 @@
 ## 25/06/2015	MG	1.0.12	Increase checking for required commands.##
 ## 28/09/2015	MG	1.0.13	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
+## 05/10/2015	MG	1.0.14	Add support for fixed root-based target	##
+##				paths whilst supporting distcheck.	##
 ##									##
 ##########################################################################
 
-AC_REVISION([$Revision: 1.0.13 $])
+AC_REVISION([$Revision: 1.0.14 $])
 
 AC_PREREQ([2.65])
 
@@ -64,6 +70,32 @@ AC_INIT([Linux / Unix (LIX) Backup Scripts], m4_esyscmd([git describe --always 1
 AC_SUBST([pkgversion], [m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null \
 		&& git describe --always | tr -d '\n' \
 		|| echo 'Pre-Release' | tr -d '\n'])])
+
+
+#########################
+##
+## The following takes the presence / absense of a configure command line argument
+## and sets a conditional for later makefile use. The target install path variable
+## is set here as conditional setting of these targets is not allowed in an AutoMake file.
+##
+#########################
+
+AC_ARG_ENABLE([distchk],
+	[  --enable-distchk    Enable running of distcheck],
+	[case "${enableval}" in
+		yes) distchk=true ;;
+		no)  distchk=false ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-distchk]) ;;
+	esac],[distchk=false])
+AM_CONDITIONAL([DISTCHK], [test x$distchk = xtrue])
+
+if test "x${distchk}" = xtrue; then
+	AC_SUBST([rootconfloc], ["$sysconfdir/logrotate.d"])
+	AC_MSG_NOTICE([Using substitute paths to facilitate distcheck.])
+else
+	AC_SUBST([rootconfloc], ["/etc/logrotate.d"])
+	AC_MSG_NOTICE([Using distcheck incompatible root based paths.])
+fi
 
 
 #########################
