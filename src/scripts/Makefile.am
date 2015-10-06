@@ -25,7 +25,7 @@
 ##				overall package version.		##
 ## 27/02/2015	MG	1.0.6	Add script substitution variable for	##
 ##				var location for log file.		##
-## 28/09/2015	MG	1.0.4	Change to conform to AutoTools Template	##
+## 28/09/2015	MG	1.0.7	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
 ##									##
 ##########################################################################
