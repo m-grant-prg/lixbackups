@@ -1,5 +1,7 @@
 2015-06-25 v 1.2.3 Mark Grant <m.grant.prg@gmail.com>
 	* Improve checking for required programs.
+	Reduce df output from -ah to -h.
+	netbckup		Now at version 1.2.6
 
 2015-03-28 v 1.2.2 Mark Grant <m.grant.prg@gmail.com>
 	* Change configuration files directory to lixbackups to limit risk of
@@ -30,7 +32,7 @@
 2014-11-30 v 1.1.4 Mark Grant <m.grant.prg@gmail.com>
 	* Add support for including overall package version in script --version.
 	Switch to use of GNU getopt to allow long options and implement them.
-	Allow for FreeBSD quirk of 2 different getopt programs on PATH. See 
+	Allow for FreeBSD quirk of 2 different getopt programs on PATH. See
 	comments in script at the start of "Main".
 	Structure OS specific requirements to test for generic *BSD OSs and use
 	Linux as the default.
@@ -133,7 +135,7 @@
 	file needed.
 	bckdatadaily.sh:	Now at version 1.0.1
 	setup.sh:		Now at version 1.0.5
-	
+
 2013-02-26 v 1.0.20 Mark Grant <m.grant.prg@gmail.com>
 	* Changed all scripts to use getopts in command line option processing.
 	attbckshare.sh:		Now at version 1.0.7
