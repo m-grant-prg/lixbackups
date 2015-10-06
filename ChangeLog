@@ -1,3 +1,6 @@
+2015-10-06 v 1.2.4 Mark Grant <m.grant.prg@gmail.com>
+	* Update to conform to AutoTools General Template v1.0.4.
+
 2015-06-25 v 1.2.3 Mark Grant <m.grant.prg@gmail.com>
 	* Improve checking for required programs.
 	Reduce df output from -ah to -h.
@@ -202,8 +205,8 @@
 	detbckshare:	Removed the .sh extension from the command name.
 
 2010-12-16 v 1.0.12 Mark Grant <m.grant.prg@btinternet.com>
-	* bckfullweekly.sh: allowed mail of disk usage stats from all OS's
-	bckincdaily.sh: allowed mail of disk usage stats from all OS's
+	* bckfullweekly.sh: allowed mail of disk usage stats from all OSs
+	bckincdaily.sh: allowed mail of disk usage stats from all OSs
 
 2010-12-14 v 1.0.11 Mark Grant <m.grant.prg@btinternet.com>
 	* bckfulladhoc.sh: removed invalid switch from df mailx
