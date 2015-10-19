@@ -5,7 +5,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate LIXBackups project from source.	##
+## AutoMake script file to generate LIXBackups project from source.	##
 ##									##
 ##########################################################################
 
@@ -23,11 +23,13 @@
 ## 27/02/2015	MG	1.0.4	Add rootconffiles as a sub-directory.	##
 ## 28/09/2015	MG	1.0.5	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
+## 19/10/2015	MG	1.0.6	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 
 
-SUBDIRS = src/scripts
-SUBDIRS += src/man/man1 src/man/man5
-SUBDIRS += src/conf/etc src/conf/rootetc
+SUBDIRS = source/progs/bash
+SUBDIRS += source/man/man1 source/man/man5
+SUBDIRS += source/conf/etc source/conf/rootetc
 

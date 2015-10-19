@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/conf/etc/Makefile.am					##
+## Script ID: source/conf/etc/Makefile.am				##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to install LIXBackups configuration files.	##
+## AutoMake script file to install LIXBackups configuration files.	##
 ##									##
 ##########################################################################
 
@@ -23,6 +23,8 @@
 ##				with other backup packages.		##
 ## 28/09/2015	MG	1.0.4	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
+## 19/10/2015	MG	1.0.5	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 

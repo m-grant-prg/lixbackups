@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/man/man1/Makefile.am					##
+## Script ID: source/man/man1/Makefile.am				##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate LIXBackup manual pages from source.	##
+## AutoMake script file to generate LIXBackup manual pages from source.	##
 ##									##
 ##########################################################################
 
@@ -27,6 +27,8 @@
 ##				page to refer to the log file location.	##
 ## 28/09/2015	MG	1.0.6	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
+## 19/10/2015	MG	1.0.7	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 

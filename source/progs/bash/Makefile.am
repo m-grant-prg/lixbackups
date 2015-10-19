@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/scripts/Makefile.am					##
+## Script ID: source/progs/bash/Makefile.am				##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate LIXBackup scripts from source.	##
+## AutoMake script file to generate LIXBackup scripts from source.	##
 ##									##
 ##########################################################################
 
@@ -27,6 +27,8 @@
 ##				var location for log file.		##
 ## 28/09/2015	MG	1.0.7	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
+## 19/10/2015	MG	1.0.8	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 

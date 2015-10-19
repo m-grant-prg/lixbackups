@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/conf/rootetc/Makefile.am				##
+## Script ID: source/conf/rootetc/Makefile.am				##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to install LIXBackups logrotate.d files.	##
+## AutoMake script file to install LIXBackups logrotate.d files.	##
 ##	Must be installed in /etc/logrotate.d as it is for use by the	##
 ##	logrotate program.						##
 ##									##
@@ -22,6 +22,8 @@
 ##				version 1.0.4.				##
 ## 05/10/2015	MG	1.0.3	Add support for fixed root-based target	##
 ##				paths whilst supporting distcheck.	##
+## 19/10/2015	MG	1.0.4	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 

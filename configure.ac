@@ -4,7 +4,7 @@
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Autoconfigure script file to configure LIXBackups project.		##
+## AutoConf script file to configure LIXBackups project.		##
 ##									##
 ## configure cmd line syntax: ./configure [--enable-distchk]		##
 ##	--enable-distchk utilises a substitute target file path for	##
@@ -46,10 +46,12 @@
 ##				version 1.0.4.				##
 ## 05/10/2015	MG	1.0.14	Add support for fixed root-based target	##
 ##				paths whilst supporting distcheck.	##
+## 19/10/2015	MG	1.0.15	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 
-AC_REVISION([$Revision: 1.0.14 $])
+AC_REVISION([$Revision: 1.0.15 $])
 
 AC_PREREQ([2.65])
 
@@ -57,7 +59,7 @@ AC_PREREQ([2.65])
 #########################
 ##
 ## The following two macros use git to provide versioning information.
-## If git is not intialised or no commit has been made, then 'Pre-Release'
+## If git is not initialised or no commit has been made, then 'Pre-Release'
 ## will be used.
 ## If no Tag has been created then just a commit identifier will be used.
 ## If a tag has been created then the most recent tag, plus number of commits
@@ -74,8 +76,8 @@ AC_SUBST([pkgversion], [m4_esyscmd([git describe --always 1>/dev/null 2>/dev/nul
 
 #########################
 ##
-## The following takes the presence / absense of a configure command line argument
-## and sets a conditional for later makefile use. The target install path variable
+## The following takes the presence / absence of a configure command line argument
+## and sets a conditional for later Makefile use. The target install path variable
 ## is set here as conditional setting of these targets is not allowed in an AutoMake file.
 ##
 #########################
@@ -234,11 +236,11 @@ fi
 
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
-		src/scripts/Makefile
-		src/man/man1/Makefile
-		src/man/man5/Makefile
-		src/conf/etc/Makefile
-		src/conf/rootetc/Makefile])
+		source/progs/bash/Makefile
+		source/man/man1/Makefile
+		source/man/man5/Makefile
+		source/conf/etc/Makefile
+		source/conf/rootetc/Makefile])
 
 AC_OUTPUT
 

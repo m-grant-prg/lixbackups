@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 ##########################################################################
 ##									##
-## Script ID: src/man/man5/Makefile.am					##
+## Script ID: source/man/man5/Makefile.am				##
 ## Author: Mark Grant							##
 ##									##
 ## Purpose:								##
-## Automake script file to generate LIXBackup manual pages from source.	##
+## AutoMake script file to generate LIXBackup manual pages from source.	##
 ##									##
 ##########################################################################
 
@@ -18,9 +18,11 @@
 ## 17/06/2014	MG	1.0.1	Started versioning of this script.	##
 ## 01/08/2014	MG	1.0.2	Change project name from IXBackups to	##
 ##				LUXBackups.				##
-## 25/09/2014	MG	1.0.3	Update to refelect file name changes.	##
+## 25/09/2014	MG	1.0.3	Update to reflect file name changes.	##
 ## 28/09/2015	MG	1.0.4	Change to conform to AutoTools Template	##
 ##				version 1.0.4.				##
+## 19/10/2015	MG	1.0.5	Restructure to conform to AutoTools	##
+##				General Template v1.0.5.		##
 ##									##
 ##########################################################################
 
