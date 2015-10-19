@@ -1,3 +1,6 @@
+Release 1.2.5 2015-10-19
+Restructure to conform to AutoTools General Template v1.0.5.
+
 Release 1.2.4 2015-10-06
 Update to conform to AutoTools General Template v1.0.4.
 
@@ -77,7 +80,7 @@ Release 1.0.20 2013-02-26
 Changed internals of processing command line options.
 
 Release 1.0.19 2013-02-06
-Added mailing of backup file date hierachy after backup.
+Added mailing of backup file date hierarchy after backup.
 
 Release 1.0.18 2012-12-20
 Added Host name and backup file indicator to email message subject line.
