@@ -1,94 +1,94 @@
 #! /usr/bin/env bash
-##########################################################################
-##									##
-##	detbckshare is automatically generated,				##
-##		please do not modify!					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+#	detbckshare is automatically generated,				#
+#		please do not modify!					#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Script ID: detbckshare						##
-## Author: Mark Grant							##
-##									##
-## Purpose:								##
-## To unmount the backup share. E.g.					##
-##	/mnt/mybackupdirectory						##
-##	from								##
-## 	\\MyServer\mybackupdirectory or hermes:/srv/backups/charybdis	##
-##									##
-## Syntax:	detbckshare [-h --help || -v --verbose || -V --version ]##
-##									##
-## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
-##		0 - success						##
-##		64 - Invalid arguments					##
-##		65 - Failed to unmount backup share			##
-##		66 - Backup share not mounted				##
-##		67 - trap received					##
-##									##
-## Further info:							##
-## This script is part of the portable backup package.			##
-##									##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Script ID: detbckshare						#
+# Author: Mark Grant							#
+#									#
+# Purpose:								#
+# To unmount the backup share. E.g.					#
+#	/mnt/mybackupdirectory						#
+#	from								#
+# 	\\MyServer\mybackupdirectory or hermes:/srv/backups/charybdis	#
+#									#
+# Syntax:	detbckshare [-h --help || -v --verbose || -V --version ]#
+#									#
+# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
+#		0 - success						#
+#		64 - Invalid arguments					#
+#		65 - Failed to unmount backup share			#
+#		66 - Backup share not mounted				#
+#		67 - trap received					#
+#									#
+# Further info:								#
+# This script is part of the portable backup package.			#
+#									#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Changelog								##
-##									##
-## Date		Author	Version	Description				##
-##									##
-## 09/04/2010	MG	1.0.1	Created for Linux.			##
-## 26/08/2010	MG	1.0.2	Revised to support FreeBSD as well as	##
-##				Linux. Also, backup variables		##
-##				introduced at beginning of script to	##
-##				enhance portability. (E.g. System,	##
-##				backup user etc.).			##
-## 18/11/2010	MG	1.0.3	Changed to emit help and version on	##
-##				input of correct flag as argument. Also	##
-##				stored version in string in Init section##
-## 28/11/2010	MG	1.0.4	Changed script to read parameters from	##
-##				etclocation/backups.conf.		##
-## 10/01/2012	MG	1.0.5	Removed the .sh extension from the	##
-##				command name.				##
-## 05/11/2012	MG	1.0.6	Reverted to .sh file extension.		##
-## 26/02/2013	MG	1.0.7	Changed command line option processing	##
-##				to use getopts.				##
-## 01/04/2013	MG	1.0.8	Moved config files to new backups	##
-##				directory under sysconfdir. Added	##
-##				exclude files for system, weekly, daily	##
-##				and data.				##
-## 22/08/2013	MG	1.0.9	Debian best practice documentation	##
-##				requires that programs placed in the	##
-##				PATH should not have extensions as the	##
-##				programs may be rewritten in a		##
-##				different language. This would then	##
-##				require a name change, or, if left	##
-##				as-is would cause confusion. So name	##
-##				changed to remove .sh extension.	##
-## 06/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
-##				to use a function directing to one or	##
-##				other based on a status. Changed	##
-##				version option to -V. Added verbose	##
-##				option -v.				##
-## 22/11/2014	MG	1.1.2	Add overall package version to -V.	##
-## 22/11/2014	MG	1.1.3	Switched from getopts to GNU getopt to	##
-##				allow long options.			##
-## 03/02/2015	MG	1.1.4	Remove BSD support.			##
-## 03/02/2015	MG	1.2.1	Add NFS share support. Add support for	##
-##				different targets for weekly and ad hoc	##
-##				backups.				##
-## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
-##				lixbackups to limit risk of conflict	##
-##				with other backup packages.		##
-## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
-##				syslog.					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 09/04/2010	MG	1.0.1	Created for Linux.			#
+# 26/08/2010	MG	1.0.2	Revised to support FreeBSD as well as	#
+#				Linux. Also, backup variables		#
+#				introduced at beginning of script to	#
+#				enhance portability. (E.g. System,	#
+#				backup user etc.).			#
+# 18/11/2010	MG	1.0.3	Changed to emit help and version on	#
+#				input of correct flag as argument. Also	#
+#				stored version in string in Init section#
+# 28/11/2010	MG	1.0.4	Changed script to read parameters from	#
+#				etclocation/backups.conf.		#
+# 10/01/2012	MG	1.0.5	Removed the .sh extension from the	#
+#				command name.				#
+# 05/11/2012	MG	1.0.6	Reverted to .sh file extension.		#
+# 26/02/2013	MG	1.0.7	Changed command line option processing	#
+#				to use getopts.				#
+# 01/04/2013	MG	1.0.8	Moved config files to new backups	#
+#				directory under sysconfdir. Added	#
+#				exclude files for system, weekly, daily	#
+#				and data.				#
+# 22/08/2013	MG	1.0.9	Debian best practice documentation	#
+#				requires that programs placed in the	#
+#				PATH should not have extensions as the	#
+#				programs may be rewritten in a		#
+#				different language. This would then	#
+#				require a name change, or, if left	#
+#				as-is would cause confusion. So name	#
+#				changed to remove .sh extension.	#
+# 06/01/2014	MG	1.1.1	Changed stdout & stderr message output	#
+#				to use a function directing to one or	#
+#				other based on a status. Changed	#
+#				version option to -V. Added verbose	#
+#				option -v.				#
+# 22/11/2014	MG	1.1.2	Add overall package version to -V.	#
+# 22/11/2014	MG	1.1.3	Switched from getopts to GNU getopt to	#
+#				allow long options.			#
+# 03/02/2015	MG	1.1.4	Remove BSD support.			#
+# 03/02/2015	MG	1.2.1	Add NFS share support. Add support for	#
+#				different targets for weekly and ad hoc	#
+#				backups.				#
+# 24/02/2015	MG	1.2.2	Change configuration files directory to	#
+#				lixbackups to limit risk of conflict	#
+#				with other backup packages.		#
+# 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
+#				syslog.					#
+#									#
+#########################################################################
 
-####################
-## Init variables ##
-####################
+##################
+# Init variables #
+##################
 script_exit_code=0
 outputprefix="detbckshare: "
 version="1.2.3"				# set version variable
@@ -97,9 +97,9 @@ verbosity=""
 packageversion=@pkgversion@		# Version of the complete package
 mntdir=""
 
-###############
-## Functions ##
-###############
+#############
+# Functions #
+#############
 
 # Output $1 to stdout or stderr depending on $2 and write to syslog if required.
 # Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
@@ -148,9 +148,9 @@ script_exit
 # Setup trap
 trap trap_exit SIGHUP SIGINT SIGTERM
 
-##########
-## Main ##
-##########
+########
+# Main #
+########
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o hvV --long help,verbose,version -n "$0" -- "$@"`
 std_cmd_err_handler $?

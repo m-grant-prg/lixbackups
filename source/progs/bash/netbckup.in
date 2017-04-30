@@ -1,90 +1,90 @@
 #! /usr/bin/env bash
-##########################################################################
-##									##
-##	netbckup is automatically generated,				##
-##		please do not modify!					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+#	netbckup is automatically generated,				#
+#		please do not modify!					#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Script ID: netbckup							##
-## Author: Mark Grant							##
-##									##
-## Purpose:								##
-## Depending on command line arguments runs:-				##
-##	a full ad hoc backup.						##
-##	a level 0 --listed-incremental (ie full) backup of entire file	##
-##		system. It allows for a cycle of 5 backups for weekly	##
-##		coverage, designated by 1 - 5.				##
-##	a level 1 --listed-incremental backup to produce a differential	##
-##		backup.							##
-##	a level 1 - n --listed-incremental backup to produce an		##
-##		incremental backup.					##
-##	a selective backup.						##
-##                                                              	##
-## Syntax:      netbckup [ -d or --differential || -f or --full ||	##
-##			-h or --help || -i or --incremental ||		##
-##			-s or --selective || -V or --version ||		##
-##			-w or --weekly ]				##
-##									##
-## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
-##		0 - success						##
-##		64 - Invalid arguments					##
-##		65 - Failed mounting backup network share		##
-##		66 - backup.snar non-existent or inaccesssible		##
-##		67 - trap received					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Script ID: netbckup							#
+# Author: Mark Grant							#
+#									#
+# Purpose:								#
+# Depending on command line arguments runs:-				#
+#	a full ad hoc backup.						#
+#	a level 0 --listed-incremental (ie full) backup of entire file	#
+#		system. It allows for a cycle of 5 backups for weekly	#
+#		coverage, designated by 1 - 5.				#
+#	a level 1 --listed-incremental backup to produce a differential	#
+#		backup.							#
+#	a level 1 - n --listed-incremental backup to produce an		#
+#		incremental backup.					#
+#	a selective backup.						#
+#                                                            	  	#
+# Syntax:      netbckup [ -d or --differential || -f or --full ||	#
+#			-h or --help || -i or --incremental ||		#
+#			-s or --selective || -V or --version ||		#
+#			-w or --weekly ]				#
+#									#
+# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
+#		0 - success						#
+#		64 - Invalid arguments					#
+#		65 - Failed mounting backup network share		#
+#		66 - backup.snar non-existent or inaccesssible		#
+#		67 - trap received					#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Changelog								##
-##									##
-## Date		Author	Version	Description				##
-##									##
-## 24/09/2014	MG	1.0.1	Created from consolidation of seperate	##
-##				full, weekly, daily and data scripts.	##
-## 28/09/2014	MG	1.0.2	Changed latency_compensate function to	##
-##				attempt 1 execution of command without	##
-##				causing a sleep.			##
-## 30/09/2014	MG	1.0.3	If the root account is accessible, ('P'	##
-##				from passwd -S), then deny login access	##
-##				to non-root users for the duration of	##
-##				the backup. If root is not accessible,	##
-##				then do not deny access as it would be	##
-##				dangerous if for some reason it is not	##
-##				re-allowed. Only root would have access.##
-##				(Even though shutdown clears the	##
-##				restriction, this script does not	##
-##				demand a shutdown).			##
-## 22/11/2014	MG	1.0.4	Add overall package version to -V.	##
-## 22/11/2014	MG	1.0.5	Switched from getopts to GNU getopt to	##
-##				allow long options.			##
-## 03/02/2015	MG	1.0.6	Remove BSD support.			##
-## 03/02/2015	MG	1.2.1	Add support for NFS backup shares. Add	##
-##				support for different backup share	##
-##				targets for weekly and ad hoc type	##
-##				backups. Remove latency_compensate	##
-##				function as improved hardware or	##
-##				removal of BSD has cured the problem.	##
-## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
-##				lixbackups to limit risk of conflict	##
-##				with other backup packages.		##
-## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
-##				syslog.					##
-## 01/03/2015	MG	1.2.4	Use log file in localstatedir/log. Log	##
-##				file management set to use logrotate in	##
-##				this package release.			##
-## 16/03/2015	MG	1.2.5	Improve logging.			##
-## 05/06/2015	MG	1.2.6	Reduce df output from df -ah to a more	##
-##				sensible df -h.				##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 24/09/2014	MG	1.0.1	Created from consolidation of seperate	#
+#				full, weekly, daily and data scripts.	#
+# 28/09/2014	MG	1.0.2	Changed latency_compensate function to	#
+#				attempt 1 execution of command without	#
+#				causing a sleep.			#
+# 30/09/2014	MG	1.0.3	If the root account is accessible, ('P'	#
+#				from passwd -S), then deny login access	#
+#				to non-root users for the duration of	#
+#				the backup. If root is not accessible,	#
+#				then do not deny access as it would be	#
+#				dangerous if for some reason it is not	#
+#				re-allowed. Only root would have access.#
+#				(Even though shutdown clears the	#
+#				restriction, this script does not	#
+#				demand a shutdown).			#
+# 22/11/2014	MG	1.0.4	Add overall package version to -V.	#
+# 22/11/2014	MG	1.0.5	Switched from getopts to GNU getopt to	#
+#				allow long options.			#
+# 03/02/2015	MG	1.0.6	Remove BSD support.			#
+# 03/02/2015	MG	1.2.1	Add support for NFS backup shares. Add	#
+#				support for different backup share	#
+#				targets for weekly and ad hoc type	#
+#				backups. Remove latency_compensate	#
+#				function as improved hardware or	#
+#				removal of BSD has cured the problem.	#
+# 24/02/2015	MG	1.2.2	Change configuration files directory to	#
+#				lixbackups to limit risk of conflict	#
+#				with other backup packages.		#
+# 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
+#				syslog.					#
+# 01/03/2015	MG	1.2.4	Use log file in localstatedir/log. Log	#
+#				file management set to use logrotate in	#
+#				this package release.			#
+# 16/03/2015	MG	1.2.5	Improve logging.			#
+# 05/06/2015	MG	1.2.6	Reduce df output from df -ah to a more	#
+#				sensible df -h.				#
+#									#
+#########################################################################
 
-####################
-## Init variables ##
-####################
+##################
+# Init variables #
+##################
 script_exit_code=0
 version="1.2.6"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
@@ -103,9 +103,9 @@ notifyuser=""
 attachtype=""				# attbckshare  weekly or adhoc
 loglocation=@localstatedir@/log		# Log file location
 
-###############
-## Functions ##
-###############
+#############
+# Functions #
+#############
 
 # Output $1 to stdout or stderr depending on $2 and write to syslog if required.
 # Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
@@ -153,7 +153,7 @@ then
 	# Final log entries and restore stdout & stderr
 	output $script_short_desc" completed with status $script_exit_code" $script_exit_code FALSE
 	output "Processing of "$backpath" is complete. Status: $script_exit_code" $script_exit_code FALSE
-	
+
 	exec 1>&6 6>&-	# Restore stdout and close FD 6
 fi
 if [ $(lsof -aw -d 7 -F f -p $$ | wc -l) -gt 0 ]
@@ -180,9 +180,9 @@ script_exit
 # Setup trap
 trap trap_exit SIGHUP SIGINT SIGTERM
 
-##########
-## Main ##
-##########
+########
+# Main #
+########
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o dfhisVw \
 		--long differential,full,help,incremental,selective,version,weekly -n "$0" -- "$@"`
@@ -335,7 +335,7 @@ fi
 
 # Make copies of stdout & stderr then re-direct stdout & stderr to backup log
 # and write initial entries
-exec 6>&1 7>&2 
+exec 6>&1 7>&2
 
 exec 1>> $loglocation/lixbackups.log 2>&1
 
@@ -398,14 +398,14 @@ differential)
 	# Build the backup & incremental file names and paths
 	backpath="$mntdir/backup"$(date +%a)".tar.gz"
 	snarpath="$mntdir/backup"$(date +%a)".snar"
-	
+
 	# If the incremental files exists, delete.
 	# (Just in case full backup has not done this)
 	if [ -f $snarpath ] ; then
 		rm $snarpath
 		std_cmd_err_handler $?
 	fi
-	
+
 	# Copy level 0 incremental file in order to perform a
 	# level 1, effective differential backup each run.
 	if [ -f $mntdir/backup.snar -a -r $mntdir/backup.snar \
@@ -417,35 +417,35 @@ differential)
 		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1 TRUE
 		script_exit
 	fi
-	
+
 	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
 	;;
 fulladhoc)
 	# Build the backup file name and path
 	backpath="$mntdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
-	
+
 	bckupCL=$bckupCL"$backpath "
 	;;
 incremental)
 	# Build the backup & incremental file names and paths
 	backpath="$mntdir/backup"$(date +%a)".tar.gz"
 	snarpath="$mntdir/backup.snar"
-	
+
 	# Check that the incremental file exists.
 	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ] ; then
 		script_exit_code=66
 		output $snarpath" does not exist or is not accessible. Exit code "$script_exit_code 1 TRUE
 		script_exit
 	fi
-	
+
 	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
 	;;
 selective)
 	# Build the backup file name and path
 	backpath="$mntdir/backupsel"$(date +%a)".tar.gz"
-	
+
 	bckupCL=$bckupCL"$backpath --files-from=$etclocation/bckseldaily.files "
 	bckupCL=$bckupCL"--exclude-from=$etclocation/bckseldaily.exclude "
 	;;
@@ -453,7 +453,7 @@ weekly)
 	# Build the backup & incremental file names and paths
 	backpath="$mntdir/backup"$bckseq".tar.gz"
 	snarpath="$mntdir/backup.snar"
-	
+
 	# If the level 0 incremental file exists, delete
 	if [ -f $snarpath ]
 	then

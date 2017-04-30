@@ -1,59 +1,59 @@
 #! /usr/bin/env bash
-##########################################################################
-##									##
-##	chkbckshare is automatically generated,				##
-##		please do not modify!					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+#	chkbckshare is automatically generated,				#
+#		please do not modify!					#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Script ID: chkbckshare						##
-## Author: Mark Grant							##
-##									##
-## Purpose:								##
-## To check if the backup share is mounted . E.g.			##
-## 	\\Ambrosia\charybdisbck or hermes:/srv/backups/charybdis	##					##
-## 	on								##
-## 	/mnt/charybdisbck						##
-##									##
-## Syntax:	chkbckshare [-b or --boolean || -h or --help ||		##
-##				-t or --terse || -V or --version]	##
-##									##
-## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
-##		0 - success						##
-##		64 - Invalid arguments					##
-##		67 - trap received					##
-##									##
-## Further Info:							##
-## This script checks if a share is mounted as a target for the		##
-## backup scripts.							##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Script ID: chkbckshare						#
+# Author: Mark Grant							#
+#									#
+# Purpose:								#
+# To check if the backup share is mounted . E.g.			#
+# 	\\Ambrosia\charybdisbck or hermes:/srv/backups/charybdis	#					#
+# 	on								#
+# 	/mnt/charybdisbck						#
+#									#
+# Syntax:	chkbckshare [-b or --boolean || -h or --help ||		#
+#				-t or --terse || -V or --version]	#
+#									#
+# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
+#		0 - success						#
+#		64 - Invalid arguments					#
+#		67 - trap received					#
+#									#
+# Further Info:								#
+# This script checks if a share is mounted as a target for the		#
+# backup scripts.							#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Changelog								##
-##									##
-## Date		Author	Version	Description				##
-##									##
-## 21/12/2013	MG	1.1.1	First release.				##
-## 22/11/2014	MG	1.1.2	Add overall package version to -V.	##
-## 22/11/2014	MG	1.1.3	Switched from getopts to GNU getopt to	##
-##				allow long options.			##
-## 02/02/2015	MG	1.1.4	Remove BSD support.			##
-## 02/02/2015	MG	1.2.1	Add support for NFS shares. Add support	##
-##				for different share targets for weekly	##
-##				and adhoc backups.			##
-## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
-##				lixbackups to limit risk of conflict	##
-##				with other backup packages.		##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 21/12/2013	MG	1.1.1	First release.				#
+# 22/11/2014	MG	1.1.2	Add overall package version to -V.	#
+# 22/11/2014	MG	1.1.3	Switched from getopts to GNU getopt to	#
+#				allow long options.			#
+# 02/02/2015	MG	1.1.4	Remove BSD support.			#
+# 02/02/2015	MG	1.2.1	Add support for NFS shares. Add support	#
+#				for different share targets for weekly	#
+#				and adhoc backups.			#
+# 24/02/2015	MG	1.2.2	Change configuration files directory to	#
+#				lixbackups to limit risk of conflict	#
+#				with other backup packages.		#
+#									#
+#########################################################################
 
-####################
-## Init variables ##
-####################
+##################
+# Init variables #
+##################
 bool="FALSE"
 terse="FALSE"
 outputprefix="chkbckshare: "
@@ -65,9 +65,9 @@ packageversion=@pkgversion@		# Version of the complete package
 
 mntdir=""
 
-###############
-## Functions ##
-###############
+#############
+# Functions #
+#############
 
 # Output $1 to stdout or stderr depending on $2
 output()
@@ -107,9 +107,9 @@ script_exit
 # Setup trap
 trap trap_exit SIGHUP SIGINT SIGTERM
 
-##########
-## Main ##
-##########
+########
+# Main #
+########
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o bhtV --long boolean,help,terse,version -n "$0" -- "$@"`
 std_cmd_err_handler $?

@@ -1,102 +1,102 @@
 #! /usr/bin/env bash
-##########################################################################
-##									##
-##	attbckshare is automatically generated,				##
-##		please do not modify!					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+#	attbckshare is automatically generated,				#
+#		please do not modify!					#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Script ID: attbckshare						##
-## Author: Mark Grant							##
-##									##
-## Purpose:								##
-## To mount a CIFS or NFS backup share. E.g.				##
-## 	\\Ambrosia\charybdisbck or hermes:/srv/backups/charybdis	##
-## 	on								##
-## 	/mnt/charybdisbck						##
-##									##
-## Syntax:	attbckshare [ -a --adhoc || -h --help || -v --verbose	##
-##				|| -V --version || -w --weekly ]	##
-##									##
-## Exit Codes:	0 & 64 - 113 as per C/C++ standard			##
-##		0 - success						##
-##		64 - Invalid arguments					##
-##		65 - Failed mounting backup share			##
-##		66 - Backup share already mounted			##
-##		67 - trap received					##
-##									##
-## Further Info:							##
-## This script mounts a CIFS or NFS share as a target for the backup	##
-## scripts.								##
-##									##
-## In order to make the package portable all the necessary parameters	##
-## are stored in a $PREFIX/etc/lixbackups/backups.conf file.		##
-## For further information please consult the backups.conf man page.	##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Script ID: attbckshare						#
+# Author: Mark Grant							#
+#									#
+# Purpose:								#
+# To mount a CIFS or NFS backup share. E.g.				#
+# 	\\Ambrosia\charybdisbck or hermes:/srv/backups/charybdis	#
+# 	on								#
+# 	/mnt/charybdisbck						#
+#									#
+# Syntax:	attbckshare [ -a --adhoc || -h --help || -v --verbose	#
+#				|| -V --version || -w --weekly ]	#
+#									#
+# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
+#		0 - success						#
+#		64 - Invalid arguments					#
+#		65 - Failed mounting backup share			#
+#		66 - Backup share already mounted			#
+#		67 - trap received					#
+#									#
+# Further Info:								#
+# This script mounts a CIFS or NFS share as a target for the backup	#
+# scripts.								#
+#									#
+# In order to make the package portable all the necessary parameters	#
+# are stored in a $PREFIX/etc/lixbackups/backups.conf file.		#
+# For further information please consult the backups.conf man page.	#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Changelog								##
-##									##
-## Date		Author	Version	Description				##
-##									##
-## 09/04/2010	MG	1.0.1	Created for Linux.			##
-## 26/08/2010	MG	1.0.2	Major revision completed supporting	##
-##				FreeBSD as well as Linux. Also put all	##
-##				relevant parameters in variables at	##
-##				beginning of script to enhance		##
-##				portability. (e.g. System, backup user	##
-##				etc.).					##
-## 18/11/2010	MG	1.0.3	Changed to emit help and version on	##
-##				input of correct flag as argument. Also	##
-##				stored version in string in Init section##
-## 28/11/2010	MG	1.0.4	Changed script to read parameters from	##
-##				etclocation/backups.conf and, when	##
-##				necessary (FreeBSD), the ~/.nsmbrc file.##
-## 10/01/2012	MG	1.0.5	Removed the .sh extension from the	##
-##				command name.				##
-## 05/11/2012	MG	1.0.6	Reverted to the .sh file extension.	##
-## 26/02/2013	MG	1.0.7	Changed command line option processing	##
-##				to use getopts.				##
-## 01/04/2013	MG	1.0.8	Moved config files to new backups	##
-##				directory under sysconfdir. Added	##
-##				exclude files for system, weekly, daily	##
-##				and data.				##
-## 22/08/2013	MG	1.0.9	Debian best practice documentation	##
-##				requires that programs placed in the	##
-##				PATH should not have extensions as the	##
-##				programs may be rewritten in a		##
-##				different language. This would then	##
-##				require a name change, or, if left	##
-##				as-is would cause confusion. So name	##
-##				changed to remove .sh extension.	##
-## 06/01/2014	MG	1.1.1	Changed stdout & stderr message output	##
-##				to use a function directing to one or	##
-##				other based on a status. Changed	##
-##				version option to -V. Added verbose	##
-##				option -v.				##
-## 16/11/2014	MG	1.1.2	Switched from getopts to GNU getopt to	##
-##				allow long options.			##
-## 17/11/2014	MG	1.1.3	Change FreeBSD specifics to *BSD and	##
-##				change Linux to be the default.		##
-## 22/11/2014	MG	1.1.4	Add overall package version to -V.	##
-## 02/02/2015	MG	1.1.5	Remove BSD support.			##
-## 02/02/2015	MG	1.2.1	Add support for NFS shares. Add support	##
-##				for different weekly and ad hoc targets.##
-## 24/02/2015	MG	1.2.2	Change configuration files directory to	##
-##				lixbackups to limit risk of conflict	##
-##				with other backup packages.		##
-## 26/02/2015	MG	1.2.3	Use logger to write key messages to	##
-##				syslog.					##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 09/04/2010	MG	1.0.1	Created for Linux.			#
+# 26/08/2010	MG	1.0.2	Major revision completed supporting	#
+#				FreeBSD as well as Linux. Also put all	#
+#				relevant parameters in variables at	#
+#				beginning of script to enhance		#
+#				portability. (e.g. System, backup user	#
+#				etc.).					#
+# 18/11/2010	MG	1.0.3	Changed to emit help and version on	#
+#				input of correct flag as argument. Also	#
+#				stored version in string in Init section#
+# 28/11/2010	MG	1.0.4	Changed script to read parameters from	#
+#				etclocation/backups.conf and, when	#
+#				necessary (FreeBSD), the ~/.nsmbrc file.#
+# 10/01/2012	MG	1.0.5	Removed the .sh extension from the	#
+#				command name.				#
+# 05/11/2012	MG	1.0.6	Reverted to the .sh file extension.	#
+# 26/02/2013	MG	1.0.7	Changed command line option processing	#
+#				to use getopts.				#
+# 01/04/2013	MG	1.0.8	Moved config files to new backups	#
+#				directory under sysconfdir. Added	#
+#				exclude files for system, weekly, daily	#
+#				and data.				#
+# 22/08/2013	MG	1.0.9	Debian best practice documentation	#
+#				requires that programs placed in the	#
+#				PATH should not have extensions as the	#
+#				programs may be rewritten in a		#
+#				different language. This would then	#
+#				require a name change, or, if left	#
+#				as-is would cause confusion. So name	#
+#				changed to remove .sh extension.	#
+# 06/01/2014	MG	1.1.1	Changed stdout & stderr message output	#
+#				to use a function directing to one or	#
+#				other based on a status. Changed	#
+#				version option to -V. Added verbose	#
+#				option -v.				#
+# 16/11/2014	MG	1.1.2	Switched from getopts to GNU getopt to	#
+#				allow long options.			#
+# 17/11/2014	MG	1.1.3	Change FreeBSD specifics to *BSD and	#
+#				change Linux to be the default.		#
+# 22/11/2014	MG	1.1.4	Add overall package version to -V.	#
+# 02/02/2015	MG	1.1.5	Remove BSD support.			#
+# 02/02/2015	MG	1.2.1	Add support for NFS shares. Add support	#
+#				for different weekly and ad hoc targets.#
+# 24/02/2015	MG	1.2.2	Change configuration files directory to	#
+#				lixbackups to limit risk of conflict	#
+#				with other backup packages.		#
+# 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
+#				syslog.					#
+#									#
+#########################################################################
 
-####################
-## Init variables ##
-####################
+##################
+# Init variables #
+##################
 script_exit_code=0
 outputprefix="attbckshare: "
 version="1.2.3"				# set version variable
@@ -117,9 +117,9 @@ adhocnotifyuser=""
 mntdir=""
 bckuptype=""
 
-###############
-## Functions ##
-###############
+#############
+# Functions #
+#############
 
 # Output $1 to stdout or stderr depending on $2 and write to syslog if required.
 # Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
@@ -168,9 +168,9 @@ script_exit
 # Setup trap
 trap trap_exit SIGHUP SIGINT SIGTERM
 
-##########
-## Main ##
-##########
+########
+# Main #
+########
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o ahvVw --long adhoc,help,verbose,version,weekly -n "$0" -- "$@"`
 std_cmd_err_handler $?

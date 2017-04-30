@@ -1,31 +1,31 @@
 #! /usr/bin/env bash
-##########################################################################
-##									##
-## Script ID: source/conf/rootetc/Makefile.am				##
-## Author: Mark Grant							##
-##									##
-## Purpose:								##
-## AutoMake script file to install LIXBackups logrotate.d files.	##
-##	Must be installed in /etc/logrotate.d as it is for use by the	##
-##	logrotate program.						##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Script ID: source/conf/rootetc/Makefile.am				#
+# Author: Mark Grant							#
+#									#
+# Purpose:								#
+# AutoMake script file to install LIXBackups logrotate.d files.		#
+#	Must be installed in /etc/logrotate.d as it is for use by the	#
+#	logrotate program.						#
+#									#
+#########################################################################
 
-##########################################################################
-##									##
-## Changelog								##
-##									##
-## Date		Author	Version	Description				##
-##									##
-## 27/02/2015	MG	1.0.1	Started versioning of this script.	##
-## 28/09/2015	MG	1.0.2	Change to conform to AutoTools Template	##
-##				version 1.0.4.				##
-## 05/10/2015	MG	1.0.3	Add support for fixed root-based target	##
-##				paths whilst supporting distcheck.	##
-## 19/10/2015	MG	1.0.4	Restructure to conform to AutoTools	##
-##				General Template v1.0.5.		##
-##									##
-##########################################################################
+#########################################################################
+#									#
+# Changelog								#
+#									#
+# Date		Author	Version	Description				#
+#									#
+# 27/02/2015	MG	1.0.1	Started versioning of this script.	#
+# 28/09/2015	MG	1.0.2	Change to conform to AutoTools Template	#
+#				version 1.0.4.				#
+# 05/10/2015	MG	1.0.3	Add support for fixed root-based target	#
+#				paths whilst supporting distcheck.	#
+# 19/10/2015	MG	1.0.4	Restructure to conform to AutoTools	#
+#				General Template v1.0.5.		#
+#									#
+#########################################################################
 
 # rootconfloc is set in configure.ac to provide a conditional target depending
 # on whether distcheck is being run.
@@ -45,4 +45,3 @@ conf_DATA = lixbackups
 EXTRA_DIST = $(srcdir)/lixbackups.in
 
 CLEANFILES = *.tmp lixbackups
-
