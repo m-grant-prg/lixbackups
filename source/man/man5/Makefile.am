@@ -23,6 +23,7 @@
 #				version 1.0.4.				#
 # 19/10/2015	MG	1.0.5	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
+# 30/04/2017	MG	1.0.6	Output from $(edit) was being ignored.	#
 #									#
 #########################################################################
 
@@ -32,8 +33,7 @@ backups.conf.5 bckseldaily.exclude.5 bckseldaily.files.5 bckweekly.exclude.5 \
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	$(edit) $(srcdir)/$(@F).txt > $@.tmp
-	mv $@.tmp $@
-	txt2manwrap $(@F) 5 "Backup Scripts Manual" $(srcdir)/$(@F).txt $@
+	txt2manwrap $(@F) 5 "Backup Scripts Manual" $@.tmp $@
 	rm -f $@.tmp
 
 backups.conf.5: $(srcdir)/backups.conf.5.txt
