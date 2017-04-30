@@ -24,6 +24,7 @@
 # 19/10/2015	MG	1.0.5	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
 # 30/04/2017	MG	1.0.6	Output from $(edit) was being ignored.	#
+#				Rename source file extension .man.in	#
 #									#
 #########################################################################
 
@@ -32,23 +33,25 @@ backups.conf.5 bckseldaily.exclude.5 bckseldaily.files.5 bckweekly.exclude.5 \
 	bckdaily.exclude.5 bcksystem.exclude.5: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
-	$(edit) $(srcdir)/$(@F).txt > $@.tmp
+	$(edit) $(srcdir)/$(@F).man.in > $@.tmp
 	txt2manwrap $(@F) 5 "Backup Scripts Manual" $@.tmp $@
 	rm -f $@.tmp
 
-backups.conf.5: $(srcdir)/backups.conf.5.txt
-bckseldaily.exclude.5: $(srcdir)/bckseldaily.exclude.5.txt
-bckseldaily.files.5: $(srcdir)/bckseldaily.files.5.txt
-bckweekly.exclude.5: $(srcdir)/bckweekly.exclude.5.txt
-bckdaily.exclude.5: $(srcdir)/bckdaily.exclude.5.txt
-bcksystem.exclude.5: $(srcdir)/bcksystem.exclude.5.txt
+backups.conf.5: $(srcdir)/backups.conf.5.man.in
+bckseldaily.exclude.5: $(srcdir)/bckseldaily.exclude.5.man.in
+bckseldaily.files.5: $(srcdir)/bckseldaily.files.5.man.in
+bckweekly.exclude.5: $(srcdir)/bckweekly.exclude.5.man.in
+bckdaily.exclude.5: $(srcdir)/bckdaily.exclude.5.man.in
+bcksystem.exclude.5: $(srcdir)/bcksystem.exclude.5.man.in
 
 man_MANS = backups.conf.5 bckseldaily.exclude.5 bckseldaily.files.5 \
 	bckweekly.exclude.5 bckdaily.exclude.5 bcksystem.exclude.5
 
-EXTRA_DIST = $(srcdir)/backups.conf.5.txt $(srcdir)/bckseldaily.exclude.5.txt \
-	$(srcdir)/bckseldaily.files.5.txt $(srcdir)/bckweekly.exclude.5.txt \
-	$(srcdir)/bckdaily.exclude.5.txt $(srcdir)/bcksystem.exclude.5.txt
+EXTRA_DIST = $(srcdir)/backups.conf.5.man.in \
+	$(srcdir)/bckseldaily.exclude.5.man.in \
+	$(srcdir)/bckseldaily.files.5.man.in \
+	$(srcdir)/bckweekly.exclude.5.man.in \
+	$(srcdir)/bckdaily.exclude.5.man.in $(srcdir)/bcksystem.exclude.5.man.in
 
 CLEANFILES = *.tmp backups.conf.5 bckseldaily.exclude.5 bckseldaily.files.5 \
 	bckweekly.exclude.5 bckdaily.exclude.5 bcksystem.exclude.5

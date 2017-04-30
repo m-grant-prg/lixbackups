@@ -30,6 +30,7 @@
 # 19/10/2015	MG	1.0.7	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
 # 30/04/2017	MG	1.0.8	Output from $(edit) was being ignored.	#
+#				Rename source file extension .man.in	#
 #									#
 #########################################################################
 
@@ -37,18 +38,18 @@
 attbckshare.1 detbckshare.1 chkbckshare.1 netbckup.1: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
-	$(edit) $(srcdir)/$(@F).txt > $@.tmp
+	$(edit) $(srcdir)/$(@F).man.in > $@.tmp
 	txt2manwrap $(@F) 1 "Backup Scripts Manual" $@.tmp $@
 	rm -f $@.tmp
 
-attbckshare.1: $(srcdir)/attbckshare.1.txt
-detbckshare.1: $(srcdir)/detbckshare.1.txt
-chkbckshare.1: $(srcdir)/chkbckshare.1.txt
-netbckup.1: $(srcdir)/netbckup.1.txt
+attbckshare.1: $(srcdir)/attbckshare.1.man.in
+detbckshare.1: $(srcdir)/detbckshare.1.man.in
+chkbckshare.1: $(srcdir)/chkbckshare.1.man.in
+netbckup.1: $(srcdir)/netbckup.1.man.in
 
 man_MANS = attbckshare.1 detbckshare.1 chkbckshare.1 netbckup.1
 
-EXTRA_DIST = $(srcdir)/attbckshare.1.txt $(srcdir)/detbckshare.1.txt \
-		$(srcdir)/chkbckshare.1.txt $(srcdir)/netbckup.1.txt
+EXTRA_DIST = $(srcdir)/attbckshare.1.man.in $(srcdir)/detbckshare.1.man.in \
+		$(srcdir)/chkbckshare.1.man.in $(srcdir)/netbckup.1.man.in
 
 CLEANFILES = *.tmp attbckshare.1 detbckshare.1 chkbckshare.1 netbckup.1
