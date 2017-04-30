@@ -30,7 +30,7 @@ Written by Mark Grant.
 REPORTING BUGS
 Report bugs to <m.grant.prg@gmail.com>
 COPYRIGHT
-Copyright 2013 Mark Grant.
+Copyright 2017 Mark Grant.
 .br
 License GPLv3+: GNU GPL version 3 or later
 .br
@@ -40,4 +40,6 @@ This is free software: you are free to change and redistribute it.
 .br
 There is NO WARRANTY, to the extent permitted by law.
 SEE ALSO
-attbckshare(1) detbckshare(1) mount(8) umount(8) netbckup(1) backups.conf(5) bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5) bckdaily.exclude(5) bcksystem.exclude(5)
+attbckshare(8) detbckshare(8) mount(8) umount(8) netbckup(8) backups.conf(5)
+bckseldaily.exclude(5) bckseldaily.files(5) bckweekly.exclude(5)
+bckdaily.exclude(5) bcksystem.exclude(5)

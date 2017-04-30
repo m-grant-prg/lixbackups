@@ -48,10 +48,11 @@
 #				paths whilst supporting distcheck.	#
 # 19/10/2015	MG	1.0.15	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
+# 30/04/2017	MG	1.0.16	Move command man pages to section 8.	#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.15 $])
+AC_REVISION([$Revision: 1.0.16 $])
 
 AC_PREREQ([2.65])
 
@@ -237,8 +238,8 @@ fi
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
 		source/progs/bash/Makefile
-		source/man/man1/Makefile
 		source/man/man5/Makefile
+		source/man/man8/Makefile
 		source/conf/etc/Makefile
 		source/conf/rootetc/Makefile])
 
