@@ -29,32 +29,40 @@
 #				version 1.0.4.				#
 # 19/10/2015	MG	1.0.8	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
+# 01/05/2017	MG	1.0.9	Rename source file extension .sh.in	#
 #									#
 #########################################################################
 
 
-attbckshare detbckshare chkbckshare netbckup setup.sh: Makefile
+attbckshare detbckshare chkbckshare netbckup: Makefile
+	mkdir -p $(@D)
+	rm -f $@ $@.tmp
+	test -f ./$@.sh.in || srcdir=$(srcdir)/; \
+	$(edit) $${srcdir}$(@F).sh.in > $@.tmp
+	mv $@.tmp $@
+	chmod a+x $@
+attbckshare: $(srcdir)/attbckshare.sh.in
+detbckshare: $(srcdir)/detbckshare.sh.in
+chkbckshare: $(srcdir)/chkbckshare.sh.in
+netbckup: $(srcdir)/netbckup.sh.in
+
+
+setup.sh: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	test -f ./$@.in || srcdir=$(srcdir)/; \
 	$(edit) $${srcdir}$(@F).in > $@.tmp
-
 	mv $@.tmp $@
-
 	chmod a+x $@
-
-attbckshare: $(srcdir)/attbckshare.in
-detbckshare: $(srcdir)/detbckshare.in
-chkbckshare: $(srcdir)/chkbckshare.in
-netbckup: $(srcdir)/netbckup.in
 setup.sh: $(srcdir)/setup.sh.in
+
 
 sbin_SCRIPTS = attbckshare detbckshare chkbckshare netbckup
 
 noinst_SCRIPTS = setup.sh
 
-EXTRA_DIST = $(srcdir)/attbckshare.in $(srcdir)/detbckshare.in \
-	$(srcdir)/chkbckshare.in $(srcdir)/netbckup.in \
+EXTRA_DIST = $(srcdir)/attbckshare.sh.in $(srcdir)/detbckshare.sh.in \
+	$(srcdir)/chkbckshare.sh.in $(srcdir)/netbckup.sh.in \
 	$(srcdir)/setup.sh.in
 
 CLEANFILES = *.tmp attbckshare detbckshare chkbckshare netbckup setup.sh
