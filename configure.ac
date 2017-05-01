@@ -48,7 +48,9 @@
 #				paths whilst supporting distcheck.	#
 # 19/10/2015	MG	1.0.15	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
-# 30/04/2017	MG	1.0.16	Move command man pages to section 8.	#
+# 01/05/2017	MG	1.0.16	Move command man pages to section 8.	#
+#				Make AC_INIT and pkgversion AC_SUBST	#
+#				multi-line.				#
 #									#
 #########################################################################
 
@@ -68,11 +70,16 @@ AC_PREREQ([2.65])
 #
 ########################
 
-AC_INIT([Linux / Unix (LIX) Backup Scripts], m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null && git describe --always | tr -d '\n' || echo 'Pre-Release' | tr -d '\n']), [m.grant.prg@gmail.com], [lixbackups])
+AC_INIT([Linux / Unix (LIX) Backup Scripts], m4_esyscmd([ \
+	git describe --always 1>/dev/null 2>/dev/null \
+	&& git describe --always | tr -d '\n' \
+	|| echo 'Pre-Release' | tr -d '\n']),
+	[m.grant.prg@gmail.com], [lixbackups])
 
-AC_SUBST([pkgversion], [m4_esyscmd([git describe --always 1>/dev/null 2>/dev/null \
-		&& git describe --always | tr -d '\n' \
-		|| echo 'Pre-Release' | tr -d '\n'])])
+AC_SUBST([pkgversion], [m4_esyscmd([ \
+	git describe --always 1>/dev/null 2>/dev/null \
+	&& git describe --always | tr -d '\n' \
+	|| echo 'Pre-Release' | tr -d '\n'])])
 
 
 ########################
