@@ -25,11 +25,12 @@
 #				version 1.0.4.				#
 # 19/10/2015	MG	1.0.6	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
-# 30/04/2017	MG	1.0.7	Move command man pages to section 8.	#
+# 01/05/2017	MG	1.0.7	Move command man pages to section 8.	#
+#				Move logrotate to new subdir logrotate.	#
 #									#
 #########################################################################
 
 
 SUBDIRS = source/progs/bash
 SUBDIRS += source/man/man5 source/man/man8
-SUBDIRS += source/conf/etc source/conf/rootetc
+SUBDIRS += source/conf/etc source/conf/rootetc/logrotate

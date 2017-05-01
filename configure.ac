@@ -6,12 +6,18 @@
 # Purpose:								#
 # AutoConf script file to configure LIXBackups project.			#
 #									#
-# configure cmd line syntax: ./configure [--enable-distchk]		#
-#	--enable-distchk utilises a substitute target file path for	#
-#	targets normally defined from /. This is really only useful	#
-#	when running make distcheck as it fails with these paths.	#
-#	To use this facility run:-					#
-#	make distcheck DISTCHECK_CONFIGURE_FLAGS=--enable-distchk	#
+# configure cmd line syntax:						#
+# ./configure	[--enable-distcheckfake=<yes|no> [default: no]]		#
+#									#
+# --enable-distcheckfake enables the replacement of an absolute		#
+# directory path specified in a variable, with a value based on		#
+# AutoTools standard directories. This enables the Makefile.am to use	#
+# the AT variable based value when running distcheck and the absolute	#
+# path for all else. Hence distcheck can now succeed when it would 	#
+# normally fail.							#
+#									#
+# To use this facility run:-						#
+# make distcheck DISTCHECK_CONFIGURE_FLAGS=--enable-distcheckfake=yes	#
 #									#
 #########################################################################
 
@@ -53,6 +59,8 @@
 #				multi-line.				#
 #				Fully populate sed substitution		#
 #				variable.				#
+#				Adopt standard --enable-distcheckfake.	#
+#				Move logrotate to new subdir logrotate.	#
 #									#
 #########################################################################
 
@@ -86,27 +94,30 @@ AC_SUBST([pkgversion], [m4_esyscmd([ \
 
 ########################
 #
-# The following takes the presence / absence of a configure command line argument
-# and sets a conditional for later Makefile use. The target install path variable
-# is set here as conditional setting of these targets is not allowed in an AutoMake file.
+# If a file location has to be fixed, e.g. /etc/foo.conf and never
+# /usr/local/etc/foo.conf, then make distcheck will fail. Setting this flag
+# allows make distcheck to locate the file in an AT standard directory-based
+# location.
+# eg /usr/local/etc/foo.conf.
+# and hence succeed.
 #
 ########################
 
-AC_ARG_ENABLE([distchk],
-	[  --enable-distchk    Enable running of distcheck],
+AC_ARG_ENABLE([distcheckfake],
+	[  --enable-distcheckfake    Enable running of distcheck],
 	[case "${enableval}" in
-		yes) distchk=true ;;
-		no)  distchk=false ;;
-		*) AC_MSG_ERROR([bad value ${enableval} for --enable-distchk]) ;;
-	esac],[distchk=false])
-AM_CONDITIONAL([DISTCHK], [test x$distchk = xtrue])
+		yes) distcheckfake=true ;;
+		no)  distcheckfake=false ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-distcheckfake]) ;;
+	esac],[distcheckfake=false])
+AM_CONDITIONAL([DISTCHECKFAKE], [test x$distcheckfake = xtrue])
 
-if test "x${distchk}" = xtrue; then
-	AC_SUBST([rootconfloc], ["$sysconfdir/logrotate.d"])
+if test "x${distcheckfake}" = xtrue; then
+	AC_SUBST([logrotateloc], ["$sysconfdir/logrotate.d"])
 	AC_MSG_NOTICE([Using substitute paths to facilitate distcheck.])
 else
-	AC_SUBST([rootconfloc], ["/etc/logrotate.d"])
-	AC_MSG_NOTICE([Using distcheck incompatible root based paths.])
+	AC_SUBST([logrotateloc], ["/etc/logrotate.d"])
+	AC_MSG_NOTICE([Using distcheck incompatible absolute based paths.])
 fi
 
 
@@ -288,6 +299,6 @@ AC_CONFIG_FILES([Makefile
 		source/man/man5/Makefile
 		source/man/man8/Makefile
 		source/conf/etc/Makefile
-		source/conf/rootetc/Makefile])
+		source/conf/rootetc/logrotate/Makefile])
 
 AC_OUTPUT

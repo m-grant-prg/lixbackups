@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 #########################################################################
 #									#
-# Script ID: source/conf/rootetc/Makefile.am				#
+# Script ID: source/conf/rootetc/logrotate/Makefile.am			#
 # Author: Mark Grant							#
 #									#
 # Purpose:								#
 # AutoMake script file to install LIXBackups logrotate.d files.		#
-#	Must be installed in /etc/logrotate.d as it is for use by the	#
-#	logrotate program.						#
+# Must be installed in /etc/logrotate.d as it is for use by the		#
+# logrotate program.							#
 #									#
 #########################################################################
 
@@ -24,13 +24,17 @@
 #				paths whilst supporting distcheck.	#
 # 19/10/2015	MG	1.0.4	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
+# 01/05/2017	MG	1.0.5	Adopt new standard using logrotateloc	#
+#				variable.				#
+#				Move to rootetc/logrotate directory the	#
+#				new standard.				#
 #									#
 #########################################################################
 
-# rootconfloc is set in configure.ac to provide a conditional target depending
+# logrotateloc is set in configure.ac to provide a conditional target depending
 # on whether distcheck is being run.
 
-confdir = $(rootconfloc)
+confdir = $(logrotateloc)
 
 lixbackups: Makefile
 	mkdir -p $(@D)
