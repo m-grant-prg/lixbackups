@@ -180,7 +180,21 @@ AC_SUBST([edit], ["sed \
 		-e 's|@pkglibexecdir[@]|\$(pkglibexecdir)|g'"])
 
 
-AM_INIT_AUTOMAKE
+# Passes the options to all am files. Puts objects in the sub-directory
+# containing the source.
+AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
+
+
+########################
+#
+# Standard macros will be automatically placed in m4.
+# Programmer defined macros should be placed in, say, m4extra which allows us
+# to exclude the standard macros from being git tracked. This other directory
+# must be specified as an include option in the Makefile.am ACLOCAL_AMFLAGS
+#
+########################
+
+AC_CONFIG_MACRO_DIR([m4])
 
 
 ########################
