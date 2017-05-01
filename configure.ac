@@ -51,6 +51,8 @@
 # 01/05/2017	MG	1.0.16	Move command man pages to section 8.	#
 #				Make AC_INIT and pkgversion AC_SUBST	#
 #				multi-line.				#
+#				Fully populate sed substitution		#
+#				variable.				#
 #									#
 #########################################################################
 
@@ -147,12 +149,36 @@ fi
 ########################
 
 AC_SUBST([edit], ["sed \
-		-e 's|@bindir[@]|\$(bindir)|g' \
-		-e 's|@pkgdatadir[@]|\$(pkgdatadir)|g' \
-		-e 's|@sysconfdir[@]|\$(sysconfdir)|g' \
-		-e 's|@prefix[@]|\$(prefix)|g' \
+		-e 's|@logrotateloc[@]|\$(logrotateloc)|g' \
 		-e 's|@pkgversion[@]|\$(pkgversion)|g' \
-		-e 's|@localstatedir[@]|\$(localstatedir)|g'"])
+		-e 's|@prefix[@]|\$(prefix)|g' \
+		-e 's|@exec_prefix[@]|\$(exec_prefix)|g' \
+		-e 's|@bindir[@]|\$(bindir)|g' \
+		-e 's|@sbindir[@]|\$(sbindir)|g' \
+		-e 's|@libexecdir[@]|\$(libexecdir)|g' \
+		-e 's|@libdir[@]|\$(libdir)|g' \
+		-e 's|@sysconfdir[@]|\$(sysconfdir)|g' \
+		-e 's|@sharedstatedir[@]|\$(sharedstatedir)|g' \
+		-e 's|@localstatedir[@]|\$(localstatedir)|g' \
+		-e 's|@runstatedir[@]|\$(runstatedir)|g' \
+		-e 's|@includedir[@]|\$(includedir)|g' \
+		-e 's|@oldincludedir[@]|\$(oldincludedir)|g' \
+		-e 's|@datarootdir[@]|\$(datarootdir)|g' \
+		-e 's|@localedir[@]|\$(localedir)|g' \
+		-e 's|@datadir[@]|\$(datadir)|g' \
+		-e 's|@mandir[@]|\$(mandir)|g' \
+		-e 's|@infodir[@]|\$(infodir)|g' \
+		-e 's|@docdir[@]|\$(docdir)|g' \
+		-e 's|@htmldir[@]|\$(htmldir)|g' \
+		-e 's|@dvidir[@]|\$(dvidir)|g' \
+		-e 's|@pdfdir[@]|\$(pdfdir)|g' \
+		-e 's|@psdir[@]|\$(psdir)|g' \
+		-e 's|@lispdir[@]|\$(lispdir)|g' \
+		-e 's|@pkgdatadir[@]|\$(pkgdatadir)|g' \
+		-e 's|@pkgincludedir[@]|\$(pkgincludedir)|g' \
+		-e 's|@pkglibdir[@]|\$(pkglibdir)|g' \
+		-e 's|@pkglibexecdir[@]|\$(pkglibexecdir)|g'"])
+
 
 AM_INIT_AUTOMAKE
 
