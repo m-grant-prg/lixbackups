@@ -1,3 +1,8 @@
+Release 1.2.6 2017-05-07
+Move command man pages to section 8.
+Adopt new --enable-distcheckfake and rootetc standards.
+Adopt standards from atbre template v1.0.0
+
 Release 1.2.5 2015-10-19
 Note conformity to AutoTools General Template v1.0.6.
 Restructure to conform to AutoTools General Template v1.0.5.
