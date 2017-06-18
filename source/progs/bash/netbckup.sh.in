@@ -32,7 +32,7 @@
 #		0 - success						#
 #		64 - Invalid arguments					#
 #		65 - Failed mounting backup network share		#
-#		66 - backup.snar non-existent or inaccesssible		#
+#		66 - backup.snar non-existent or inaccessible		#
 #		67 - trap received					#
 #									#
 #########################################################################
@@ -43,7 +43,7 @@
 #									#
 # Date		Author	Version	Description				#
 #									#
-# 24/09/2014	MG	1.0.1	Created from consolidation of seperate	#
+# 24/09/2014	MG	1.0.1	Created from consolidation of separate	#
 #				full, weekly, daily and data scripts.	#
 # 28/09/2014	MG	1.0.2	Changed latency_compensate function to	#
 #				attempt 1 execution of command without	#
@@ -79,6 +79,11 @@
 # 16/03/2015	MG	1.2.5	Improve logging.			#
 # 05/06/2015	MG	1.2.6	Reduce df output from df -ah to a more	#
 #				sensible df -h.				#
+# 18/06/2017	MG	1.2.7	With the introduction of GNU tar v1.29,	#
+#				some command line arguments are		#
+#				sensitive to the order in which they	#
+#				appear. In our case excludes must	#
+#				precede includes.			#
 #									#
 #########################################################################
 
@@ -86,7 +91,7 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.2.6"				# set version variable
+version="1.2.7"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -203,7 +208,8 @@ while true
 do
 	case "$1" in
 	-d|--differential)
-		if [ $fulladhoc = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+		if [ $fulladhoc = TRUE -o $incremental = TRUE \
+			-o $selective = TRUE -o $weekly = TRUE ]
 		then
 			output "Options d, f, i, s and w are all mutually exclusive." 64 FALSE
 			exit 64
@@ -211,11 +217,13 @@ do
 		differential=TRUE
 		bckuptype="differential"
 		attachtype="weekly"
-		script_short_desc=$(uname -n)" "$(date +%A)" Daily Differential Backup"
+		script_short_desc=$(uname -n)" "$(date +%A)
+		script_short_desc+=" Daily Differential Backup"
 		shift
 		;;
 	-f|--full)
-		if [ $differential = TRUE -o $incremental = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+		if [ $differential = TRUE -o $incremental = TRUE \
+			-o $selective = TRUE -o $weekly = TRUE ]
 		then
 			output "Options f, i, s, w and d are all mutually exclusive." 64 FALSE
 			exit 64
@@ -223,7 +231,8 @@ do
 		fulladhoc=TRUE
 		bckuptype="fulladhoc"
 		attachtype="adhoc"
-		script_short_desc=$(uname -n)" Ad Hoc Full Backup "$(date '+%Y%m%d%H%M')
+		script_short_desc=$(uname -n)" Ad Hoc Full Backup "
+		script_short_desc+=$(date '+%Y%m%d%H%M')
 		shift
 		;;
 	-h|--help)
@@ -240,7 +249,8 @@ do
 		exit 0
 		;;
 	-i|--incremental)
-		if [ $fulladhoc = TRUE -o $differential = TRUE -o $selective = TRUE -o $weekly = TRUE ]
+		if [ $fulladhoc = TRUE -o $differential = TRUE \
+			-o $selective = TRUE -o $weekly = TRUE ]
 		then
 			output "Options i, s, w, d and f are all mutually exclusive." 64 FALSE
 			exit 64
@@ -248,11 +258,13 @@ do
 		incremental=TRUE
 		bckuptype="incremental"
 		attachtype="weekly"
-		script_short_desc=$(uname -n)" "$(date +%A)" Daily Incremental Backup"
+		script_short_desc=$(uname -n)" "$(date +%A)
+		script_short_desc+=" Daily Incremental Backup"
 		shift
 		;;
 	-s|--selective)
-		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $weekly = TRUE ]
+		if [ $fulladhoc = TRUE -o $differential = TRUE \
+			-o $incremental = TRUE -o $weekly = TRUE ]
 		then
 			output "Options s, w, d, f and i are all mutually exclusive." 64 FALSE
 			exit 64
@@ -269,7 +281,8 @@ do
 		exit 0
 		;;
 	-w|--weekly)
-		if [ $fulladhoc = TRUE -o $differential = TRUE -o $incremental = TRUE -o $selective = TRUE ]
+		if [ $fulladhoc = TRUE -o $differential = TRUE \
+			-o $incremental = TRUE -o $selective = TRUE ]
 		then
 			output "Options w, d, f, i and s are all mutually exclusive." 64 FALSE
 			exit 64
@@ -393,6 +406,7 @@ std_cmd_err_handler $?
 # Start build of backup command
 bckupCL="tar cpzf "
 
+
 case $bckuptype in
 differential)
 	# Build the backup & incremental file names and paths
@@ -418,14 +432,22 @@ differential)
 		script_exit
 	fi
 
-	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
-	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
+	bckupCL+="$backpath --exclude-from=$etclocation/bckdaily.exclude "
+	# Exclude system and cache directories
+	bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
+	bckupCL+="--exclude-from=$mntdir/sockets.exclude "
+	bckupCL+="--exclude-caches "
+	bckupCL+="--listed-incremental=$snarpath "
 	;;
 fulladhoc)
 	# Build the backup file name and path
 	backpath="$mntdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
 
-	bckupCL=$bckupCL"$backpath "
+	bckupCL+="$backpath "
+	# Exclude system and cache directories
+	bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
+	bckupCL+="--exclude-from=$mntdir/sockets.exclude "
+	bckupCL+="--exclude-caches "
 	;;
 incremental)
 	# Build the backup & incremental file names and paths
@@ -439,15 +461,23 @@ incremental)
 		script_exit
 	fi
 
-	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
-	bckupCL=$bckupCL"--exclude-from=$etclocation/bckdaily.exclude "
+	bckupCL+="$backpath --exclude-from=$etclocation/bckdaily.exclude "
+	# Exclude system and cache directories
+	bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
+	bckupCL+="--exclude-from=$mntdir/sockets.exclude "
+	bckupCL+="--exclude-caches "
+	bckupCL+="--listed-incremental=$snarpath "
 	;;
 selective)
 	# Build the backup file name and path
 	backpath="$mntdir/backupsel"$(date +%a)".tar.gz"
 
-	bckupCL=$bckupCL"$backpath --files-from=$etclocation/bckseldaily.files "
-	bckupCL=$bckupCL"--exclude-from=$etclocation/bckseldaily.exclude "
+	bckupCL+="$backpath --exclude-from=$etclocation/bckseldaily.exclude "
+	# Exclude system and cache directories
+	bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
+	bckupCL+="--exclude-from=$mntdir/sockets.exclude "
+	bckupCL+="--exclude-caches "
+	bckupCL+="--files-from=$etclocation/bckseldaily.files "
 	;;
 weekly)
 	# Build the backup & incremental file names and paths
@@ -461,8 +491,12 @@ weekly)
 		std_cmd_err_handler $?
 	fi
 
-	bckupCL=$bckupCL"$backpath --listed-incremental=$snarpath "
-	bckupCL=$bckupCL"--exclude-from=$etclocation/bckweekly.exclude "
+	bckupCL+="$backpath --exclude-from=$etclocation/bckweekly.exclude "
+	# Exclude system and cache directories
+	bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
+	bckupCL+="--exclude-from=$mntdir/sockets.exclude "
+	bckupCL+="--exclude-caches "
+	bckupCL+="--listed-incremental=$snarpath "
 	;;
 esac
 
@@ -508,15 +542,10 @@ output "Find command used:- $findCL" 0 FALSE
 
 eval "$findCL"
 
-# Run the backup excluding system directories
-bckupCL=$bckupCL"--exclude-from=$etclocation/bcksystem.exclude "
-bckupCL=$bckupCL"--exclude-from=$mntdir/sockets.exclude "
 
-# If selective backup then uses --files-from so doesn't need starting node (root)
-if [ $selective = TRUE ] ; then
-	bckupCL=$bckupCL"--exclude-caches"
-else
-	bckupCL=$bckupCL"--exclude-caches /"
+# Selective uses --files-from so doesn't need starting node (root)
+if [ $selective = FALSE ] ; then
+	bckupCL+="/"
 fi
 
 output "Backup command used:- $bckupCL" 0 FALSE
