@@ -83,6 +83,8 @@
 #				with other backup packages.		#
 # 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
 #				syslog.					#
+# 19/06/2017	MG	1.2.4	Ensure comments respect the 80 column	#
+#				rule.					#
 #									#
 #########################################################################
 
@@ -91,7 +93,7 @@
 ##################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.2.3"				# set version variable
+version="1.2.4"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 verbosity=""
 packageversion=@pkgversion@		# Version of the complete package
@@ -102,7 +104,8 @@ mntdir=""
 #############
 
 # Output $1 to stdout or stderr depending on $2 and write to syslog if required.
-# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
+# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr)
+# $3 (TRUE = syslog it).
 output()
 {
 	if [ $2 = 0 ]

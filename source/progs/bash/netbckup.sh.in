@@ -84,6 +84,8 @@
 #				sensitive to the order in which they	#
 #				appear. In our case excludes must	#
 #				precede includes.			#
+# 19/06/2017	MG	1.2.8	Ensure comments respect the 80 column	#
+#				rule.					#
 #									#
 #########################################################################
 
@@ -91,7 +93,7 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.2.7"				# set version variable
+version="1.2.8"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -113,7 +115,8 @@ loglocation=@localstatedir@/log		# Log file location
 #############
 
 # Output $1 to stdout or stderr depending on $2 and write to syslog if required.
-# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr) $3 (TRUE = syslog it).
+# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr)
+# $3 (TRUE = syslog it).
 output()
 {
 	if [ $2 = 0 ]
@@ -149,10 +152,10 @@ then
 	# No error check cos could loop via std_cmd_err_handler
 fi
 
-# FD's 6 & 7 may or may not be open at this point so test individually for closing.
-# This reads lsof with ANDed conditions of suppress warnings, FD 6, output only FD
-# for this current PID and pipe it's output to wc to count the lines. If FD 6 is
-# open, 2 lines result, PID number and f6.
+# FD's 6 & 7 may or may not be open at this point so test individually for
+# closing. This reads lsof with ANDed conditions of suppress warnings, FD 6,
+# output only FD for this current PID and pipe it's output to wc to count the
+# lines. If FD 6 is open, 2 lines result, PID number and f6.
 if [ $(lsof -aw -d 6 -F f -p $$ | wc -l) -gt 0 ]
 then
 	# Final log entries and restore stdout & stderr
@@ -517,7 +520,8 @@ std_cmd_err_handler $?
 # ignoring directories appearing in bcksystem.exclude
 # If the directory being excluded is explicit then use wholename option so
 # the path has to be an exact match.
-# If the directory is quoted then use -name which matches any part of the full path.
+# If the directory is quoted then use -name which matches any part of the full
+# path.
 
 findCL="find / -type d '(' "
 count=0
