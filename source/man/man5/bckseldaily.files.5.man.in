@@ -1,10 +1,13 @@
 NAME
 bckseldaily.files - Daily selective backup inclusions file.
 DESCRIPTION
-bckseldaily.files contains one line for each file or directory to be included in a daily selective backup.
+bckseldaily.files contains one line for each file or directory to be included in
+a daily selective backup.
 FILES
 bckseldaily.files
-The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/lixbackups/bckseldaily.files.
+The file is stored in an etc directory. The exact location depends on the method
+of installation but for Autotools installations on Linux this is likely to
+be /usr/local/etc/lixbackups/bckseldaily.files.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS

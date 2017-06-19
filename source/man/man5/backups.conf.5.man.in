@@ -25,7 +25,9 @@ General Section		mntdir=local mount directory
 
 The last line of this file must be terminated with a NewLine.
 
-The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/lixbackups/backups.conf.
+The file is stored in an etc directory. The exact location depends on the method
+of installation but for Autotools installations on Linux this is likely to
+be /usr/local/etc/lixbackups/backups.conf.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS

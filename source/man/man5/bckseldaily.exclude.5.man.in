@@ -1,10 +1,13 @@
 NAME
 bckseldaily.exclude - Daily selective backup exclusions file.
 DESCRIPTION
-bckseldaily.exclude contains one line for each file or directory to be skipped during a daily selective backup.
+bckseldaily.exclude contains one line for each file or directory to be skipped
+during a daily selective backup.
 FILES
 bckseldaily.exclude
-The file is stored in an etc directory. The exact location depends on the method of installation but for Autotools installations on Linux this is likely to be /usr/local/etc/lixbackups/bckseldaily.exclude.
+The file is stored in an etc directory. The exact location depends on the method
+of installation but for Autotools installations on Linux this is likely to
+be /usr/local/etc/lixbackups/bckseldaily.exclude.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
