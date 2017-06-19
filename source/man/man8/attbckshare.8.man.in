@@ -3,10 +3,10 @@ attbckshare - attach network share for backups
 SYNOPSIS
 attbckshare [OPTION]
 DESCRIPTION
-Attaches a pre-determined network CIFS or NFS share as a target location for backup
-files. Two target locations are supported; a weekly target for the full weekly,
-differential and incremental type backups, and, the ad hoc type for the full
-ad hoc and selective type backups.
+Attaches a pre-determined network CIFS or NFS share as a target location for
+backup files. Two target locations are supported; a weekly target for the full
+weekly, differential and incremental type backups, and, the ad hoc type for the
+full ad hoc and selective type backups.
 OPTIONS
 -a, --adhoc	attaches the pre-defined adhoc backup target share.
 
