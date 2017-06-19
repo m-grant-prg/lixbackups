@@ -60,7 +60,8 @@
 	Change package name to LIXBackups.
 	Change latency_compensate function to attempt 1 execution of command
 	without causing a sleep.
-	Changed --exclude-from and --files-from file names to more meaningful names.
+	Changed --exclude-from and --files-from file names to more meaningful
+	names.
 	attbckshare		Still at version 1.1.1
 	chkbckshare		Still at version 1.1.1
 	detbckshare		Still at version 1.1.1
@@ -68,8 +69,8 @@
 	setup.sh		Now at version 1.1.2
 
 2014-06-18 v 1.1.2 Mark Grant <m.grant.prg@gmail.com>
-	* Improved directory structure in source and which files Git tracks. Added configure
-	check for txt2man. Added manual entries for files.
+	* Improved directory structure in source and which files Git tracks.
+	Added configure check for txt2man. Added manual entries for files.
 	attbckshare		Still at version 1.1.1
 	bckdatadaily		Still at version 1.1.1
 	bckfulladhoc		Still at version 1.1.1

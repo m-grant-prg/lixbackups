@@ -61,10 +61,11 @@
 #				variable.				#
 #				Adopt standard --enable-distcheckfake.	#
 #				Move logrotate to new subdir logrotate.	#
+# 19/06/2017	MG	1.0.17	Ensure the 80 column rule is respected.	#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.16 $])
+AC_REVISION([$Revision: 1.0.17 $])
 
 AC_PREREQ([2.65])
 
@@ -108,7 +109,8 @@ AC_ARG_ENABLE([distcheckfake],
 	[case "${enableval}" in
 		yes) distcheckfake=true ;;
 		no)  distcheckfake=false ;;
-		*) AC_MSG_ERROR([bad value ${enableval} for --enable-distcheckfake]) ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for \
+			--enable-distcheckfake]) ;;
 	esac],[distcheckfake=false])
 AM_CONDITIONAL([DISTCHECKFAKE], [test x$distcheckfake = xtrue])
 
