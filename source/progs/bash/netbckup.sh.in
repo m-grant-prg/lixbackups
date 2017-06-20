@@ -84,7 +84,7 @@
 #				sensitive to the order in which they	#
 #				appear. In our case excludes must	#
 #				precede includes.			#
-# 19/06/2017	MG	1.2.8	Ensure comments respect the 80 column	#
+# 20/06/2017	MG	1.2.8	Ensure script respects the 80 column	#
 #				rule.					#
 #									#
 #########################################################################
@@ -159,8 +159,11 @@ fi
 if [ $(lsof -aw -d 6 -F f -p $$ | wc -l) -gt 0 ]
 then
 	# Final log entries and restore stdout & stderr
-	output $script_short_desc" completed with status $script_exit_code" $script_exit_code FALSE
-	output "Processing of "$backpath" is complete. Status: $script_exit_code" $script_exit_code FALSE
+	output $script_short_desc" completed with status $script_exit_code" \
+		$script_exit_code FALSE
+	msg="Processing of "$backpath" is complete. Status: "
+	msg+="$script_exit_code"
+	output "$msg" $script_exit_code FALSE
 
 	exec 1>&6 6>&-	# Restore stdout and close FD 6
 fi
@@ -172,7 +175,8 @@ fi
 # Re-Allow logins
 rm -f /etc/nologin
 
-output $script_short_desc" completed with status "$script_exit_code $script_exit_code TRUE
+output $script_short_desc" completed with status "$script_exit_code \
+	$script_exit_code TRUE
 
 exit $script_exit_code
 }
@@ -193,7 +197,8 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 ########
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o dfhisVw \
-		--long differential,full,help,incremental,selective,version,weekly -n "$0" -- "$@"`
+	--long differential,full,help,incremental,selective,version,weekly \
+	-n "$0" -- "$@"`
 status=$?
 if [ $status != 0 ]
 then
@@ -214,7 +219,9 @@ do
 		if [ $fulladhoc = TRUE -o $incremental = TRUE \
 			-o $selective = TRUE -o $weekly = TRUE ]
 		then
-			output "Options d, f, i, s and w are all mutually exclusive." 64 FALSE
+			msg="Options d, f, i, s and w are all mutually "
+			msg+="exclusive."
+			output "$msg" 64 FALSE
 			exit 64
 		fi
 		differential=TRUE
@@ -228,7 +235,9 @@ do
 		if [ $differential = TRUE -o $incremental = TRUE \
 			-o $selective = TRUE -o $weekly = TRUE ]
 		then
-			output "Options f, i, s, w and d are all mutually exclusive." 64 FALSE
+			msg="Options d, f, i, s and w are all mutually "
+			msg+="exclusive."
+			output "$msg" 64 FALSE
 			exit 64
 		fi
 		fulladhoc=TRUE
@@ -255,7 +264,9 @@ do
 		if [ $fulladhoc = TRUE -o $differential = TRUE \
 			-o $selective = TRUE -o $weekly = TRUE ]
 		then
-			output "Options i, s, w, d and f are all mutually exclusive." 64 FALSE
+			msg="Options d, f, i, s and w are all mutually "
+			msg+="exclusive."
+			output "$msg" 64 FALSE
 			exit 64
 		fi
 		incremental=TRUE
@@ -269,7 +280,9 @@ do
 		if [ $fulladhoc = TRUE -o $differential = TRUE \
 			-o $incremental = TRUE -o $weekly = TRUE ]
 		then
-			output "Options s, w, d, f and i are all mutually exclusive." 64 FALSE
+			msg="Options d, f, i, s and w are all mutually "
+			msg+="exclusive."
+			output "$msg" 64 FALSE
 			exit 64
 		fi
 		selective=TRUE
@@ -287,7 +300,9 @@ do
 		if [ $fulladhoc = TRUE -o $differential = TRUE \
 			-o $incremental = TRUE -o $selective = TRUE ]
 		then
-			output "Options w, d, f, i and s are all mutually exclusive." 64 FALSE
+			msg="Options d, f, i, s and w are all mutually "
+			msg+="exclusive."
+			output "$msg" 64 FALSE
 			exit 64
 		fi
 		weekly=TRUE
@@ -363,10 +378,14 @@ pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 
 if [ $pwdstatus = "P" ]
 then
-	output "Root password status is "$pwdstatus". Denying non-root login access." 0 TRUE
+	msg="Root password status is "$pwdstatus". Denying non-root login "
+	msg+="access."
+	output "$msg" 0 TRUE
 	echo "Login refused. Backup in progress." > /etc/nologin
 else
-	output "Root password status is "$pwdstatus". Login access not being denied." 0 TRUE
+	msg="Root password status is "$pwdstatus". Login access not being "
+	msg+="denied."
+	output "$msg" 0 TRUE
 fi
 
 # Read parameters from $etclocation/backups.conf
@@ -431,7 +450,9 @@ differential)
 		std_cmd_err_handler $?
 	else
 		script_exit_code=66
-		output "backup.snar does not exist or is not accessible. Exit code "$script_exit_code 1 TRUE
+		msg="backup.snar does not exist or is not accessible. Exit "
+		msg+="code "$script_exit_code
+		output "$msg" 1 TRUE
 		script_exit
 	fi
 
@@ -460,7 +481,9 @@ incremental)
 	# Check that the incremental file exists.
 	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ] ; then
 		script_exit_code=66
-		output $snarpath" does not exist or is not accessible. Exit code "$script_exit_code 1 TRUE
+		msg=$snarpath" does not exist or is not accessible. Exit "
+		msg+="code "$script_exit_code
+		output "$msg" 1 TRUE
 		script_exit
 	fi
 

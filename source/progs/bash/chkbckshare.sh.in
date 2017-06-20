@@ -48,6 +48,8 @@
 # 24/02/2015	MG	1.2.2	Change configuration files directory to	#
 #				lixbackups to limit risk of conflict	#
 #				with other backup packages.		#
+# 20/06/2017	MG	1.2.3	Ensure script respects the 80 column	#
+#				rule.					#
 #									#
 #########################################################################
 
@@ -59,7 +61,7 @@ terse="FALSE"
 outputprefix="chkbckshare: "
 mountoutput=""
 script_exit_code=0
-version="1.2.2"				# set version variable
+version="1.2.3"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -126,11 +128,15 @@ do
 		;;
 	-h|--help)
 		echo "Usage is $0 [options]"
-		echo "	-b or --boolean displays TRUE or FALSE instead of mount information"
+		msg="	-b or --boolean displays TRUE or FALSE instead of "
+		msg+="mount information"
+		echo "$msg"
 		echo "	OR"
 		echo "	-h or --help displays usage information"
 		echo "	OR"
-		echo "	-t or --terse removes prepending script name from the output"
+		msg="	-t or --terse removes prepending script name from the "
+		msg+="output"
+		echo "$msg"
 		echo "	OR"
 		echo "	-V or --version displays version information"
 		shift

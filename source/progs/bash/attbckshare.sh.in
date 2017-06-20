@@ -91,7 +91,7 @@
 #				with other backup packages.		#
 # 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
 #				syslog.					#
-# 19/06/2017	MG	1.2.4	Ensure comments respect the 80 column	#
+# 19/06/2017	MG	1.2.4	Ensure script respects the 80 column	#
 #				rule.					#
 #									#
 #########################################################################
@@ -175,7 +175,8 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Main #
 ########
 # Process command line arguments with GNU getopt.
-GETOPTTEMP=`getopt -o ahvVw --long adhoc,help,verbose,version,weekly -n "$0" -- "$@"`
+GETOPTTEMP=`getopt -o ahvVw --long adhoc,help,verbose,version,weekly \
+	-n "$0" -- "$@"`
 std_cmd_err_handler $?
 
 eval set -- "$GETOPTTEMP"
@@ -333,12 +334,16 @@ then
 	if [ $status != 0 ]
 	then
 		script_exit_code=65
-		output "Failed to mount backup share. Mount error: "$status" Script exit code: "$script_exit_code 1 TRUE
+		msg="Failed to mount backup share. Mount error: "$status
+		msg+=" Script exit code: "$script_exit_code
+		output $msg 1 TRUE
 		script_exit
 	fi
 else
 	script_exit_code=66
-	output "Backup share already mounted. Script exit code: "$script_exit_code 1 TRUE
+	msg="Backup share already mounted. Script exit code: "
+	msg+=$script_exit_code
+	output $msg 1 TRUE
 	script_exit
 fi
 

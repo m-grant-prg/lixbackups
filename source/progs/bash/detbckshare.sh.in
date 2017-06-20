@@ -83,7 +83,7 @@
 #				with other backup packages.		#
 # 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
 #				syslog.					#
-# 19/06/2017	MG	1.2.4	Ensure comments respect the 80 column	#
+# 20/06/2017	MG	1.2.4	Ensure script respects the 80 column	#
 #				rule.					#
 #									#
 #########################################################################
@@ -226,12 +226,15 @@ then
 	if [ $status != 0 ]
 	then
 		script_exit_code=65
-		output "Failed to unmount backup share. Umount error: "$status" Script exit code: "$script_exit_code 1 TRUE
+		msg="Failed to unmount backup share. Umount error: "
+		msg+=$status" Script exit code: "$script_exit_code
+		output $msg 1 TRUE
 		script_exit
 	fi
 else
 	script_exit_code=66
-	output "Backup share not mounted. Script exit code: "$script_exit_code 1 TRUE
+	output "Backup share not mounted. Script exit code: "$script_exit_code \
+		1 TRUE
 	script_exit
 fi
 
