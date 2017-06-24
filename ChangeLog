@@ -1,3 +1,15 @@
+2017-06-24 v 1.2.7 Mark Grant <m.grant.prg@gmail.com>
+	* Move excludes before includes in the tar command. With the
+	introduction of GNU tar v1.29, some command line arguments are sensitive
+	to the order in which they appear. In our case excludes must precede
+	includes.
+	Tidy-up source code formatting.
+	attbckshare		Now at version 1.2.4
+	chkbckshare		Now at version 1.2.3
+	detbckshare		Now at version 1.2.4
+	netbckup		Now at version 1.2.8
+	setup.sh		Still at version 1.2.2
+
 2017-05-07 v 1.2.6 Mark Grant <m.grant.prg@gmail.com>
 	* Move command man pages to section 8.
 	Adopt new --enable-distcheckfake and rootetc standards.

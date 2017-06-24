@@ -1,3 +1,9 @@
+Release 1.2.7 2017-06-24
+Move excludes before includes in the tar command. With the introduction of
+GNU tar v1.29, some command line arguments are sensitive to the order in which
+they appear. In our case excludes must precede includes.
+Tidy-up source code formatting.
+
 Release 1.2.6 2017-05-07
 Move command man pages to section 8.
 Adopt new --enable-distcheckfake and rootetc standards.
