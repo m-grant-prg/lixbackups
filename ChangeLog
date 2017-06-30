@@ -1,3 +1,8 @@
+2017-06-30 v 1.2.8 Mark Grant <m.grant.prg@gmail.com>
+	* Add --format=posix to the tar command to avoid the 99 character
+	filename limitation.
+	netbckup		Now at version 1.2.9
+
 2017-06-24 v 1.2.7 Mark Grant <m.grant.prg@gmail.com>
 	* Move excludes before includes in the tar command. With the
 	introduction of GNU tar v1.29, some command line arguments are sensitive
