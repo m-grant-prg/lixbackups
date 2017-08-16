@@ -1,3 +1,8 @@
+2017-08-16 v 1.2.9 Mark Grant <m.grant.prg@gmail.com>
+	* If lixbackups.log does not exist create with root:adm ownership
+	instead of syslog:adm as Debian does not have a syslog user.
+	netbckup		Now at version 1.2.10
+
 2017-06-30 v 1.2.8 Mark Grant <m.grant.prg@gmail.com>
 	* Add --format=posix to the tar command to avoid the 99 character
 	filename limitation.
