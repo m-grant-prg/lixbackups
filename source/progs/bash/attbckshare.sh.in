@@ -93,6 +93,13 @@
 #				syslog.					#
 # 19/06/2017	MG	1.2.4	Ensure script respects the 80 column	#
 #				rule.					#
+# 07/09/2017	MG	1.2.5	As of kernel version 4.13.0 the default	#
+#				CIFS protocol version has been changed	#
+#				from 1.0 to 3.0. However, some old NAS	#
+#				devices may well still only know 1.0.	#
+#				So introduce a config file param for	#
+#				cifs version. If left blank the the	#
+#				system default will be used.		#
 #									#
 #########################################################################
 
@@ -101,7 +108,7 @@
 ##################
 script_exit_code=0
 outputprefix="attbckshare: "
-version="1.2.4"				# set version variable
+version="1.2.5"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -116,6 +123,7 @@ adhoctype=""
 adhoctarget=""
 adhoccredfile=""
 adhocnotifyuser=""
+cifsversion=""
 mntdir=""
 bckuptype=""
 
@@ -290,6 +298,9 @@ do
 	adhocnotifyuser)
 		adhocnotifyuser=${input[1]}
 		;;
+	cifsversion)
+		cifsversion=${input[1]}
+		;;
 	mntdir)
 		mntdir=${input[1]}
 		;;
@@ -319,6 +330,10 @@ NFS)
 	;;
 CIFS)
 	mountCL=$mountCL"cifs -o credentials=$credfile $target $mntdir"
+	if [ "$cifsversion" != "" ]
+	then
+		mountCL+=" -o vers=$cifsversion"
+	fi
 	;;
 *)	script_exit_code=1
 	output "Invalid share type." 1 TRUE

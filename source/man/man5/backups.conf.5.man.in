@@ -21,7 +21,9 @@ adhoccredfile=blank or full path. (E.g. /root/.hostbackupcredentials)
 .br
 adhocnotifyuser=user to be notified by email
 
-General Section		mntdir=local mount directory
+General Section		cifsversion=protocol to use (blank for default)
+.br
+mntdir=local mount directory
 
 The last line of this file must be terminated with a NewLine.
 
