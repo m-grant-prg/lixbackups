@@ -1,3 +1,9 @@
+Release 1.2.10 2017-09-07
+As of kernel version 4.13.0 the default CIFS protocol version has been changed
+from 1.0 to 3.0. However, some old NAS devices may well still only know 1.0. So
+introduce a config file param for cifs version. If left blank the the system
+default will be used.
+
 Release 1.2.9 2017-08-16
 If lixbackups.log does not exist create with root:adm ownership instead of
 syslog:adm as Debian does not have a syslog user.
