@@ -1,3 +1,6 @@
+Release 1.2.11 2017-10-26
+bcksystem.exclude extended following more detailed linux FHS analysis.
+
 Release 1.2.10 2017-09-07
 As of kernel version 4.13.0 the default CIFS protocol version has been changed
 from 1.0 to 3.0. However, some old NAS devices may well still only know 1.0. So
