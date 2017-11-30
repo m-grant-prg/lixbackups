@@ -2,7 +2,10 @@
 #########################################################################
 #									#
 # Script ID: ./Makefile.am						#
-# Author: Mark Grant							#
+# Author: Copyright (C) 2012-2017  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
 #									#
 # Purpose:								#
 # AutoMake script file to generate LIXBackups project from source.	#
@@ -27,6 +30,7 @@
 #				General Template v1.0.5.		#
 # 01/05/2017	MG	1.0.7	Move command man pages to section 8.	#
 #				Move logrotate to new subdir logrotate.	#
+# 30/11/2017	MG	1.0.8	Add SPDX license tags to source files.	#
 #									#
 #########################################################################
 

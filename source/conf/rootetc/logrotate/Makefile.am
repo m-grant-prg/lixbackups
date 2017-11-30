@@ -2,7 +2,10 @@
 #########################################################################
 #									#
 # Script ID: source/conf/rootetc/logrotate/Makefile.am			#
-# Author: Mark Grant							#
+# Author: Copyright (C) 2012-2017  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
 #									#
 # Purpose:								#
 # AutoMake script file to install LIXBackups logrotate.d files.		#
@@ -28,6 +31,7 @@
 #				variable.				#
 #				Move to rootetc/logrotate directory the	#
 #				new standard.				#
+# 30/11/2017	MG	1.0.6	Add SPDX license tags to source files.	#
 #									#
 #########################################################################
 

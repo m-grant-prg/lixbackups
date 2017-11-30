@@ -9,7 +9,10 @@
 #########################################################################
 #									#
 # Script ID: netbckup							#
-# Author: Mark Grant							#
+# Author: Copyright (C) 2012-2017  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
 #									#
 # Purpose:								#
 # Depending on command line arguments runs:-				#
@@ -93,6 +96,7 @@
 #				with root:adm ownership instead of	#
 #				syslog:adm as Debian does not have a	#
 #				syslog user.				#
+# 30/11/2017	MG	1.2.11	Add SPDX license tags to source files.	#
 #									#
 #########################################################################
 
@@ -100,7 +104,7 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.2.10"			# set version variable
+version="1.2.11"			# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE

@@ -9,7 +9,10 @@
 #########################################################################
 #									#
 # Script ID: detbckshare						#
-# Author: Mark Grant							#
+# Author: Copyright (C) 2012-2017  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
 #									#
 # Purpose:								#
 # To unmount the backup share. E.g.					#
@@ -85,6 +88,7 @@
 #				syslog.					#
 # 20/06/2017	MG	1.2.4	Ensure script respects the 80 column	#
 #				rule.					#
+# 30/11/2017	MG	1.2.5	Add SPDX license tags to source files.	#
 #									#
 #########################################################################
 
@@ -93,7 +97,7 @@
 ##################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.2.4"				# set version variable
+version="1.2.5"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 verbosity=""
 packageversion=@pkgversion@		# Version of the complete package

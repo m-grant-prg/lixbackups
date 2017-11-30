@@ -1,7 +1,10 @@
 #########################################################################
 #									#
 # Script ID: ./configure.ac						#
-# Author: Mark Grant							#
+# Author: Copyright (C) 2012-2017  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0					#
 #									#
 # Purpose:								#
 # AutoConf script file to configure LIXBackups project.			#
@@ -62,10 +65,11 @@
 #				Adopt standard --enable-distcheckfake.	#
 #				Move logrotate to new subdir logrotate.	#
 # 19/06/2017	MG	1.0.17	Ensure the 80 column rule is respected.	#
+# 30/11/2017	MG	1.0.18	Add SPDX license tags to source files.	#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.17 $])
+AC_REVISION([$Revision: 1.0.18 $])
 
 AC_PREREQ([2.65])
 
