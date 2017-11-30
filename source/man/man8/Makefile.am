@@ -32,6 +32,10 @@
 # 30/04/2017	MG	1.0.8	Output from $(edit) was being ignored.	#
 #				Rename source file extension .man.in	#
 #				Move to section 8.			#
+# 30/11/2017	MG	1.0.9	Determine the manual section from the	#
+#				target suffix. If the suffix is blank	#
+#				(foo.) or if there is no suffix (foo)	#
+#				then error out.				#
 #									#
 #########################################################################
 
@@ -40,7 +44,19 @@ attbckshare.8 detbckshare.8 chkbckshare.8 netbckup.8: Makefile
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	$(edit) $(srcdir)/$(@F).man.in > $@.tmp
-	txt2manwrap $(@F) 1 "Backup Scripts Manual" $@.tmp $@
+	targfile=$(@F);	\
+	if [[ $$targfile == *"."* ]]; then \
+		if [[ $${targfile##*.} == "" ]]; then \
+			echo "Source file suffix used as section but empty."; \
+			exit 1; \
+		else \
+			section=$${targfile##*.}; \
+		fi; \
+	else \
+		echo "Source file suffix used as section but no dot & empty."; \
+		exit 1; \
+	fi; \
+	txt2manwrap $(@F) $$section "Backup Scripts Manual" $@.tmp $@
 	rm -f $@.tmp
 
 attbckshare.8: $(srcdir)/attbckshare.8.man.in

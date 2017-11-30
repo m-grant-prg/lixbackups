@@ -25,6 +25,10 @@
 #				General Template v1.0.5.		#
 # 30/04/2017	MG	1.0.6	Output from $(edit) was being ignored.	#
 #				Rename source file extension .man.in	#
+# 30/11/2017	MG	1.0.7	Determine the manual section from the	#
+#				target suffix. If the suffix is blank	#
+#				(foo.) or if there is no suffix (foo)	#
+#				then error out.				#
 #									#
 #########################################################################
 
@@ -34,7 +38,19 @@ backups.conf.5 bckseldaily.exclude.5 bckseldaily.files.5 bckweekly.exclude.5 \
 	mkdir -p $(@D)
 	rm -f $@ $@.tmp
 	$(edit) $(srcdir)/$(@F).man.in > $@.tmp
-	txt2manwrap $(@F) 5 "Backup Scripts Manual" $@.tmp $@
+	targfile=$(@F);	\
+	if [[ $$targfile == *"."* ]]; then \
+		if [[ $${targfile##*.} == "" ]]; then \
+			echo "Source file suffix used as section but empty."; \
+			exit 1; \
+		else \
+			section=$${targfile##*.}; \
+		fi; \
+	else \
+		echo "Source file suffix used as section but no dot & empty."; \
+		exit 1; \
+	fi; \
+	txt2manwrap $(@F) $$section "Backup Scripts Manual" $@.tmp $@
 	rm -f $@.tmp
 
 backups.conf.5: $(srcdir)/backups.conf.5.man.in
