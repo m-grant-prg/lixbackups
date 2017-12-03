@@ -31,12 +31,8 @@
 #			-s or --selective || -V or --version ||		#
 #			-w or --weekly ]				#
 #									#
-# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
-#		0 - success						#
-#		64 - Invalid arguments					#
-#		65 - Failed mounting backup network share		#
-#		66 - backup.snar non-existent or inaccessible		#
-#		67 - trap received					#
+# Exit Codes:	0 - success						#
+#		1 - failure						#
 #									#
 #########################################################################
 
@@ -97,6 +93,8 @@
 #				syslog:adm as Debian does not have a	#
 #				syslog user.				#
 # 30/11/2017	MG	1.2.11	Add SPDX license tags to source files.	#
+# 03/12/2017	MG	1.2.12	Adopt normal exit code policy; 0 on	#
+#				success, 1 on failure.			#
 #									#
 #########################################################################
 
@@ -104,7 +102,7 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.2.11"			# set version variable
+version="1.2.12"			# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="netbckup: "
 differential=FALSE
@@ -195,7 +193,7 @@ exit $script_exit_code
 # Standard trap exit function
 trap_exit()
 {
-script_exit_code=67
+script_exit_code=1
 output "Script terminating due to trap received." 1 TRUE
 script_exit
 }
@@ -460,7 +458,7 @@ differential)
 		cp $mntdir/backup.snar $snarpath
 		std_cmd_err_handler $?
 	else
-		script_exit_code=66
+		script_exit_code=1
 		msg="backup.snar does not exist or is not accessible. Exit "
 		msg+="code "$script_exit_code
 		output "$msg" 1 TRUE
@@ -491,7 +489,7 @@ incremental)
 
 	# Check that the incremental file exists.
 	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ] ; then
-		script_exit_code=66
+		script_exit_code=1
 		msg=$snarpath" does not exist or is not accessible. Exit "
 		msg+="code "$script_exit_code
 		output "$msg" 1 TRUE

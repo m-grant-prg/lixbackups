@@ -24,16 +24,7 @@ EXIT STATUS
 if OK,
 
 1
-if minor problems,
-
-64
-error in command line arguments.
-
-65
-failed to mount share due to mount error.
-
-66
-Backup share already mounted.
+on failure.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS

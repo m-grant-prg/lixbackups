@@ -23,12 +23,8 @@
 # Syntax:	attbckshare [ -a --adhoc || -h --help || -v --verbose	#
 #				|| -V --version || -w --weekly ]	#
 #									#
-# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
-#		0 - success						#
-#		64 - Invalid arguments					#
-#		65 - Failed mounting backup share			#
-#		66 - Backup share already mounted			#
-#		67 - trap received					#
+# Exit Codes:	0 - success						#
+#		1 - failure						#
 #									#
 # Further Info:								#
 # This script mounts a CIFS or NFS share as a target for the backup	#
@@ -104,6 +100,8 @@
 #				cifs version. If left blank the the	#
 #				system default will be used.		#
 # 30/11/2017	MG	1.2.6	Add SPDX license tags to source files.	#
+# 03/12/2017	MG	1.2.7	Adopt normal exit code policy; 0 on	#
+#				success, 1 on failure.			#
 #									#
 #########################################################################
 
@@ -112,7 +110,7 @@
 ##################
 script_exit_code=0
 outputprefix="attbckshare: "
-version="1.2.6"				# set version variable
+version="1.2.7"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -175,7 +173,7 @@ script_exit()
 # Standard trap exit function
 trap_exit()
 {
-script_exit_code=67
+script_exit_code=1
 output "Script terminating due to trap received. Code: "$script_exit_code 1 TRUE
 script_exit
 }
@@ -200,7 +198,7 @@ do
 	-a|--adhoc)
 		if [ $weekly = TRUE ]
 		then
-			script_exit_code=64
+			script_exit_code=1
 			output "Options a and w are mutually exclusive." 1 FALSE
 			script_exit
 		fi
@@ -237,7 +235,7 @@ do
 	-w|--weekly)
 		if [ $adhoc = TRUE ]
 		then
-			script_exit_code=64
+			script_exit_code=1
 			output "Options a and w are mutually exclusive." 1 FALSE
 			script_exit
 		fi
@@ -258,7 +256,7 @@ done
 # Script does not accept other arguments.
 if [ $# -gt 0 ]
 then
-	script_exit_code=64
+	script_exit_code=1
 	output "Invalid argument." 1 FALSE
 	script_exit
 fi
@@ -266,7 +264,7 @@ fi
 # One option has to be selected.
 if [ $adhoc = FALSE -a $weekly = FALSE ]
 then
-	script_exit_code=64
+	script_exit_code=1
 	output "Either a or w must be set." 1 FALSE
 	script_exit
 fi
@@ -352,14 +350,14 @@ then
 	status=$?
 	if [ $status != 0 ]
 	then
-		script_exit_code=65
+		script_exit_code=1
 		msg="Failed to mount backup share. Mount error: "$status
 		msg+=" Script exit code: "$script_exit_code
 		output $msg 1 TRUE
 		script_exit
 	fi
 else
-	script_exit_code=66
+	script_exit_code=1
 	msg="Backup share already mounted. Script exit code: "
 	msg+=$script_exit_code
 	output $msg 1 TRUE

@@ -22,12 +22,8 @@
 #									#
 # Syntax:	detbckshare [-h --help || -v --verbose || -V --version ]#
 #									#
-# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
-#		0 - success						#
-#		64 - Invalid arguments					#
-#		65 - Failed to unmount backup share			#
-#		66 - Backup share not mounted				#
-#		67 - trap received					#
+# Exit Codes:	0 - success						#
+#		1 - failure						#
 #									#
 # Further info:								#
 # This script is part of the portable backup package.			#
@@ -89,6 +85,8 @@
 # 20/06/2017	MG	1.2.4	Ensure script respects the 80 column	#
 #				rule.					#
 # 30/11/2017	MG	1.2.5	Add SPDX license tags to source files.	#
+# 03/12/2017	MG	1.2.6	Adopt normal exit code policy; 0 on	#
+#				success, 1 on failure.			#
 #									#
 #########################################################################
 
@@ -97,7 +95,7 @@
 ##################
 script_exit_code=0
 outputprefix="detbckshare: "
-version="1.2.5"				# set version variable
+version="1.2.6"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 verbosity=""
 packageversion=@pkgversion@		# Version of the complete package
@@ -147,7 +145,7 @@ script_exit()
 # Standard trap exit function
 trap_exit()
 {
-script_exit_code=67
+script_exit_code=1
 output "Script terminating due to trap received. Code: "$script_exit_code 1 TRUE
 script_exit
 }
@@ -203,7 +201,7 @@ done
 # Script does not accept other arguments.
 if [ $# -gt 0 ]
 then
-	script_exit_code=64
+	script_exit_code=1
 	output "Invalid argument." 1 FALSE
 	script_exit
 fi
@@ -229,14 +227,14 @@ then
 	status=$?
 	if [ $status != 0 ]
 	then
-		script_exit_code=65
+		script_exit_code=1
 		msg="Failed to unmount backup share. Umount error: "
 		msg+=$status" Script exit code: "$script_exit_code
 		output $msg 1 TRUE
 		script_exit
 	fi
 else
-	script_exit_code=66
+	script_exit_code=1
 	output "Backup share not mounted. Script exit code: "$script_exit_code \
 		1 TRUE
 	script_exit

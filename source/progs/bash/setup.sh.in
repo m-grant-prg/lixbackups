@@ -19,11 +19,8 @@
 #									#
 # Syntax:	setup.sh [-h || -V ]					#
 #									#
-# Exit Codes:	0 & 64 - 113 as per C/C++ standard			#
-#		0 - success						#
-#		64 - Invalid arguments					#
-#		65 - File(s) already exist				#
-#		67 - trap received					#
+# Exit Codes:	0 - success						#
+#		1 - failure						#
 #									#
 # Further Info:								#
 # The backup package mounts a share as a target for the backup.		#
@@ -90,6 +87,8 @@
 # 07/09/2017	MG	1.2.3	Add support for new config file param	#
 #				cifsversion.				#
 # 30/11/2017	MG	1.2.4	Add SPDX license tags to source files.	#
+# 03/12/2017	MG	1.2.5	Adopt normal exit code policy; 0 on	#
+#				success, 1 on failure.			#
 #									#
 #########################################################################
 
@@ -98,7 +97,7 @@
 ##################
 script_exit_code=0
 outputprefix="setup.sh: "
-version="1.2.4"				# set version variable
+version="1.2.5"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -151,7 +150,7 @@ script_exit()
 # Standard trap exit function
 trap_exit()
 {
-script_exit_code=67
+script_exit_code=1
 output "Script terminating due to trap received. Code: "$script_exit_code 1
 script_exit
 }
@@ -178,7 +177,7 @@ do
 		script_exit_code=0
 		script_exit
 		;;
-	\?)	script_exit_code=64
+	\?)	script_exit_code=1
 		output "Invalid argument -$OPTARG." 1
 		script_exit
 		;;
@@ -187,7 +186,7 @@ done
 
 if [ -f $etclocation/backups.conf ]
 then
-	script_exit_code=65
+	script_exit_code=1
 	output "File(s) exist, they must be maintained with an editor." 1
 	script_exit
 fi

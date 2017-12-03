@@ -18,13 +18,7 @@ EXIT STATUS
 if OK,
 
 1
-if minor problems,
-
-64
-error in command line arguments.
-
-67
-trap received.
+on failure.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS

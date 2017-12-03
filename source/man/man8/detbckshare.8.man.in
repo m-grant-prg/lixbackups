@@ -15,16 +15,7 @@ EXIT STATUS
 if OK,
 
 1
-if minor problems,
-
-64
-error in command line arguments.
-
-65
-failed to unmount share due to umount error.
-
-66
-Backup share not mounted.
+on failure.
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
