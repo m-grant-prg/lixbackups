@@ -1,3 +1,16 @@
+2017-12-03 v 1.2.12 Mark Grant <m.grant.prg@gmail.com>
+	*  Adopt normal exit code policy; 0 on success, 1 on failure.
+	Add SPDX license tags to source files.
+	Add project-wide TODO file.
+	Determine the manual section from the target file suffix. If the
+	suffix is blank (foo.) or if there is no suffix (foo) then error out.
+	Update man page copyright span attribution.
+	attbckshare		Now at version 1.2.7
+	chkbckshare		Now at version 1.2.5
+	detbckshare		Now at version 1.2.6
+	netbckup		Now at version 1.2.12
+	setup.sh		Now at version 1.2.5
+
 2017-10-26 v 1.2.11 Mark Grant <m.grant.prg@gmail.com>
 	* bcksystem.exclude extended following more detailed linux FHS analysis.
 
