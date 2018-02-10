@@ -2,7 +2,7 @@
 #########################################################################
 #									#
 # Script ID: ./Makefile.am						#
-# Author: Copyright (C) 2012-2017  Mark Grant				#
+# Author: Copyright (C) 2012-2018  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -31,10 +31,12 @@
 # 01/05/2017	MG	1.0.7	Move command man pages to section 8.	#
 #				Move logrotate to new subdir logrotate.	#
 # 30/11/2017	MG	1.0.8	Add SPDX license tags to source files.	#
+# 10/02/2018	MG	1.0.9	Shorten directory names to reduce	#
+#				overall path length.			#
 #									#
 #########################################################################
 
 
-SUBDIRS = source/progs/bash
-SUBDIRS += source/man/man5 source/man/man8
-SUBDIRS += source/conf/etc source/conf/rootetc/logrotate
+SUBDIRS = src/prg/bash
+SUBDIRS += src/man/5 src/man/8
+SUBDIRS += src/conf/etc src/conf/rootetc/logrotate

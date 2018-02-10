@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 #########################################################################
 #									#
-# Script ID: source/conf/etc/Makefile.am				#
-# Author: Copyright (C) 2012-2017  Mark Grant				#
+# Script ID: src/conf/etc/Makefile.am					#
+# Author: Copyright (C) 2012-2018  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -29,6 +29,8 @@
 # 19/10/2015	MG	1.0.5	Restructure to conform to AutoTools	#
 #				General Template v1.0.5.		#
 # 30/11/2017	MG	1.0.6	Add SPDX license tags to source files.	#
+# 10/02/2018	MG	1.0.7	Change file's header for new directory	#
+#				names.					#
 #									#
 #########################################################################
 

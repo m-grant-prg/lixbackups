@@ -1,7 +1,7 @@
 #########################################################################
 #									#
 # Script ID: ./configure.ac						#
-# Author: Copyright (C) 2012-2017  Mark Grant				#
+# Author: Copyright (C) 2012-2018  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -66,10 +66,12 @@
 #				Move logrotate to new subdir logrotate.	#
 # 19/06/2017	MG	1.0.17	Ensure the 80 column rule is respected.	#
 # 30/11/2017	MG	1.0.18	Add SPDX license tags to source files.	#
+# 10/02/2018	MG	1.0.19	Shorten directory names to reduce	#
+#				overall path length.			#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.18 $])
+AC_REVISION([$Revision: 1.0.19 $])
 
 AC_PREREQ([2.65])
 
@@ -301,10 +303,10 @@ fi
 
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
-		source/progs/bash/Makefile
-		source/man/man5/Makefile
-		source/man/man8/Makefile
-		source/conf/etc/Makefile
-		source/conf/rootetc/logrotate/Makefile])
+		src/prg/bash/Makefile
+		src/man/5/Makefile
+		src/man/8/Makefile
+		src/conf/etc/Makefile
+		src/conf/rootetc/logrotate/Makefile])
 
 AC_OUTPUT
