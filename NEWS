@@ -1,3 +1,8 @@
+Release 1.2.13 2018-02-24
+Standardise on misc directory.
+Add standard AutoTools bootstrap script.
+Bring project structure up to latest standard.
+
 Release 1.2.12 2017-12-03
 Adopt normal exit code policy; 0 on success, 1 on failure.
 Add SPDX license tags to source files.
