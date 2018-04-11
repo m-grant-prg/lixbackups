@@ -34,6 +34,9 @@
 # 10/02/2018	MG	1.0.9	Shorten directory names to reduce	#
 #				overall path length.			#
 #				Add standard macro directory.		#
+# 11/04/2018	MG	1.0.10	Add srctarball target to build a source	#
+#				tarball in the build directory. Uses	#
+#				git archive to archive HEAD.		#
 #									#
 #########################################################################
 
@@ -44,3 +47,13 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src/prg/bash
 SUBDIRS += src/man/5 src/man/8
 SUBDIRS += src/conf/etc src/conf/rootetc/logrotate
+
+
+srctarball:
+	@cwd="$${PWD}" && \
+	cd @srcdir@ && \
+	git archive --format=tar.gz \
+		--prefix=@PACKAGE_TARNAME@-@PACKAGE_VERSION@/ \
+		--output=$${cwd}/@PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.gz \
+		HEAD && \
+	cd -
