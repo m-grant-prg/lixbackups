@@ -1,3 +1,13 @@
+Release 1.2.14 2018-04-11
+Install setup.sh in pkglibexec instead of not installing it anywhere.
+Update this project bootstrap.sh to latest version 1.3.4.
+Improve README file.
+Change package versioning to a hard-coded configure value due to use of source
+tarballs started with new use of github.
+Add a make target srctarball to make a source tarball. This can be used in the
+same way as github's source tarball enabling 1 package methodolgy irrespective
+of source repository.
+
 Release 1.2.13 2018-02-24
 Standardise on misc directory.
 Add standard AutoTools bootstrap script.
