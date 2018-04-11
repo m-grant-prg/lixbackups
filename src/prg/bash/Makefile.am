@@ -36,6 +36,7 @@
 # 30/11/2017	MG	1.0.10	Add SPDX license tags to source files.	#
 # 10/02/2018	MG	1.0.11	Change file's header for new directory	#
 #				names.					#
+# 11/04/2018	MG	1.0.12	Install setup.sh in pkglibexec.		#
 #									#
 #########################################################################
 
@@ -65,7 +66,8 @@ setup.sh: $(srcdir)/setup.sh.in
 
 sbin_SCRIPTS = attbckshare detbckshare chkbckshare netbckup
 
-noinst_SCRIPTS = setup.sh
+pkglibexec_SCRIPTS = setup.sh
+
 
 EXTRA_DIST = $(srcdir)/attbckshare.sh.in $(srcdir)/detbckshare.sh.in \
 	$(srcdir)/chkbckshare.sh.in $(srcdir)/netbckup.sh.in \
