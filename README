@@ -147,6 +147,14 @@ Logs
 A log called lixbackups.log in /var/log contains a log of backup runs.
 A file is placed in the logrotate.d directory to manage these log files.
 
+N.B.
+----
+At a source modification / development level, this project expects to reside in
+a git environment. This manifests itself in 2 places:-
+1) ... .gitignore files are included in the source.
+2) ... The make target, 'srctarball', relies on the command 'git am' so it will
+	fail if git is not installed or it is not in a git repository.
+
 
 -------------------------------------------------
 2 ... AutoTools (configure and make) Installation
