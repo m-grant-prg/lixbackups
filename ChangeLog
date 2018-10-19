@@ -1,3 +1,12 @@
+2018-10-19 v 1.2.16 Mark Grant <m.grant.prg@gmail.com>
+	*  Add markdown symlink to README for better Github presentation.
+	Update README for new project wiki.
+	attbckshare		Still at version 1.2.7
+	chkbckshare		Still at version 1.2.5
+	detbckshare		Still at version 1.2.6
+	netbckup		Still at version 1.2.12
+	setup.sh		Still at version 1.2.5
+
 2018-08-27 v 1.2.15 Mark Grant <m.grant.prg@gmail.com>
 	*  There have been enough minor project infrastructure changes to
 	warrant a new release. No functionality changes.

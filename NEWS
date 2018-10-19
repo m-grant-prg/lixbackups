@@ -1,3 +1,7 @@
+Release 1.2.16 2018-10-19
+Add markdown symlink to README for better Github presentation.
+Update README for new project wiki.
+
 Release 1.2.15 2018-08-27
 There have been enough minor project infrastructure changes to warrant a new
 release. No functionality changes.
