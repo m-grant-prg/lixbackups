@@ -1,3 +1,6 @@
+Release 1.2.17 2018-11-01
+srctarball to use -src- in filename
+
 Release 1.2.16 2018-10-19
 Add markdown symlink to README for better Github presentation.
 Update README for new project wiki.
