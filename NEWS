@@ -1,3 +1,7 @@
+Release 1.2.18 2019-01-09
+Use absolute bash path in script shebangs
+Correct package versioning
+
 Release 1.2.17 2018-11-01
 srctarball to use -src- in filename
 
