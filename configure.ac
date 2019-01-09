@@ -85,6 +85,8 @@
 #				with absolute bash path which can be	#
 #				substituted in the shebang. Using env	#
 #				is OK for non-AutoTools scripts.	#
+#				Remove preceding v from package version	#
+#				as it should not be there.		#
 #									#
 #########################################################################
 
@@ -101,7 +103,7 @@ AC_PREREQ([2.69])
 #
 ########################
 
-AC_INIT([Linux / Unix (LIX) Backup Scripts], v1.2.17,
+AC_INIT([Linux / Unix (LIX) Backup Scripts], 1.2.17,
 	[m.grant.prg@gmail.com], [lixbackups])
 
 AC_SUBST(pkgversion, $PACKAGE_VERSION)
