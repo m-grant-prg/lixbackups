@@ -103,7 +103,7 @@ AC_PREREQ([2.69])
 #
 ########################
 
-AC_INIT([Linux / Unix (LIX) Backup Scripts], 1.2.17,
+AC_INIT([Linux / Unix (LIX) Backup Scripts], 1.2.18,
 	[m.grant.prg@gmail.com], [lixbackups])
 
 AC_SUBST(pkgversion, $PACKAGE_VERSION)
