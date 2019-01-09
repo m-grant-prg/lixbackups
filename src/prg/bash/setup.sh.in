@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! @bashlocation@
 #########################################################################
 #									#
 #	setup.sh is automatically generated,				#
@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: setup.sh							#
-# Author: Copyright (C) 2012-2017  Mark Grant				#
+# Author: Copyright (C) 2012-2019  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -89,6 +89,9 @@
 # 30/11/2017	MG	1.2.4	Add SPDX license tags to source files.	#
 # 03/12/2017	MG	1.2.5	Adopt normal exit code policy; 0 on	#
 #				success, 1 on failure.			#
+# 09/01/2019	MG	1.2.6	Use absolute bash path in shebang	#
+#				instead of env. Using env is OK for a 	#
+#				non-AutoTools script.			#
 #									#
 #########################################################################
 
@@ -97,7 +100,7 @@
 ##################
 script_exit_code=0
 outputprefix="setup.sh: "
-version="1.2.5"				# set version variable
+version="1.2.6"				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 

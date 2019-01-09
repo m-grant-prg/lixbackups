@@ -1,7 +1,7 @@
 #########################################################################
 #									#
 # Script ID: ./configure.ac						#
-# Author: Copyright (C) 2012-2018  Mark Grant				#
+# Author: Copyright (C) 2012-2019  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -81,10 +81,14 @@
 #				Because of this, other packaging should	#
 #				probably use the source tarball rather	#
 #				than a dist tarball.			#
+# 09/01/2019	MG	1.0.21	Supply Makefiles with edit variable	#
+#				with absolute bash path which can be	#
+#				substituted in the shebang. Using env	#
+#				is OK for non-AutoTools scripts.	#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.20 $])
+AC_REVISION([$Revision: 1.0.21 $])
 
 AC_PREREQ([2.69])
 
@@ -172,6 +176,7 @@ fi
 ########################
 
 AC_SUBST([edit], ["sed \
+		-e 's|@bashlocation[@]|\$(BASH)|g' \
 		-e 's|@logrotateloc[@]|\$(logrotateloc)|g' \
 		-e 's|@pkgversion[@]|\$(pkgversion)|g' \
 		-e 's|@prefix[@]|\$(prefix)|g' \
@@ -257,7 +262,7 @@ if test "x$GETOPT" = "xno" ; then
 	AC_MSG_ERROR([getopt not found])
 fi
 
-AC_CHECK_PROG([BASH], [bash], [yes], [no])
+AC_PATH_PROG([BASH], [bash], [no])
 if test "x$BASH" = "xno" ; then
    	AC_MSG_ERROR([bash not found])
 fi
