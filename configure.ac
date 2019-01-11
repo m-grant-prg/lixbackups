@@ -87,10 +87,13 @@
 #				is OK for non-AutoTools scripts.	#
 #				Remove preceding v from package version	#
 #				as it should not be there.		#
+# 11/01/2019	MG	1.0.22	Change program check section to check	#
+#				for build required, build and run	#
+#				required, and, run required programs.	#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.21 $])
+AC_REVISION([$Revision: 1.0.22 $])
 
 AC_PREREQ([2.69])
 
@@ -231,9 +234,24 @@ AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects tar-pax])
 AC_CONFIG_MACRO_DIR([m4])
 
 
-########################
+AC_MSG_NOTICE(checking for basic programs that have AutoConf checks)
+
 #
-# Checks for programs.
+# The small set of tools you can expect to find on any machine.
+#
+# awk		date		grep		od
+# basename	diff		join		rm
+# cat		dirname		ln		rmdir
+# cc		egrep		ls		sed
+# chgrp		expr		mkdir		sleep
+# chown		expr (‘|’)	mkfifo		sort
+# chmod		expr (‘:’)	mknod		tar
+# cmp		fgrep		mktemp		touch
+# cp		find		mv		tr
+#
+# (For further information including limitations to the above, see Section 11.15
+# in the GNU AutoConf Manual).
+#
 # If using am init automake, gl early or lt init the following programs are
 # automatically checked:-
 #
@@ -246,73 +264,92 @@ AC_CONFIG_MACRO_DIR([m4])
 # lt init
 #	fgrep	ranlib	sed
 #
-# Particular and generic program checks follow:
+# Basic and AutoTools program checks.
 #
-########################
-
-AC_MSG_NOTICE([checking for particular programs required by this application])
+AC_PROG_AWK
+AC_PROG_EGREP
+AC_PROG_FGREP
+AC_PROG_GREP
+AC_PROG_LN_S
+AC_PROG_MKDIR_P
 AC_PROG_SED
 
-AC_MSG_NOTICE([checking for generic programs required by this application])
-AC_CHECK_PROG([TAR], [tar], [yes], [no])
-if test "x$TAR" = "xno" ; then
-	AC_MSG_ERROR([tar not found])
-fi
+AC_MSG_NOTICE(checking for some standard AutoTools required programs)
+AC_PROG_INSTALL
 
-AC_CHECK_PROG([GETOPT], [getopt], [yes], [no])
-if test "x$GETOPT" = "xno" ; then
-	AC_MSG_ERROR([getopt not found])
-fi
-
-AC_PATH_PROG([BASH], [bash], [no])
-if test "x$BASH" = "xno" ; then
-   	AC_MSG_ERROR([bash not found])
-fi
-
-AC_CHECK_PROG([TXT2MAN], [txt2man], [yes], [no])
+AC_MSG_NOTICE(checking for particular programs required by this build)
+AC_CHECK_PROG(TXT2MAN, txt2man, yes, no)
 if test "x$TXT2MAN" = "xno" ; then
-   	AC_MSG_ERROR([txt2man not found])
+	AC_MSG_ERROR(txt2man not found)
 fi
 
-AC_CHECK_PROG([TXT2MANWRAP], [txt2manwrap], [yes], [no])
+AC_CHECK_PROG(TXT2MANWRAP, txt2manwrap, yes, no)
 if test "x$TXT2MANWRAP" = "xno" ; then
-   	AC_MSG_ERROR([txt2manwrap not found])
+	AC_MSG_ERROR(txt2manwrap not found)
 fi
 
-AC_CHECK_PROG([MAILX], [mailx], [yes], [no])
-if test "x$MAILX" = "xno" ; then
-   	AC_MSG_ERROR([mailx not found])
+AC_MSG_NOTICE(checking for particular programs required at build and run time)
+AC_CHECK_PROG(BASH, bash, yes, no)
+if test "x$BASH" = "xno" ; then
+	AC_MSG_ERROR(bash not found)
 fi
 
-AC_CHECK_PROG([LOGGER], [logger], [yes], [no])
-if test "x$LOGGER" = "xno" ; then
-   	AC_MSG_ERROR([logger not found])
+AC_CHECK_PROG(TAR, tar, yes, no)
+if test "x$TAR" = "xno" ; then
+	AC_MSG_ERROR(tar not found)
 fi
 
-AC_CHECK_PROG(MOUNT, mount, yes, no)
-if test "x$MOUNT" = "xno" ; then
-   	AC_MSG_ERROR([mount not found])
+AC_MSG_NOTICE(checking for particular programs required at run time)
+AC_CHECK_PROG(ECHO, echo, yes, no)
+if test "x$ECHO" = "xno" ; then
+	AC_MSG_WARN(echo not found - needed at run time)
 fi
 
-AC_CHECK_PROG(LSOF, lsof, yes, no)
-if test "x$LSOF" = "xno" ; then
-   	AC_MSG_ERROR([lsof not found])
-fi
-
-AC_CHECK_PROG(PASSWD, passwd, yes, no)
-if test "x$PASSWD" = "xno" ; then
-   	AC_MSG_ERROR([passwd not found])
+AC_CHECK_PROG(PRINTF, printf, yes, no)
+if test "x$PRINTF" = "xno" ; then
+	AC_MSG_WARN(printf not found - needed at run time)
 fi
 
 AC_CHECK_PROG(FIND, find, yes, no)
 if test "x$FIND" = "xno" ; then
-   	AC_MSG_ERROR([find not found])
+	AC_MSG_WARN(find not found - needed at run time)
+fi
+
+AC_CHECK_PROG(GETOPT, getopt, yes, no)
+if test "x$GETOPT" = "xno" ; then
+	AC_MSG_WARN(getopt not found - needed at run time)
+fi
+
+AC_CHECK_PROG(LOGGER, logger, yes, no)
+if test "x$LOGGER" = "xno" ; then
+	AC_MSG_WARN(logger not found - needed at run time)
+fi
+
+AC_CHECK_PROG(MAILX, mailx, yes, no)
+if test "x$MAILX" = "xno" ; then
+	AC_MSG_WARN(mailx not found - needed at run time)
+fi
+
+AC_CHECK_PROG(MOUNT, mount, yes, no)
+if test "x$MOUNT" = "xno" ; then
+	AC_MSG_WARN(mount not found - needed at run time)
+fi
+
+AC_CHECK_PROG(LSOF, lsof, yes, no)
+if test "x$LSOF" = "xno" ; then
+	AC_MSG_WARN(lsof not found - needed at run time)
+fi
+
+AC_CHECK_PROG(PASSWD, passwd, yes, no)
+if test "x$PASSWD" = "xno" ; then
+	AC_MSG_WARN(passwd not found - needed at run time)
 fi
 
 AC_CHECK_PROG(DF, df, yes, no)
 if test "x$DF" = "xno" ; then
-   	AC_MSG_ERROR([df not found])
+	AC_MSG_WARN(df not found - needed at run time)
 fi
+
 
 # Checks for libraries.
 
@@ -335,3 +372,4 @@ AC_CONFIG_FILES([Makefile
 		src/conf/rootetc/logrotate/Makefile])
 
 AC_OUTPUT
+
