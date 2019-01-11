@@ -1,3 +1,12 @@
+2019-01-11 v 1.2.19 Mark Grant <m.grant.prg@gmail.com>
+	*  Change configure to check for build-required, run and build-required
+	and run-required programs.
+	attbckshare		still at version 1.2.8
+	chkbckshare		still at version 1.2.6
+	detbckshare		still at version 1.2.7
+	netbckup		still at version 1.2.13
+	setup.sh		still at version 1.2.6
+
 2019-01-09 v 1.2.18 Mark Grant <m.grant.prg@gmail.com>
 	*  Use absolute bash path in script shebangs
 	Correct package versioning
