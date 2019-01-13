@@ -1,4 +1,3 @@
-#! /usr/bin/env bash
 #########################################################################
 #									#
 # Script ID: ./Makefile.am						#
@@ -44,6 +43,7 @@
 # 09/01/2019	MG	1.0.13	Change source tarball name to be the	#
 #				same as that in GitHub releases. This	#
 #				aids integrating with rpm generation.	#
+# 13/01/2019	MG	1.0.14	Remove unnecessary shebang.		#
 #									#
 #########################################################################
 
