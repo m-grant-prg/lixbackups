@@ -127,8 +127,7 @@ mntdir=""
 # Output $1 to stdout or stderr depending on $2
 output()
 {
-	if [ $2 = 0 ]
-	then
+	if [ $2 = 0 ]; then
 		echo "$outputprefix $1"
 	else
 		echo "$outputprefix $1" 1>&2
@@ -138,8 +137,7 @@ output()
 # Standard function to test command error ($1 is $?) and exit if non-zero
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]
-	then
+	if [ $1 != 0 ]; then
 		script_exit_code=$1
 		script_exit
 	fi
@@ -166,8 +164,7 @@ trap trap_exit SIGHUP SIGINT SIGTERM
 # Main #
 ########
 # Process command line arguments with getopts.
-while getopts :hV arg
-do
+while getopts :hV arg; do
 	case $arg in
 	h)	echo "Usage is $0 [options]"
 		echo "	-h displays usage information"
@@ -188,8 +185,7 @@ do
 	esac
 done
 
-if [ -f $etclocation/backups.conf ]
-then
+if [ -f $etclocation/backups.conf ]; then
 	script_exit_code=1
 	output "File(s) exist, they must be maintained with an editor." 1
 	script_exit
@@ -197,8 +193,7 @@ fi
 
 read -p "Weekly backup share type: " weeklysharetype
 read -p "Weekly backup target: " weeklytarget
-if [ $weeklysharetype = "CIFS" ]
-then
+if [ $weeklysharetype = "CIFS" ]; then
 	read -p "Weekly credential file (full path): " weeklycredfile
 	read -p "Weekly user profile: " weeklyusr
 	read -p "Weekly password for user profile: " weeklypwd
@@ -207,8 +202,7 @@ read -p "Weekly user to notify: " weeklynotifyuser
 
 read -p "Ad hoc backup share type: " adhocsharetype
 read -p "Ad hoc backup target: " adhoctarget
-if [ $adhocsharetype = "CIFS" ]
-then
+if [ $adhocsharetype = "CIFS" ]; then
 	read -p "Ad hoc credential file (full path): " adhoccredfile
 	read -p "Ad hoc user profile: " adhocusr
 	read -p "Ad hoc password for user profile: " adhocpwd
@@ -253,8 +247,7 @@ echo "" >>$etclocation/backups.conf
 std_cmd_err_handler $?
 
 # Write weekly CIFS credential file.
-if [ $weeklysharetype = "CIFS" ]
-then
+if [ $weeklysharetype = "CIFS" ]; then
 	echo "username="$weeklyusr >>$weeklycredfile
 	std_cmd_err_handler $?
 	echo "password="$weeklypwd >>$weeklycredfile
@@ -264,8 +257,7 @@ then
 fi
 
 # Write ad hoc CIFS credential file.
-if [ $adhocsharetype = "CIFS" ]
-then
+if [ $adhocsharetype = "CIFS" ]; then
 	echo "username="$adhocusr >>$adhoccredfile
 	std_cmd_err_handler $?
 	echo "password="$adhocpwd >>$adhoccredfile

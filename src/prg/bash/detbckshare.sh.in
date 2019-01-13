@@ -114,17 +114,14 @@ mntdir=""
 # $3 (TRUE = syslog it).
 output()
 {
-	if [ $2 = 0 ]
-	then
-		if [ "$verbosity" = "-v" ]
-		then
+	if [ $2 = 0 ]; then
+		if [ "$verbosity" = "-v" ]; then
 			echo "$outputprefix $1"
 		fi
 	else
 		echo "$outputprefix $1" 1>&2
 	fi
-	if [ $3 = TRUE ]
-	then
+	if [ $3 = TRUE ]; then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -133,8 +130,7 @@ output()
 # Standard function to test command error ($1 is $?) and exit if non-zero
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]
-	then
+	if [ $1 != 0 ]; then
 		script_exit_code=$1
 		script_exit
 	fi
@@ -167,8 +163,7 @@ std_cmd_err_handler $?
 eval set -- "$GETOPTTEMP"
 std_cmd_err_handler $?
 
-while true
-do
+while true; do
 	case "$1" in
 	-h|--help)
 		echo "Usage is $0 [options]"
@@ -203,8 +198,7 @@ do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]
-then
+if [ $# -gt 0 ]; then
 	script_exit_code=1
 	output "Invalid argument." 1 FALSE
 	script_exit
@@ -214,8 +208,7 @@ fi
 IFS="="
 
 exec 3<$etclocation/backups.conf
-while read -u3 -ra input
-do
+while read -u3 -ra input; do
 	case ${input[0]} in
 	mntdir)
 		mntdir=${input[1]}
@@ -225,12 +218,10 @@ done
 exec 3<&-
 
 # Check to see if the backup share is mounted, if it is, unmount
-if [ "$(chkbckshare -bt)" = "TRUE" ]
-then
+if [ "$(chkbckshare -bt)" = "TRUE" ]; then
 	umount $mntdir
 	status=$?
-	if [ $status != 0 ]
-	then
+	if [ $status != 0 ]; then
 		script_exit_code=1
 		msg="Failed to unmount backup share. Umount error: "
 		msg+=$status" Script exit code: "$script_exit_code

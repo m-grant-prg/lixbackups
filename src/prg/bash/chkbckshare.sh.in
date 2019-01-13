@@ -82,8 +82,7 @@ mntdir=""
 # Output $1 to stdout or stderr depending on $2
 output()
 {
-	if [ $2 = 0 ]
-	then
+	if [ $2 = 0 ]; then
 		echo "$outputprefix $1"
 	else
 		echo "$outputprefix $1" 1>&2
@@ -93,8 +92,7 @@ output()
 # Standard function to test command error ($1 is $?) and exit if non-zero
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]
-	then
+	if [ $1 != 0 ]; then
 		script_exit_code=$1
 		script_exit
 	fi
@@ -127,8 +125,7 @@ std_cmd_err_handler $?
 eval set -- "$GETOPTTEMP"
 std_cmd_err_handler $?
 
-while true
-do
+while true; do
 	case "$1" in
 	-b|--boolean)
 		bool="TRUE"
@@ -174,8 +171,7 @@ do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]
-then
+if [ $# -gt 0 ]; then
 	script_exit_code=1
 	output "Invalid argument." 1
 	script_exit
@@ -185,8 +181,7 @@ fi
 IFS="="
 
 exec 3<$etclocation/backups.conf
-while read -u3 -ra input
-do
+while read -u3 -ra input; do
 	case ${input[0]} in
 	mntdir)
 		mntdir=${input[1]}
@@ -197,17 +192,14 @@ exec 3<&-
 
 # Check to see if the backup share is mounted
 mountoutput=$(mount | grep "$mntdir")
-if [ "$bool" = "FALSE" ]
-then
-	if [ "$mountoutput" = "" ]
-	then
+if [ "$bool" = "FALSE" ]; then
+	if [ "$mountoutput" = "" ]; then
 		output "Backup share not mounted" 0
 	else
 		output $mountoutput 0
 	fi
 else
-	if [ "$mountoutput" = "" ]
-	then
+	if [ "$mountoutput" = "" ]; then
 		output "FALSE" 0
 	else
 		output "TRUE" 0

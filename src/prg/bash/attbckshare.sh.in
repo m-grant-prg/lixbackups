@@ -142,17 +142,14 @@ bckuptype=""
 # $3 (TRUE = syslog it).
 output()
 {
-	if [ $2 = 0 ]
-	then
-		if [ "$verbosity" = "-v" ]
-		then
+	if [ $2 = 0 ]; then
+		if [ "$verbosity" = "-v" ]; then
 			echo "$outputprefix $1"
 		fi
 	else
 		echo "$outputprefix $1" 1>&2
 	fi
-	if [ $3 = TRUE ]
-	then
+	if [ $3 = TRUE ]; then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -161,8 +158,7 @@ output()
 # Standard function to test command error ($1 is $?) and exit if non-zero
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]
-	then
+	if [ $1 != 0 ]; then
 		script_exit_code=$1
 		script_exit
 	fi
@@ -196,12 +192,10 @@ std_cmd_err_handler $?
 eval set -- "$GETOPTTEMP"
 std_cmd_err_handler $?
 
-while true
-do
+while true; do
 	case "$1" in
 	-a|--adhoc)
-		if [ $weekly = TRUE ]
-		then
+		if [ $weekly = TRUE ]; then
 			script_exit_code=1
 			output "Options a and w are mutually exclusive." 1 FALSE
 			script_exit
@@ -237,8 +231,7 @@ do
 		script_exit
 		;;
 	-w|--weekly)
-		if [ $adhoc = TRUE ]
-		then
+		if [ $adhoc = TRUE ]; then
 			script_exit_code=1
 			output "Options a and w are mutually exclusive." 1 FALSE
 			script_exit
@@ -258,16 +251,14 @@ do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]
-then
+if [ $# -gt 0 ]; then
 	script_exit_code=1
 	output "Invalid argument." 1 FALSE
 	script_exit
 fi
 
 # One option has to be selected.
-if [ $adhoc = FALSE -a $weekly = FALSE ]
-then
+if [ $adhoc = FALSE -a $weekly = FALSE ]; then
 	script_exit_code=1
 	output "Either a or w must be set." 1 FALSE
 	script_exit
@@ -277,8 +268,7 @@ fi
 IFS="="
 
 exec 3<$etclocation/backups.conf
-while read -u3 -ra input
-do
+while read -u3 -ra input; do
 	case ${input[0]} in
 	weeklytype)
 		weeklytype=${input[1]}
@@ -348,12 +338,10 @@ CIFS)
 esac
 
 # Check to see if the network backup share is mounted, if not, mount
-if [ "$(chkbckshare -bt)" = "FALSE" ]
-then
+if [ "$(chkbckshare -bt)" = "FALSE" ]; then
 	eval "$mountCL"
 	status=$?
-	if [ $status != 0 ]
-	then
+	if [ $status != 0 ]; then
 		script_exit_code=1
 		msg="Failed to mount backup share. Mount error: "$status
 		msg+=" Script exit code: "$script_exit_code
