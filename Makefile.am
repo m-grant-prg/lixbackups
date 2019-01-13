@@ -44,6 +44,8 @@
 #				same as that in GitHub releases. This	#
 #				aids integrating with rpm generation.	#
 # 13/01/2019	MG	1.0.14	Remove unnecessary shebang.		#
+#				Add install of standard top level GNU	#
+#				files AUTHOR, etc.			#
 #									#
 #########################################################################
 
@@ -55,6 +57,7 @@ SUBDIRS = src/prg/bash
 SUBDIRS += src/man/5 src/man/8
 SUBDIRS += src/conf/etc src/conf/rootetc/logrotate
 
+doc_DATA = AUTHORS ChangeLog COPYING NEWS README
 
 srctarball:
 	@cwd="$${PWD}" && \
@@ -67,4 +70,7 @@ srctarball:
 		--output=$${targ} \
 		HEAD && \
 	cd -
+
+EXTRA_DIST = $(srcdir)/AUTHORS $(srcdir)/ChangeLog $(srcdir)/COPYING \
+		$(srcdir)/NEWS $(srcdir)/README
 
