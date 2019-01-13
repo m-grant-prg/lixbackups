@@ -98,6 +98,7 @@
 # 09/01/2019	MG	1.2.13	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
+# 13/01/2019	MG	1.2.14	Do not hard code outputprefix contents.	#
 #									#
 #########################################################################
 
@@ -105,9 +106,9 @@
 # Init variables #
 ##################
 script_exit_code=0
-version="1.2.13"			# set version variable
+version=1.2.14				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
-outputprefix="netbckup: "
+outputprefix="$(basename $0):"
 differential=FALSE
 fulladhoc=FALSE
 incremental=FALSE
@@ -133,13 +134,13 @@ output()
 {
 	if [ $2 = 0 ]
 	then
-		echo $(date +'[ %a %b %d %T ]')" $outputprefix$1"
+		echo $(date +'[ %a %b %d %T ]')" $outputprefix $1"
 	else
-		echo $(date +'[ %a %b %d %T ]')" $outputprefix$1" 1>&2
+		echo $(date +'[ %a %b %d %T ]')" $outputprefix $1" 1>&2
 	fi
 	if [ $3 = TRUE ]
 	then
-		logger "$outputprefix$1"
+		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
 }

@@ -105,6 +105,7 @@
 # 09/01/2019	MG	1.2.8	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
+# 13/01/2019	MG	1.2.9	Do not hard code outputprefix contents.	#
 #									#
 #########################################################################
 
@@ -112,8 +113,8 @@
 # Init variables #
 ##################
 script_exit_code=0
-outputprefix="attbckshare: "
-version="1.2.8"				# set version variable
+outputprefix="$(basename $0):"
+version=1.2.9				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -145,14 +146,14 @@ output()
 	then
 		if [ "$verbosity" = "-v" ]
 		then
-			echo "$outputprefix$1"
+			echo "$outputprefix $1"
 		fi
 	else
-		echo "$outputprefix$1" 1>&2
+		echo "$outputprefix $1" 1>&2
 	fi
 	if [ $3 = TRUE ]
 	then
-		logger "$outputprefix$1"
+		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
 }
