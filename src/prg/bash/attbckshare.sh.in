@@ -105,7 +105,8 @@
 # 09/01/2019	MG	1.2.8	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 13/01/2019	MG	1.2.9	Do not hard code outputprefix contents.	#
+# 15/01/2019	MG	1.2.9	Do not hard code outputprefix contents.	#
+#				Make true booleans.			#
 #									#
 #########################################################################
 
@@ -119,8 +120,8 @@ etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
 verbosity=""
-adhoc=FALSE
-weekly=FALSE
+adhoc=false
+weekly=false
 weeklytype=""
 weeklytarget=""
 weeklycredfile=""
@@ -139,7 +140,7 @@ bckuptype=""
 
 # Output $1 to stdout or stderr depending on $2 and write to syslog if required.
 # Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr)
-# $3 (TRUE = syslog it).
+# $3 (true = syslog it).
 output()
 {
 	if [ $2 = 0 ]; then
@@ -149,7 +150,7 @@ output()
 	else
 		echo "$outputprefix $1" 1>&2
 	fi
-	if [ $3 = TRUE ]; then
+	if $3 ; then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -174,7 +175,7 @@ script_exit()
 trap_exit()
 {
 script_exit_code=1
-output "Script terminating due to trap received. Code: "$script_exit_code 1 TRUE
+output "Script terminating due to trap received. Code: "$script_exit_code 1 true
 script_exit
 }
 
@@ -195,12 +196,12 @@ std_cmd_err_handler $?
 while true; do
 	case "$1" in
 	-a|--adhoc)
-		if [ $weekly = TRUE ]; then
+		if $weekly ; then
 			script_exit_code=1
-			output "Options a and w are mutually exclusive." 1 FALSE
+			output "Options a and w are mutually exclusive." 1 false
 			script_exit
 		fi
-		adhoc=TRUE
+		adhoc=true
 		bckuptype="adhoc"
 		shift
 		;;
@@ -231,12 +232,12 @@ while true; do
 		script_exit
 		;;
 	-w|--weekly)
-		if [ $adhoc = TRUE ]; then
+		if $adhoc ; then
 			script_exit_code=1
-			output "Options a and w are mutually exclusive." 1 FALSE
+			output "Options a and w are mutually exclusive." 1 false
 			script_exit
 		fi
-		weekly=TRUE
+		weekly=true
 		bckuptype="weekly"
 		shift
 		;;
@@ -244,7 +245,7 @@ while true; do
 		break
 		;;
 	*)	script_exit_code=1
-		output "Internal error." 1 FALSE
+		output "Internal error." 1 false
 		script_exit
 		;;
 	esac
@@ -253,14 +254,14 @@ done
 # Script does not accept other arguments.
 if [ $# -gt 0 ]; then
 	script_exit_code=1
-	output "Invalid argument." 1 FALSE
+	output "Invalid argument." 1 false
 	script_exit
 fi
 
 # One option has to be selected.
-if [ $adhoc = FALSE -a $weekly = FALSE ]; then
+if ! $adhoc && ! $weekly ; then
 	script_exit_code=1
-	output "Either a or w must be set." 1 FALSE
+	output "Either a or w must be set." 1 false
 	script_exit
 fi
 
@@ -332,7 +333,7 @@ CIFS)
 	fi
 	;;
 *)	script_exit_code=1
-	output "Invalid share type." 1 TRUE
+	output "Invalid share type." 1 true
 	script_exit
 	;;
 esac
@@ -345,17 +346,17 @@ if [ "$(chkbckshare -bt)" = "FALSE" ]; then
 		script_exit_code=1
 		msg="Failed to mount backup share. Mount error: "$status
 		msg+=" Script exit code: "$script_exit_code
-		output $msg 1 TRUE
+		output $msg 1 true
 		script_exit
 	fi
 else
 	script_exit_code=1
 	msg="Backup share already mounted. Script exit code: "
 	msg+=$script_exit_code
-	output $msg 1 TRUE
+	output $msg 1 true
 	script_exit
 fi
 
 script_exit_code=0
-output "Share $target mounted on $mntdir" 0 TRUE
+output "Share $target mounted on $mntdir" 0 true
 script_exit
