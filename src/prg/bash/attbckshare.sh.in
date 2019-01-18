@@ -109,6 +109,7 @@
 #				Make true booleans.			#
 #				Standardise parameters of output().	#
 #				Remove script_exit_code variable.	#
+#				Improve if statements with [[ ... ]].	#
 #									#
 #########################################################################
 
@@ -259,7 +260,7 @@ while true; do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]; then
+if [[ $# > 0 ]]; then
 	output "Invalid argument." 1 0
 	script_exit 1
 fi
@@ -332,8 +333,7 @@ NFS)
 	;;
 CIFS)
 	mountCL=$mountCL"cifs -o credentials=$credfile $target $mntdir"
-	if [ "$cifsversion" != "" ]
-	then
+	if [[ $cifsversion ]]; then
 		mountCL+=" -o vers=$cifsversion"
 	fi
 	;;
