@@ -110,6 +110,7 @@
 #				Standardise parameters of output().	#
 #				Remove script_exit_code variable.	#
 #				Improve if statements with [[ ... ]].	#
+#				Change verbosity to verbose boolean.	#
 #									#
 #########################################################################
 
@@ -121,8 +122,8 @@ version=1.2.9				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
-verbosity=""
 adhoc=false
+verbose=false
 weekly=false
 weeklytype=""
 weeklytarget=""
@@ -169,7 +170,7 @@ EOF
 output()
 {
 	if [ $2 = 0 ]; then
-		if [ "$verbosity" = "-v" ]; then
+		if $verbose ; then
 			echo "$outputprefix $1"
 		fi
 	else
@@ -242,7 +243,7 @@ while true; do
 		script_exit 0
 		;;
 	-v|--verbose)
-		verbosity="-v"
+		verbose=true
 		shift
 		;;
 	-V|--version)
