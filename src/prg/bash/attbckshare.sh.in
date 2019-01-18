@@ -140,6 +140,25 @@ bckuptype=""
 # Functions #
 #############
 
+# -h --help output.
+# No parameters
+# No return value
+usage()
+{
+cat << EOF
+Usage is $0 [options]
+	-a or --adhoc mount the ad hoc backup target share
+	OR
+	-h or --help displays usage information
+	OR
+	-v or --verbose verbose output
+	OR
+	-V or --version displays version information
+	OR
+	-w or --weekly mount the weekly target backup share
+EOF
+}
+
 # Standard function to emit messages depending on various parameters.
 # Parameters -	$1 What:-	The message to emit.
 #		$2 Where:-	stdout == 0
@@ -218,16 +237,7 @@ while true; do
 		shift
 		;;
 	-h|--help)
-		echo "Usage is $0 [options]"
-		echo "	-a or --adhoc mount the ad hoc backup target share"
-		echo "	OR"
-		echo "	-h or --help displays usage information"
-		echo "	OR"
-		echo "	-v or --verbose verbose output"
-		echo "	OR"
-		echo "	-V or --version displays version information"
-		echo "	OR"
-		echo "	-w or --weekly mount the weekly target backup share"
+		usage
 		shift
 		script_exit 0
 		;;
