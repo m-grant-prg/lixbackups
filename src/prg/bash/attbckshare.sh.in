@@ -123,19 +123,19 @@ etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
 adhoc=false
-verbose=false
-weekly=false
-weeklytype=""
-weeklytarget=""
-weeklycredfile=""
-weeklynotifyuser=""
-adhoctype=""
-adhoctarget=""
 adhoccredfile=""
 adhocnotifyuser=""
+adhoctarget=""
+adhoctype=""
+bckuptype=""
 cifsversion=""
 mntdir=""
-bckuptype=""
+verbose=false
+weekly=false
+weeklycredfile=""
+weeklynotifyuser=""
+weeklytarget=""
+weeklytype=""
 
 #############
 # Functions #
