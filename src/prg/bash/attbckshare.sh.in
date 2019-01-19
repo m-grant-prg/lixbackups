@@ -124,19 +124,12 @@ etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
 adhoc=false
-adhoccredfile=""
-adhocnotifyuser=""
-adhoctarget=""
-adhoctype=""
 bckuptype=""
 cifsversion=""
 mntdir=""
 verbose=false
 weekly=false
-weeklycredfile=""
-weeklynotifyuser=""
-weeklytarget=""
-weeklytype=""
+
 
 #############
 # Functions #
@@ -211,9 +204,6 @@ trap_exit()
 	output "$msg" 1 0
 	script_exit $exit_code
 }
-
-# Setup trap.
-trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
 # Process command line arguments with GNU getopt.
 # Parameters -	$1 is the command line.
@@ -291,98 +281,127 @@ proc_CL()
 	fi
 }
 
+# Process the config file.
+# Parameters - None
+# No return value.
+proc_config_file()
+{
+	local oldIFS=$IFS
+	local input=()
+	local adhoccredfile adhocnotifyuser adhoctarget adhoctype
+	local weeklycredfile weeklynotifyuser weeklytarget weeklytype
+
+	IFS="="
+
+	exec 3<$etclocation/backups.conf
+	while read -u3 -ra input; do
+		case ${input[0]} in
+		weeklytype)
+			weeklytype=${input[1]}
+			;;
+		weeklytarget)
+			weeklytarget=${input[1]}
+			;;
+		weeklycredfile)
+			weeklycredfile=${input[1]}
+			;;
+		weeklynotifyuser)
+			weeklynotifyuser=${input[1]}
+			;;
+		adhoctype)
+			adhoctype=${input[1]}
+			;;
+		adhoctarget)
+			adhoctarget=${input[1]}
+			;;
+		adhoccredfile)
+			adhoccredfile=${input[1]}
+			;;
+		adhocnotifyuser)
+			adhocnotifyuser=${input[1]}
+			;;
+		cifsversion)
+			cifsversion=${input[1]}
+			;;
+		mntdir)
+			mntdir=${input[1]}
+			;;
+		esac
+	done
+	exec 3<&-
+
+	case $bckuptype in
+	adhoc)
+		type=$adhoctype
+		target=$adhoctarget
+		credfile=$adhoccredfile
+		notifyuser=$adhocnotifyuser
+		;;
+	weekly)
+		type=$weeklytype
+		target=$weeklytarget
+		credfile=$weeklycredfile
+		notifyuser=$weeklynotifyuser
+		;;
+	esac
+
+	IFS=$oldIFS
+}
+
+# Build the mount command.
+# Parameters - none
+# No return value.
+build_mnt_cmd()
+{
+	mountCL="mount -t "
+	case $type in
+	NFS)
+		mountCL=$mountCL"nfs $target $mntdir"
+		;;
+	CIFS)
+		mountCL=$mountCL"cifs -o credentials=$credfile $target $mntdir"
+		if [[ $cifsversion ]]; then
+			mountCL+=" -o vers=$cifsversion"
+		fi
+		;;
+	*)	output "Invalid share type." 1 1
+		script_exit 1
+		;;
+	esac
+}
+
 
 ########
 # Main #
 ########
 
+# Setup trap.
+trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
+
 proc_CL "$@"
 
 # Read parameters from $etclocation/backups.conf
-IFS="="
+proc_config_file
 
-exec 3<$etclocation/backups.conf
-while read -u3 -ra input; do
-	case ${input[0]} in
-	weeklytype)
-		weeklytype=${input[1]}
-		;;
-	weeklytarget)
-		weeklytarget=${input[1]}
-		;;
-	weeklycredfile)
-		weeklycredfile=${input[1]}
-		;;
-	weeklynotifyuser)
-		weeklynotifyuser=${input[1]}
-		;;
-	adhoctype)
-		adhoctype=${input[1]}
-		;;
-	adhoctarget)
-		adhoctarget=${input[1]}
-		;;
-	adhoccredfile)
-		adhoccredfile=${input[1]}
-		;;
-	adhocnotifyuser)
-		adhocnotifyuser=${input[1]}
-		;;
-	cifsversion)
-		cifsversion=${input[1]}
-		;;
-	mntdir)
-		mntdir=${input[1]}
-		;;
-	esac
-done
-exec 3<&-
+# Build Mount command.
+build_mnt_cmd
 
-case $bckuptype in
-adhoc)
-	type=$adhoctype
-	target=$adhoctarget
-	credfile=$adhoccredfile
-	notifyuser=$adhocnotifyuser
-	;;
-weekly)
-	type=$weeklytype
-	target=$weeklytarget
-	credfile=$weeklycredfile
-	notifyuser=$weeklynotifyuser
-	;;
-esac
-
-mountCL="mount -t "
-case $type in
-NFS)
-	mountCL=$mountCL"nfs $target $mntdir"
-	;;
-CIFS)
-	mountCL=$mountCL"cifs -o credentials=$credfile $target $mntdir"
-	if [[ $cifsversion ]]; then
-		mountCL+=" -o vers=$cifsversion"
-	fi
-	;;
-*)	output "Invalid share type." 1 1
-	script_exit 1
-	;;
-esac
-
-# Check to see if the network backup share is mounted, if not, mount
-if [ "$(chkbckshare -bt)" = "FALSE" ]; then
-	eval "$mountCL"
-	status=$?
-	if [ $status != 0 ]; then
-		msg="Failed to mount backup share. Mount error: $status"
-		msg+=" Script exit code: $status"
-		output $msg 1 1
-		script_exit $status
-	fi
-else
+# Exit if share already mounted.
+if [ "$(chkbckshare -bt)" = "TRUE" ]; then
 	msg="Backup share already mounted."
-	output $msg 1 1
+	output "$msg" 1 1
 	script_exit 1
+fi
+
+# Finally mount.
+eval "$mountCL"
+status=$?
+
+if [ $status != 0 ]; then
+	msg="Failed to mount backup share. Mount error: $status"
+	msg+=" Script exit code: $status"
+	output "$msg" 1 1
+	script_exit $status
 fi
 
 output "Share $target mounted on $mntdir" 0 1
