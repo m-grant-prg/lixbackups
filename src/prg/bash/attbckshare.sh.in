@@ -135,6 +135,7 @@
 #				Refactor into functions.		#
 #				Make appropriate variables read-only.	#
 #				Use more meaningful exit codes.		#
+#				Replace echo with more standard printf.	#
 #									#
 #########################################################################
 
@@ -188,10 +189,10 @@ output()
 {
 	if [ $2 = 0 ]; then
 		if $verbose ; then
-			echo "$outputprefix $1"
+			printf "%s %s\n" $outputprefix "$1"
 		fi
 	else
-		echo "$outputprefix $1" 1>&2
+		printf "%s %s\n" $outputprefix "$1" 1>&2
 	fi
 	if [ $3 = 1 ]; then
 		logger "$outputprefix $1"
@@ -267,8 +268,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			echo "$0 Script version "$version
-			echo "$0 Package version "$packageversion
+			printf "%s Script version %s\n" $0 $version
+			printf "%s Package version %s\n" $0 $packageversion
 			shift
 			script_exit 0
 			;;
