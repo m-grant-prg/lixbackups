@@ -23,8 +23,29 @@
 # Syntax:	attbckshare [ -a --adhoc || -h --help || -v --verbose	#
 #				|| -V --version || -w --weekly ]	#
 #									#
-# Exit Codes:	0 - success						#
-#		1 - failure						#
+# Exit codes used:-							#
+# Bash standard Exit Codes:	0 - success				#
+#				1 - general failure			#
+# User-defined exit code range is 64 - 113				#
+#	C/C++ Semi-standard exit codes from sysexits.h range is 64 - 78	#
+#		EX_USAGE	64	command line usage error	#
+#		EX_DATAERR	65	data format error		#
+#		EX_NOINPUT	66	cannot open input		#
+#		EX_NOUSER	67	addressee unknown		#
+#		EX_NOHOST	68	host name unknown		#
+#		EX_UNAVAILABLE	69	service unavailable		#
+#		EX_SOFTWARE	70	internal software error		#
+#		EX_OSERR	71	system error (e.g., can't fork)	#
+#		EX_OSFILE	72	critical OS file missing	#
+#		EX_CANTCREAT	73	can't create (user) output file	#
+#		EX_IOERR	74	input/output error		#
+#		EX_TEMPFAIL	75	temp failure; user is invited	#
+#					to retry			#
+#		EX_PROTOCOL	76	remote error in protocol	#
+#		EX_NOPERM	77	permission denied		#
+#		EX_CONFIG	78	configuration error		#
+#	User-defined (here) exit codes range 79 - 113:			#
+#		None							#
 #									#
 # Further Info:								#
 # This script mounts a CIFS or NFS share as a target for the backup	#
@@ -105,7 +126,7 @@
 # 09/01/2019	MG	1.2.8	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 18/01/2019	MG	1.2.9	Do not hard code outputprefix contents.	#
+# 19/01/2019	MG	1.2.9	Do not hard code outputprefix contents.	#
 #				Make true booleans.			#
 #				Standardise parameters of output().	#
 #				Remove script_exit_code variable.	#
@@ -113,6 +134,7 @@
 #				Change verbosity to verbose boolean.	#
 #				Refactor into functions.		#
 #				Make appropriate variables read-only.	#
+#				Use more meaningful exit codes.		#
 #									#
 #########################################################################
 
@@ -229,7 +251,7 @@ proc_CL()
 			if $weekly ; then
 				msg="Options a and w are mutually exclusive."
 				output "$msg" 1 0
-				script_exit 1
+				script_exit 64
 			fi
 			adhoc=true
 			bckuptype="adhoc"
@@ -254,7 +276,7 @@ proc_CL()
 			if $adhoc ; then
 				msg="Options a and w are mutually exclusive."
 				output "$msg" 1 0
-				script_exit 1
+				script_exit 64
 			fi
 			weekly=true
 			bckuptype="weekly"
@@ -264,7 +286,7 @@ proc_CL()
 			break
 			;;
 		*)	output "Internal error." 1 0
-			script_exit 1
+			script_exit 64
 			;;
 		esac
 	done
@@ -272,13 +294,13 @@ proc_CL()
 	# Script does not accept other arguments.
 	if [[ $# > 0 ]]; then
 		output "Invalid argument." 1 0
-		script_exit 1
+		script_exit 64
 	fi
 
 	# One option has to be selected.
 	if ! $adhoc && ! $weekly ; then
 		output "Either a or w must be set." 1 0
-		script_exit 1
+		script_exit 64
 	fi
 }
 
@@ -366,7 +388,7 @@ build_mnt_cmd()
 		fi
 		;;
 	*)	output "Invalid share type." 1 1
-		script_exit 1
+		script_exit 78
 		;;
 	esac
 }
