@@ -112,16 +112,17 @@
 #				Improve if statements with [[ ... ]].	#
 #				Change verbosity to verbose boolean.	#
 #				Refactor into functions.		#
+#				Make appropriate variables read-only.	#
 #									#
 #########################################################################
 
 ##################
 # Init variables #
 ##################
-outputprefix="$(basename $0):"
-version=1.2.9				# set version variable
-etclocation=@sysconfdir@/lixbackups	# Path to etc directory
-packageversion=@pkgversion@		# Version of the complete package
+readonly outputprefix="$(basename $0):"
+readonly version=1.2.9				# Set version variable
+readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
+readonly packageversion=@pkgversion@		# Version of the package
 
 adhoc=false
 bckuptype=""
