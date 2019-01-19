@@ -136,6 +136,7 @@
 #				Make appropriate variables read-only.	#
 #				Use more meaningful exit codes.		#
 #				Replace echo with more standard printf.	#
+#				Add test for config file existence.	#
 #									#
 #########################################################################
 
@@ -312,8 +313,15 @@ proc_config_file()
 {
 	local oldIFS=$IFS
 	local input=()
+	local msg
 	local adhoccredfile adhocnotifyuser adhoctarget adhoctype
 	local weeklycredfile weeklynotifyuser weeklytarget weeklytype
+
+	if [[ ! -f $etclocation/backups.conf ]]; then
+		msg="Config file $etclocation/backups.conf does not exist."
+		output "$msg" 1 0
+		script_exit 66
+	fi
 
 	IFS="="
 
