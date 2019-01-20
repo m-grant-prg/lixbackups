@@ -97,6 +97,7 @@
 #				Improve trap function.			#
 #				Use [[ ... ]] when appropriate.		#
 #				Refactor into functions.		#
+#				Improve logic on check and unmount.	#
 #									#
 #########################################################################
 
@@ -272,19 +273,21 @@ proc_CL "$@"
 
 proc_config_file
 
-# Check to see if the backup share is mounted, if it is, unmount
-if [ "$(chkbckshare -bt)" = "TRUE" ]; then
-	umount $mntdir
-	status=$?
-	if [ $status != 0 ]; then
-		msg="Failed to unmount backup share. Umount error: "
-		msg+=$status" Script exit code: 1"
-		output $msg 1 1
-		script_exit 1
-	fi
-else
+# Exit if not mounted.
+if [ "$(chkbckshare -bt)" = "FALSE" ]; then
 	output "Backup share not mounted. Script exit code: 1" 1 1
 	script_exit 1
+fi
+
+# Finally unmount.
+umount $mntdir
+status=$?
+
+if [ $status != 0 ]; then
+	msg="Failed to unmount backup share. Umount error: "
+	msg+="$status Script exit code: $status"
+	output $msg 1 1
+	script_exit $status
 fi
 
 output "Share unmounted from $mntdir" 0 1
