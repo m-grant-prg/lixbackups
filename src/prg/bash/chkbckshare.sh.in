@@ -78,7 +78,7 @@
 # 09/01/2019	MG	1.2.6	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 20/01/2019	MG	1.2.7	Do not hard code outputprefix contents.	#
+# 20/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Use true booleans.			#
 #				Standardise output function.		#
 #				Remove script_exit_code variable.	#
@@ -95,7 +95,7 @@
 # Init variables #
 ##################
 outputprefix="$(basename $0):"			# Can be altered by --terse CLA
-readonly version=1.2.7				# set version variable
+readonly version=1.3.1				# set version variable
 readonly packageversion=@pkgversion@		# Version of the package
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 
