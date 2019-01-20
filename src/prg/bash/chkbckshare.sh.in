@@ -64,21 +64,22 @@
 #				Improve trap function.			#
 #				Use [[ ... ]] when appropriate.		#
 #				Refactor into functions.		#
+#				Make appropriate variables readonly.	#
 #									#
 #########################################################################
 
 ##################
 # Init variables #
 ##################
-outputprefix="$(basename $0):"
-mountoutput=""
-version=1.2.7				# set version variable
-etclocation=@sysconfdir@/lixbackups	# Path to etc directory
-packageversion=@pkgversion@		# Version of the complete package
+outputprefix="$(basename $0):"			# Can be altered by --terse CLA
+readonly version=1.2.7				# set version variable
+readonly packageversion=@pkgversion@		# Version of the package
+readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 
 bool=false
 terse=false
 mntdir=""
+mountoutput=""
 
 #############
 # Functions #
