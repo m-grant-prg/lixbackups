@@ -198,6 +198,38 @@ proc_CL()
 	fi
 }
 
+# Process the config file just looking for mntdir.
+# Parameters - None
+# No return value.
+proc_config_file()
+{
+	local input=()
+	local msg
+	local oldIFS=$IFS
+
+	if [[ ! -f $etclocation/backups.conf \
+		|| ! -r $etclocation/backups.conf ]]; then
+		msg="Config file $etclocation/backups.conf does not exist, is "
+		msg+="not a regular file or is not readable."
+		output "$msg" 1
+		script_exit 66
+	fi
+
+	IFS="="
+
+	exec 3<$etclocation/backups.conf
+	while read -u3 -ra input; do
+		case ${input[0]} in
+		mntdir)
+			mntdir=${input[1]}
+			;;
+		esac
+	done
+	exec 3<&-
+
+	IFS=$oldIFS
+}
+
 
 ########
 # Main #
@@ -208,18 +240,7 @@ trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
 proc_CL "$@"
 
-# Read parameters from $etclocation/backups.conf
-IFS="="
-
-exec 3<$etclocation/backups.conf
-while read -u3 -ra input; do
-	case ${input[0]} in
-	mntdir)
-		mntdir=${input[1]}
-		;;
-	esac
-done
-exec 3<&-
+proc_config_file
 
 # Check to see if the backup share is mounted
 mountoutput=$(mount | grep "$mntdir")
