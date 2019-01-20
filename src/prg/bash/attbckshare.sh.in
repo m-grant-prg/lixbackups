@@ -319,9 +319,11 @@ proc_config_file()
 	local adhoccredfile adhocnotifyuser adhoctarget adhoctype
 	local weeklycredfile weeklynotifyuser weeklytarget weeklytype
 
-	if [[ ! -f $etclocation/backups.conf ]]; then
-		msg="Config file $etclocation/backups.conf does not exist."
-		output "$msg" 1 0
+	if [[ ! -f $etclocation/backups.conf \
+		|| ! -r $etclocation/backups.conf ]]; then
+		msg="Config file $etclocation/backups.conf does not exist, is "
+		msg+="not a regular file or is not readable."
+		output "$msg" 1 1
 		script_exit 66
 	fi
 
