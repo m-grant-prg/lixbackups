@@ -61,6 +61,7 @@
 #				Use true booleans.			#
 #				Standardise output function.		#
 #				Remove script_exit_code variable.	#
+#				Improve trap function.			#
 #									#
 #########################################################################
 
@@ -113,19 +114,27 @@ script_exit()
 	exit $1
 }
 
-# Standard trap exit function
+# Standard trap exit function.
+# No parameters.
+# No return value.
 trap_exit()
 {
-output "Script terminating due to trap received. Code: 1" 1
-script_exit 1
+	local exit_code=$?
+	local msg
+
+	msg="Script terminating with exit code $exit_code due to trap received."
+	output "$msg" 1 0
+	script_exit $exit_code
 }
 
-# Setup trap
-trap trap_exit SIGHUP SIGINT SIGTERM
 
 ########
 # Main #
 ########
+
+# Setup trap.
+trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
+
 # Process command line arguments with GNU getopt.
 GETOPTTEMP=`getopt -o bhtV --long boolean,help,terse,version -n "$0" -- "$@"`
 std_cmd_err_handler $?
