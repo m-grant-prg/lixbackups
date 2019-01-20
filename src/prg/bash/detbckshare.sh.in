@@ -90,7 +90,8 @@
 # 09/01/2019	MG	1.2.7	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 13/01/2019	MG	1.2.8	Do not hard code outputprefix contents.	#
+# 20/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
+#				Change verbosity to boolean verbose.	#
 #									#
 #########################################################################
 
@@ -99,11 +100,11 @@
 ##################
 script_exit_code=0
 outputprefix="$(basename $0):"
-version=1.2.8				# set version variable
-etclocation=@sysconfdir@/lixbackups	# Path to etc directory
-verbosity=""
+version=1.3.1				# set version variable
 packageversion=@pkgversion@		# Version of the complete package
+etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 mntdir=""
+verbose=false
 
 #############
 # Functions #
@@ -115,7 +116,7 @@ mntdir=""
 output()
 {
 	if [ $2 = 0 ]; then
-		if [ "$verbosity" = "-v" ]; then
+		if $verbose ; then
 			echo "$outputprefix $1"
 		fi
 	else
@@ -177,7 +178,7 @@ while true; do
 		script_exit
 		;;
 	-v|--verbose)
-		verbosity="-v"
+		verbose=true
 		shift
 		;;
 	-V|--version)
