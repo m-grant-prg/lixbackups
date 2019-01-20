@@ -92,6 +92,7 @@
 #				non-AutoTools script.			#
 # 20/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Change verbosity to boolean verbose.	#
+#				Use standardised output function.	#
 #									#
 #########################################################################
 
@@ -110,19 +111,23 @@ verbose=false
 # Functions #
 #############
 
-# Output $1 to stdout or stderr depending on $2 and write to syslog if required.
-# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr)
-# $3 (TRUE = syslog it).
+# Standard function to emit messages depending on various parameters.
+# Parameters -	$1 What:-	The message to emit.
+#		$2 Where:-	stdout == 0
+#				stderr == 1
+#		$3 Syslog:-	$3 == 0, No.
+#				$3 == 1, Yes.
+# No return value.
 output()
 {
 	if [ $2 = 0 ]; then
 		if $verbose ; then
-			echo "$outputprefix $1"
+			printf "%s %s\n" $outputprefix "$1"
 		fi
 	else
-		echo "$outputprefix $1" 1>&2
+		printf "%s %s\n" $outputprefix "$1" 1>&2
 	fi
-	if [ $3 = TRUE ]; then
+	if [ $3 = 1 ]; then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -147,7 +152,7 @@ script_exit()
 trap_exit()
 {
 script_exit_code=1
-output "Script terminating due to trap received. Code: "$script_exit_code 1 TRUE
+output "Script terminating due to trap received. Code: "$script_exit_code 1 1
 script_exit
 }
 
@@ -192,7 +197,7 @@ while true; do
 		break
 		;;
 	*)	script_exit_code=1
-		output "Internal error." 1 FALSE
+		output "Internal error." 1 0
 		script_exit
 		;;
 	esac
@@ -201,7 +206,7 @@ done
 # Script does not accept other arguments.
 if [ $# -gt 0 ]; then
 	script_exit_code=1
-	output "Invalid argument." 1 FALSE
+	output "Invalid argument." 1 0
 	script_exit
 fi
 
@@ -226,16 +231,16 @@ if [ "$(chkbckshare -bt)" = "TRUE" ]; then
 		script_exit_code=1
 		msg="Failed to unmount backup share. Umount error: "
 		msg+=$status" Script exit code: "$script_exit_code
-		output $msg 1 TRUE
+		output $msg 1 1
 		script_exit
 	fi
 else
 	script_exit_code=1
 	output "Backup share not mounted. Script exit code: "$script_exit_code \
-		1 TRUE
+		1 1
 	script_exit
 fi
 
 script_exit_code=0
-output "Share unmounted from $mntdir" 0 TRUE
+output "Share unmounted from $mntdir" 0 1
 script_exit
