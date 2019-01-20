@@ -95,6 +95,7 @@
 #				Use standardised output function.	#
 #				Remove script_exit_code variable.	#
 #				Improve trap function.			#
+#				Use [[ ... ]] when appropriate.		#
 #									#
 #########################################################################
 
@@ -212,7 +213,7 @@ while true; do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]; then
+if [[ $# > 0 ]]; then
 	output "Invalid argument." 1 0
 	script_exit 1
 fi
