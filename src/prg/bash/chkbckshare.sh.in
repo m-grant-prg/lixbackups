@@ -63,7 +63,7 @@
 #				Remove script_exit_code variable.	#
 #				Improve trap function.			#
 #				Use [[ ... ]] when appropriate.		#
-#				Extract help text into function.	#
+#				Refactor into functions.		#
 #									#
 #########################################################################
 
@@ -146,6 +146,58 @@ trap_exit()
 	script_exit $exit_code
 }
 
+# Process command line arguments with GNU getopt.
+# Parameters -	$1 is the command line.
+# No return value.
+proc_CL()
+{
+	local GETOPTTEMP
+
+	GETOPTTEMP="getopt -o bhtV --long boolean,help,terse,version"
+	GETOPTTEMP=`$GETOPTTEMP -n "$0" -- "$@"`
+	std_cmd_err_handler $?
+
+	eval set -- "$GETOPTTEMP"
+	std_cmd_err_handler $?
+
+	while true; do
+		case "$1" in
+		-b|--boolean)
+			bool=true
+			shift
+			;;
+		-h|--help)
+			usage
+			shift
+			script_exit 0
+			;;
+		-t|--terse)
+			terse=true
+			outputprefix=""
+			shift
+			;;
+		-V|--version)
+			echo "$0 Script version "$version
+			echo "$0 Package version "$packageversion
+			shift
+			script_exit 0
+			;;
+		--)	shift
+			break
+			;;
+		*)	output "Internal error." 1
+			script_exit 1
+			;;
+		esac
+	done
+
+	# Script does not accept other arguments.
+	if [[ $# > 0 ]]; then
+		output "Invalid argument." 1
+		script_exit 1
+	fi
+}
+
 
 ########
 # Main #
@@ -154,49 +206,7 @@ trap_exit()
 # Setup trap.
 trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
-# Process command line arguments with GNU getopt.
-GETOPTTEMP=`getopt -o bhtV --long boolean,help,terse,version -n "$0" -- "$@"`
-std_cmd_err_handler $?
-
-eval set -- "$GETOPTTEMP"
-std_cmd_err_handler $?
-
-while true; do
-	case "$1" in
-	-b|--boolean)
-		bool=true
-		shift
-		;;
-	-h|--help)
-		usage
-		shift
-		script_exit 0
-		;;
-	-t|--terse)
-		terse=true
-		outputprefix=""
-		shift
-		;;
-	-V|--version)
-		echo "$0 Script version "$version
-		echo "$0 Package version "$packageversion
-		shift
-		script_exit 0
-		;;
-	--)	shift
-		break
-		;;
-	*)	output "Internal error." 1
-		script_exit 1
-		;;
-	esac
-done
-
-# Script does not accept other arguments.
-if [[ $# > 0 ]]; then
-	output "Invalid argument." 1
-	script_exit 1
-fi
+proc_CL "$@"
 
 # Read parameters from $etclocation/backups.conf
 IFS="="
