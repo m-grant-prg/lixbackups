@@ -63,6 +63,7 @@
 #				Remove script_exit_code variable.	#
 #				Improve trap function.			#
 #				Use [[ ... ]] when appropriate.		#
+#				Extract help text into function.	#
 #									#
 #########################################################################
 
@@ -82,6 +83,23 @@ mntdir=""
 #############
 # Functions #
 #############
+
+# -h --help output.
+# No parameters
+# No return value
+usage()
+{
+cat << EOF
+Usage is $0 [options]
+	-b or --boolean displays TRUE or FALSE instead of mount information
+	OR
+	-h or --help displays usage information
+	OR
+	-t or --terse removes prepending script name from the output
+	OR
+	-V or --version displays version information
+EOF
+}
 
 # Standard function to emit messages depending on various parameters.
 # Parameters -	$1 What:-	The message to emit.
@@ -150,18 +168,7 @@ while true; do
 		shift
 		;;
 	-h|--help)
-		echo "Usage is $0 [options]"
-		msg="	-b or --boolean displays TRUE or FALSE instead of "
-		msg+="mount information"
-		echo "$msg"
-		echo "	OR"
-		echo "	-h or --help displays usage information"
-		echo "	OR"
-		msg="	-t or --terse removes prepending script name from the "
-		msg+="output"
-		echo "$msg"
-		echo "	OR"
-		echo "	-V or --version displays version information"
+		usage
 		shift
 		script_exit 0
 		;;
