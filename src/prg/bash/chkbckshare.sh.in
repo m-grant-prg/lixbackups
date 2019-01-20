@@ -59,6 +59,7 @@
 #				non-AutoTools script.			#
 # 20/01/2019	MG	1.2.7	Do not hard code outputprefix contents.	#
 #				Use true booleans.			#
+#				Standardise output function.		#
 #									#
 #########################################################################
 
@@ -80,13 +81,17 @@ mntdir=""
 # Functions #
 #############
 
-# Output $1 to stdout or stderr depending on $2
+# Standard function to emit messages depending on various parameters.
+# Parameters -	$1 What:-	The message to emit.
+#		$2 Where:-	stdout == 0
+#				stderr == 1
+# No return value.
 output()
 {
 	if [ $2 = 0 ]; then
-		echo "$outputprefix $1"
+		printf "%s %s\n" $outputprefix "$1"
 	else
-		echo "$outputprefix $1" 1>&2
+		printf "%s %s\n" $outputprefix "$1" 1>&2
 	fi
 }
 
