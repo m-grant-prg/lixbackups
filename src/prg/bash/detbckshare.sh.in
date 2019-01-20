@@ -121,6 +121,7 @@
 #				Improve logic on check and unmount.	#
 #				Make appropriate variables readonly.	#
 #				Use meaningful exit codes.		#
+#				Use more standard printf aot echo.	#
 #									#
 #########################################################################
 
@@ -232,8 +233,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			echo "$0 Script version "$version
-			echo "$0 Package version "$packageversion
+			printf "%s Script version %s\n" $0 $version
+			printf "%s Package version %s\n" $0 $packageversion
 			shift
 			script_exit 0
 			;;
