@@ -93,13 +93,13 @@
 # 20/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Change verbosity to boolean verbose.	#
 #				Use standardised output function.	#
+#				Remove script_exit_code variable.	#
 #									#
 #########################################################################
 
 ##################
 # Init variables #
 ##################
-script_exit_code=0
 outputprefix="$(basename $0):"
 version=1.3.1				# set version variable
 packageversion=@pkgversion@		# Version of the complete package
@@ -133,27 +133,29 @@ output()
 	fi
 }
 
-# Standard function to test command error ($1 is $?) and exit if non-zero
+# Standard function to test command error and exit if non-zero.
+# Parameters - $1 is $?
+# No return value.
 std_cmd_err_handler()
 {
 	if [ $1 != 0 ]; then
-		script_exit_code=$1
-		script_exit
+		script_exit $1
 	fi
 }
 
-# Standard function to tidy up and return exit code
+# Standard function to tidy up and return exit code.
+# Parameters - 	$1 is the exit code.
+# No return value.
 script_exit()
 {
-	exit $script_exit_code
+	exit $1
 }
 
 # Standard trap exit function
 trap_exit()
 {
-script_exit_code=1
-output "Script terminating due to trap received. Code: "$script_exit_code 1 1
-script_exit
+output "Script terminating due to trap received. Code: 1" 1 1
+script_exit 1
 }
 
 # Setup trap
@@ -179,8 +181,7 @@ while true; do
 		echo "	OR"
 		echo "	-V or --version displays version information"
 		shift
-		script_exit_code=0
-		script_exit
+		script_exit 0
 		;;
 	-v|--verbose)
 		verbose=true
@@ -190,24 +191,21 @@ while true; do
 		echo "$0 Script version "$version
 		echo "$0 Package version "$packageversion
 		shift
-		script_exit_code=0
-		script_exit
+		script_exit 0
 		;;
 	--)	shift
 		break
 		;;
-	*)	script_exit_code=1
-		output "Internal error." 1 0
-		script_exit
+	*)	output "Internal error." 1 0
+		script_exit 1
 		;;
 	esac
 done
 
 # Script does not accept other arguments.
 if [ $# -gt 0 ]; then
-	script_exit_code=1
 	output "Invalid argument." 1 0
-	script_exit
+	script_exit 1
 fi
 
 # Read parameters from $etclocation/backups.conf
@@ -228,19 +226,16 @@ if [ "$(chkbckshare -bt)" = "TRUE" ]; then
 	umount $mntdir
 	status=$?
 	if [ $status != 0 ]; then
-		script_exit_code=1
 		msg="Failed to unmount backup share. Umount error: "
-		msg+=$status" Script exit code: "$script_exit_code
+		msg+=$status" Script exit code: 1"
 		output $msg 1 1
-		script_exit
+		script_exit 1
 	fi
 else
-	script_exit_code=1
-	output "Backup share not mounted. Script exit code: "$script_exit_code \
-		1 1
-	script_exit
+	output "Backup share not mounted. Script exit code: 1" 1 1
+	script_exit 1
 fi
 
-script_exit_code=0
 output "Share unmounted from $mntdir" 0 1
-script_exit
+script_exit 0
+
