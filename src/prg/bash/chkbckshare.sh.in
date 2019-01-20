@@ -57,15 +57,14 @@
 # 09/01/2019	MG	1.2.6	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 13/01/2019	MG	1.2.7	Do not hard code outputprefix contents.	#
+# 20/01/2019	MG	1.2.7	Do not hard code outputprefix contents.	#
+#				Use true booleans.			#
 #									#
 #########################################################################
 
 ##################
 # Init variables #
 ##################
-bool="FALSE"
-terse="FALSE"
 outputprefix="$(basename $0):"
 mountoutput=""
 script_exit_code=0
@@ -73,6 +72,8 @@ version=1.2.7				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
+bool=false
+terse=false
 mntdir=""
 
 #############
@@ -128,7 +129,7 @@ std_cmd_err_handler $?
 while true; do
 	case "$1" in
 	-b|--boolean)
-		bool="TRUE"
+		bool=true
 		shift
 		;;
 	-h|--help)
@@ -149,7 +150,7 @@ while true; do
 		script_exit
 		;;
 	-t|--terse)
-		terse="TRUE"
+		terse=true
 		outputprefix=""
 		shift
 		;;
@@ -192,7 +193,7 @@ exec 3<&-
 
 # Check to see if the backup share is mounted
 mountoutput=$(mount | grep "$mntdir")
-if [ "$bool" = "FALSE" ]; then
+if ! $bool ; then
 	if [ "$mountoutput" = "" ]; then
 		output "Backup share not mounted" 0
 	else
