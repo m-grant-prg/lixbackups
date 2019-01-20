@@ -96,6 +96,7 @@
 #				Remove script_exit_code variable.	#
 #				Improve trap function.			#
 #				Use [[ ... ]] when appropriate.		#
+#				Refactor into functions.		#
 #									#
 #########################################################################
 
@@ -112,6 +113,21 @@ verbose=false
 #############
 # Functions #
 #############
+
+# -h --help output.
+# No parameters
+# No return value
+usage()
+{
+cat << EOF
+Usage is $0 [options]
+	-h or --help displays usage information
+	OR
+	-v or --verbose verbose output
+	OR
+	-V or --version displays version information
+EOF
+}
 
 # Standard function to emit messages depending on various parameters.
 # Parameters -	$1 What:-	The message to emit.
@@ -184,12 +200,7 @@ std_cmd_err_handler $?
 while true; do
 	case "$1" in
 	-h|--help)
-		echo "Usage is $0 [options]"
-		echo "	-h or --help displays usage information"
-		echo "	OR"
-		echo "	-v or --verbose verbose output"
-		echo "	OR"
-		echo "	-V or --version displays version information"
+		usage
 		shift
 		script_exit 0
 		;;
