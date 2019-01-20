@@ -201,7 +201,9 @@ output()
 	fi
 }
 
-# Standard function to test command error ($1 is $?) and exit if non-zero
+# Standard function to test command error and exit if non-zero.
+# Parameters - $1 is $?
+# No return value.
 std_cmd_err_handler()
 {
 	if [ $1 != 0 ]; then
