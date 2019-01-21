@@ -100,6 +100,7 @@
 #				non-AutoTools script.			#
 # 21/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Use true booleans.			#
+#				Standardise output function.		#
 #									#
 #########################################################################
 
@@ -128,17 +129,23 @@ loglocation=@localstatedir@/log		# Log file location
 # Functions #
 #############
 
-# Output $1 to stdout or stderr depending on $2 and write to syslog if required.
-# Syntax = output $1 (The message) $2 (0 = stdout, > 0 = stderr)
-# $3 (TRUE = syslog it).
+# Standard function to emit messages depending on various parameters.
+# Parameters -	$1 What:-	The message to emit.
+#		$2 Where:-	stdout == 0
+#				stderr == 1
+#		$3 Syslog:-	$3 == 0, No.
+#				$3 == 1, Yes.
+# No return value.
 output()
 {
 	if [ $2 = 0 ]; then
-		echo $(date +'[ %a %b %d %T ]')" $outputprefix $1"
+		printf "%s %s %s\n" "$(date +'[ %a %b %d %T ]')" $outputprefix \
+			"$1"
 	else
-		echo $(date +'[ %a %b %d %T ]')" $outputprefix $1" 1>&2
+		printf "%s %s %s\n" "$(date +'[ %a %b %d %T ]')" $outputprefix \
+			"$1" 1>&2
 	fi
-	if [ $3 = TRUE ]; then
+	if [ $3 = 1 ]; then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -168,11 +175,10 @@ fi
 # lines. If FD 6 is open, 2 lines result, PID number and f6.
 if [ $(lsof -aw -d 6 -F f -p $$ | wc -l) -gt 0 ]; then
 	# Final log entries and restore stdout & stderr
-	output $script_short_desc" completed with status $script_exit_code" \
+	output "$script_short_desc completed with status $script_exit_code" \
 		$script_exit_code FALSE
-	msg="Processing of "$backpath" is complete. Status: "
-	msg+="$script_exit_code"
-	output "$msg" $script_exit_code FALSE
+	msg="Processing of $backpath is complete. Status: $script_exit_code"
+	output "$msg" $script_exit_code 0
 
 	exec 1>&6 6>&-	# Restore stdout and close FD 6
 fi
@@ -183,8 +189,8 @@ fi
 # Re-Allow logins
 rm -f /etc/nologin
 
-output $script_short_desc" completed with status "$script_exit_code \
-	$script_exit_code TRUE
+output "$script_short_desc completed with status $script_exit_code" \
+	$script_exit_code 1
 
 exit $script_exit_code
 }
@@ -193,7 +199,7 @@ exit $script_exit_code
 trap_exit()
 {
 script_exit_code=1
-output "Script terminating due to trap received." 1 TRUE
+output "Script terminating due to trap received." 1 1
 script_exit
 }
 
@@ -224,7 +230,7 @@ while true; do
 		if $fulladhoc || $incremental || $selective || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
-			output "$msg" 64 FALSE
+			output "$msg" 64 0
 			exit 64
 		fi
 		differential=true
@@ -238,7 +244,7 @@ while true; do
 		if $differential || $incremental || $selective || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
-			output "$msg" 64 FALSE
+			output "$msg" 64 0
 			exit 64
 		fi
 		fulladhoc=true
@@ -265,7 +271,7 @@ while true; do
 		if $fulladhoc || $differential || $selective || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
-			output "$msg" 64 FALSE
+			output "$msg" 64 0
 			exit 64
 		fi
 		incremental=true
@@ -279,7 +285,7 @@ while true; do
 		if $fulladhoc || $differential || $incremental || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
-			output "$msg" 64 FALSE
+			output "$msg" 64 0
 			exit 64
 		fi
 		selective=true
@@ -298,7 +304,7 @@ while true; do
 			|| $selective; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
-			output "$msg" 64 FALSE
+			output "$msg" 64 0
 			exit 64
 		fi
 		weekly=true
@@ -324,7 +330,7 @@ while true; do
 	--)	shift
 		break
 		;;
-	*)	output "Internal error." 1 FALSE
+	*)	output "Internal error." 1 0
 		exit 1
 		;;
 	esac
@@ -332,19 +338,19 @@ done
 
 # Script does not accept other arguments.
 if [ $# -gt 0 ]; then
-	output "Invalid argument." 64 FALSE
+	output "Invalid argument." 64 0
 	exit 64
 fi
 
 # One option has to be selected.
 if ! $differential && ! $fulladhoc && ! $incremental && ! $selective \
 	&& ! $weekly; then
-	output "Either d, f, i, s or w must be set." 64 FALSE
+	output "Either d, f, i, s or w must be set." 64 0
 	exit 64
 fi
 
-output "Refer to $loglocation/lixbackups.log for further information." 0 TRUE
-output "$script_short_desc" 0 TRUE
+output "Refer to $loglocation/lixbackups.log for further information." 0 1
+output "$script_short_desc" 0 1
 
 # Ensure backup log exists.
 mkdir -p $loglocation
@@ -363,21 +369,21 @@ exec 6>&1 7>&2
 
 exec 1>> $loglocation/lixbackups.log 2>&1
 
-output "$script_short_desc" 0 FALSE
+output "$script_short_desc" 0 0
 
 # Check to see if root account is accessible, if so, prohibit non-root login
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 		print $2 ;}')
 
 if [ $pwdstatus = "P" ]; then
-	msg="Root password status is "$pwdstatus". Denying non-root login "
+	msg="Root password status is $pwdstatus. Denying non-root login "
 	msg+="access."
-	output "$msg" 0 TRUE
+	output "$msg" 0 1
 	echo "Login refused. Backup in progress." > /etc/nologin
 else
-	msg="Root password status is "$pwdstatus". Login access not being "
+	msg="Root password status is $pwdstatus. Login access not being "
 	msg+="denied."
-	output "$msg" 0 TRUE
+	output "$msg" 0 1
 fi
 
 # Read parameters from $etclocation/backups.conf
@@ -440,8 +446,8 @@ differential)
 	else
 		script_exit_code=1
 		msg="backup.snar does not exist or is not accessible. Exit "
-		msg+="code "$script_exit_code
-		output "$msg" 1 TRUE
+		msg+="code $script_exit_code"
+		output "$msg" 1 1
 		script_exit
 	fi
 
@@ -470,9 +476,9 @@ incremental)
 	# Check that the incremental file exists.
 	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ]; then
 		script_exit_code=1
-		msg=$snarpath" does not exist or is not accessible. Exit "
-		msg+="code "$script_exit_code
-		output "$msg" 1 TRUE
+		msg="$snarpath does not exist or is not accessible. Exit "
+		msg+="code $script_exit_code"
+		output "$msg" 1 1
 		script_exit
 	fi
 
@@ -520,7 +526,7 @@ if [ -f $backpath ]; then
 	std_cmd_err_handler $?
 fi
 
-output "Attempting to process backup - "$backpath 0 TRUE
+output "Attempting to process backup - $backpath" 0 1
 
 # Empty the network trashbox if it exists
 rm -fr $mntdir/trashbox/*
@@ -551,7 +557,7 @@ exec 3<&-
 
 findCL=$findCL" ')' -prune -o -type s -print > "$mntdir/sockets.exclude
 
-output "Find command used:- $findCL" 0 FALSE
+output "Find command used:- $findCL" 0 0
 
 eval "$findCL"
 
@@ -561,7 +567,7 @@ if ! $selective; then
 	bckupCL+="/"
 fi
 
-output "Backup command used:- $bckupCL" 0 FALSE
+output "Backup command used:- $bckupCL" 0 0
 eval "$bckupCL"
 std_cmd_err_handler $?
 
