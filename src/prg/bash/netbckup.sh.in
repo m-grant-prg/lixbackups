@@ -98,7 +98,8 @@
 # 09/01/2019	MG	1.2.13	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 13/01/2019	MG	1.2.14	Do not hard code outputprefix contents.	#
+# 21/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
+#				Use true booleans.			#
 #									#
 #########################################################################
 
@@ -106,14 +107,14 @@
 # Init variables #
 ##################
 script_exit_code=0
-version=1.2.14				# set version variable
+version=1.3.1				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="$(basename $0):"
-differential=FALSE
-fulladhoc=FALSE
-incremental=FALSE
-selective=FALSE
-weekly=FALSE
+differential=false
+fulladhoc=false
+incremental=false
+selective=false
+weekly=false
 bckuptype=""				# Selected backup type
 bckupCL=""				# Backup command line
 packageversion=@pkgversion@		# Version of the complete package
@@ -220,14 +221,13 @@ fi
 while true; do
 	case "$1" in
 	-d|--differential)
-		if [ $fulladhoc = TRUE -o $incremental = TRUE \
-			-o $selective = TRUE -o $weekly = TRUE ]; then
+		if $fulladhoc || $incremental || $selective || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
 			output "$msg" 64 FALSE
 			exit 64
 		fi
-		differential=TRUE
+		differential=true
 		bckuptype="differential"
 		attachtype="weekly"
 		script_short_desc=$(uname -n)" "$(date +%A)
@@ -235,14 +235,13 @@ while true; do
 		shift
 		;;
 	-f|--full)
-		if [ $differential = TRUE -o $incremental = TRUE \
-			-o $selective = TRUE -o $weekly = TRUE ]; then
+		if $differential || $incremental || $selective || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
 			output "$msg" 64 FALSE
 			exit 64
 		fi
-		fulladhoc=TRUE
+		fulladhoc=true
 		bckuptype="fulladhoc"
 		attachtype="adhoc"
 		script_short_desc=$(uname -n)" Ad Hoc Full Backup "
@@ -263,14 +262,13 @@ while true; do
 		exit 0
 		;;
 	-i|--incremental)
-		if [ $fulladhoc = TRUE -o $differential = TRUE \
-			-o $selective = TRUE -o $weekly = TRUE ]; then
+		if $fulladhoc || $differential || $selective || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
 			output "$msg" 64 FALSE
 			exit 64
 		fi
-		incremental=TRUE
+		incremental=true
 		bckuptype="incremental"
 		attachtype="weekly"
 		script_short_desc=$(uname -n)" "$(date +%A)
@@ -278,14 +276,13 @@ while true; do
 		shift
 		;;
 	-s|--selective)
-		if [ $fulladhoc = TRUE -o $differential = TRUE \
-			-o $incremental = TRUE -o $weekly = TRUE ]; then
+		if $fulladhoc || $differential || $incremental || $weekly; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
 			output "$msg" 64 FALSE
 			exit 64
 		fi
-		selective=TRUE
+		selective=true
 		bckuptype="selective"
 		attachtype="adhoc"
 		script_short_desc=$(uname -n)" "$(date +%A)" Selective Backup"
@@ -297,14 +294,14 @@ while true; do
 		exit 0
 		;;
 	-w|--weekly)
-		if [ $fulladhoc = TRUE -o $differential = TRUE \
-			-o $incremental = TRUE -o $selective = TRUE ]; then
+		if $fulladhoc || $differential || $incremental \
+			|| $selective; then
 			msg="Options d, f, i, s and w are all mutually "
 			msg+="exclusive."
 			output "$msg" 64 FALSE
 			exit 64
 		fi
-		weekly=TRUE
+		weekly=true
 		bckuptype="weekly"
 		attachtype="weekly"
 		# Calculate backup sequence number.
@@ -340,8 +337,8 @@ if [ $# -gt 0 ]; then
 fi
 
 # One option has to be selected.
-if [ $differential = FALSE -a $fulladhoc = FALSE -a $incremental = FALSE \
-	-a $selective = FALSE -a $weekly = FALSE ]; then
+if ! $differential && ! $fulladhoc && ! $incremental && ! $selective \
+	&& ! $weekly; then
 	output "Either d, f, i, s or w must be set." 64 FALSE
 	exit 64
 fi
@@ -560,7 +557,7 @@ eval "$findCL"
 
 
 # Selective uses --files-from so doesn't need starting node (root)
-if [ $selective = FALSE ]; then
+if ! $selective; then
 	bckupCL+="/"
 fi
 
