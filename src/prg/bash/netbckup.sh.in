@@ -128,6 +128,7 @@
 #				Improve trap fnction.			#
 #				Use [[ ... ]] where appropriate.	#
 #				Refactor into functions.		#
+#				Improve checking for required files.	#
 #									#
 #########################################################################
 
@@ -393,6 +394,80 @@ proc_CL()
 	fi
 }
 
+# Ensure required files exist and are accessible.
+# Parameters - None.
+# No return value.
+chk_reqd_files()
+{
+	local msg
+
+	mkdir -p $loglocation
+	std_cmd_err_handler $?
+
+	if [[ ! -e $loglocation/lixbackups.log ]]; then
+		touch "$loglocation/lixbackups.log"
+		std_cmd_err_handler $?
+		chown root:adm "$loglocation/lixbackups.log"
+		std_cmd_err_handler $?
+		chmod 0640 "$loglocation/lixbackups.log"
+		std_cmd_err_handler $?
+	fi
+	if [[ ! -f $loglocation/lixbackups.log \
+		|| ! -r $loglocation/lixbackups.log \
+		|| ! -w $loglocation/lixbackups.log ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $loglocation/lixbackups.log." 1 1
+		script_exit 66
+	fi
+
+	if [[ ! -f $etclocation/backups.conf || ! -r $etclocation/backups.conf \
+		|| ! -w $etclocation/backups.conf ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $etclocation/backups.conf." 1 1
+		script_exit 66
+	fi
+
+	if [[ ! -f $etclocation/bckdaily.exclude \
+		|| ! -r $etclocation/bckdaily.exclude \
+		|| ! -w $etclocation/bckdaily.exclude ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $etclocation/bckdaily.exclude." 1 1
+		script_exit 66
+	fi
+
+	if [[ ! -f $etclocation/bckseldaily.exclude \
+		|| ! -r $etclocation/bckseldaily.exclude \
+		|| ! -w $etclocation/bckseldaily.exclude ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $etclocation/bckseldaily.exclude." 1 1
+		script_exit 66
+	fi
+
+	if [[ ! -f $etclocation/bckseldaily.files \
+		|| ! -r $etclocation/bckseldaily.files \
+		|| ! -w $etclocation/bckseldaily.files ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $etclocation/bckseldaily.files." 1 1
+		script_exit 66
+	fi
+
+	if [[ ! -f $etclocation/bcksystem.exclude \
+		|| ! -r $etclocation/bcksystem.exclude \
+		|| ! -w $etclocation/bcksystem.exclude ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $etclocation/bcksystem.exclude." 1 1
+		script_exit 66
+	fi
+
+	if [[ ! -f $etclocation/bckweekly.exclude \
+		|| ! -r $etclocation/bckweekly.exclude \
+		|| ! -w $etclocation/bckweekly.exclude ]]; then
+		msg="Incorrect file type or permissions for"
+		output "$msg $etclocation/bckweekly.exclude." 1 1
+		script_exit 66
+	fi
+}
+
 
 ########
 # Main #
@@ -406,16 +481,6 @@ proc_CL "$@"
 output "Refer to $loglocation/lixbackups.log for further information." 0 1
 output "$script_short_desc" 0 1
 
-# Ensure backup log exists.
-mkdir -p $loglocation
-if [[ ! -f $loglocation/lixbackups.log ]]; then
-	touch "$loglocation/lixbackups.log"
-	std_cmd_err_handler $?
-	chown root:adm "$loglocation/lixbackups.log"
-	std_cmd_err_handler $?
-	chmod 0640 "$loglocation/lixbackups.log"
-	std_cmd_err_handler $?
-fi
 
 # Make copies of stdout & stderr then re-direct stdout & stderr to backup log
 # and write initial entries
@@ -424,6 +489,8 @@ exec 6>&1 7>&2
 exec 1>> $loglocation/lixbackups.log 2>&1
 
 output "$script_short_desc" 0 0
+
+chk_reqd_files
 
 # Check to see if root account is accessible, if so, prohibit non-root login
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
