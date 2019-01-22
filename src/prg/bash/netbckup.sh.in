@@ -127,6 +127,7 @@
 #				Standardise script_exit and exit codes.	#
 #				Improve trap fnction.			#
 #				Use [[ ... ]] where appropriate.	#
+#				Refactor into functions.		#
 #									#
 #########################################################################
 
@@ -155,6 +156,23 @@ weeklynotifyuser=""
 #############
 # Functions #
 #############
+
+# -h --help output.
+# No parameters
+# No return value
+usage()
+{
+cat << EOF
+Usage is $0 [options]
+	-d or --differential - perform a differential backup
+	-f or --full - perform a full ad hoc backup
+	-h or --help displays usage information
+	-i or --incremental - perform an incremental backup
+	-s or --selective - perform a selective backup
+	-V or --version displays version information
+	-w or --weekly - perform a weekly full backup
+EOF
+}
 
 # Standard function to emit messages depending on various parameters.
 # Parameters -	$1 What:-	The message to emit.
@@ -281,15 +299,7 @@ while true; do
 		shift
 		;;
 	-h|--help)
-		echo "Usage is $0 [options]"
-		echo "	-d or --differential - perform a differential backup"
-		echo "	-f or --full - perform a full ad hoc backup"
-		echo "	-h or --help displays usage information"
-		echo "	-i or --incremental - perform an incremental backup"
-		echo "	-s or --selective - perform a selective backup"
-		echo "	-V or --version displays version information"
-		echo "	OR"
-		echo "	-w or --weekly - perform a weekly full backup"
+		usage
 		shift
 		script_exit 0
 		;;
