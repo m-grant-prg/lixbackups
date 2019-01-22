@@ -251,6 +251,148 @@ trap_exit()
 	script_exit $exit_code
 }
 
+# Process command line arguments with GNU getopt.
+# Parameters -	$1 is the command line.
+# No return value.
+proc_CL()
+{
+	local GETOPTTEMP
+	local msg
+
+
+	GETOPTTEMP="getopt -o dfhisVw --long differential,full,help,"
+	GETOPTTEMP+="incremental,selective,version,weekly"
+	GETOPTTEMP=`$GETOPTTEMP -n "$0" -- "$@"`
+	std_cmd_err_handler $?
+
+	eval set -- "$GETOPTTEMP"
+	std_cmd_err_handler $?
+
+	while true; do
+		case "$1" in
+		-d|--differential)
+			if $fulladhoc || $incremental || $selective \
+				|| $weekly; then
+				msg="Options d, f, i, s and w are all mutually "
+				msg+="exclusive."
+				output "$msg" 1 0
+				script_exit 64
+			fi
+			differential=true
+			bckuptype="differential"
+			attachtype="weekly"
+			script_short_desc=$(uname -n)" "$(date +%A)
+			script_short_desc+=" Daily Differential Backup"
+			shift
+			;;
+		-f|--full)
+			if $differential || $incremental || $selective \
+				|| $weekly; then
+				msg="Options d, f, i, s and w are all mutually "
+				msg+="exclusive."
+				output "$msg" 1 0
+				script_exit 64
+			fi
+			fulladhoc=true
+			bckuptype="fulladhoc"
+			attachtype="adhoc"
+			script_short_desc=$(uname -n)" Ad Hoc Full Backup "
+			script_short_desc+=$(date '+%Y%m%d%H%M')
+			shift
+			;;
+		-h|--help)
+			usage
+			shift
+			script_exit 0
+			;;
+		-i|--incremental)
+			if $fulladhoc || $differential || $selective \
+				|| $weekly; then
+				msg="Options d, f, i, s and w are all mutually "
+				msg+="exclusive."
+				output "$msg" 1 0
+				script_exit 64
+			fi
+			incremental=true
+			bckuptype="incremental"
+			attachtype="weekly"
+			script_short_desc=$(uname -n)" "$(date +%A)
+			script_short_desc+=" Daily Incremental Backup"
+			shift
+			;;
+		-s|--selective)
+			if $fulladhoc || $differential || $incremental \
+				|| $weekly; then
+				msg="Options d, f, i, s and w are all mutually "
+				msg+="exclusive."
+				output "$msg" 1 0
+				script_exit 64
+			fi
+			selective=true
+			bckuptype="selective"
+			attachtype="adhoc"
+			script_short_desc="$(uname -n) $(date +%A) Selective "
+			script_short_desc+="Backup"
+			shift
+			;;
+		-V|--version)
+			echo "$0 Script version "$version
+			echo "$0 Package version "$packageversion
+			shift
+			script_exit 0
+			;;
+		-w|--weekly)
+			if $fulladhoc || $differential || $incremental \
+				|| $selective; then
+				msg="Options d, f, i, s and w are all mutually "
+				msg+="exclusive."
+				output "$msg" 1 0
+				script_exit 64
+			fi
+			weekly=true
+			bckuptype="weekly"
+			attachtype="weekly"
+			# Calculate backup sequence number.
+			# Remove leading zeros otherwise thinks it is octal
+			day=$(date +%d)
+			day=$(echo $day | sed 's/^0*//')
+			bckseq=1
+			if [[ $day > 28 ]]; then
+				bckseq=5
+				elif [[ $day > 21 ]]; then
+					bckseq=4
+					elif [[ $day > 14 ]]; then
+						bckseq=3
+						elif [[ $day > 7 ]]; then
+							bckseq=2
+			fi
+			script_short_desc="$(uname -n) Weekly Full Backup - "
+			script_short_desc+="$bckseq"
+			shift
+			;;
+		--)	shift
+			break
+			;;
+		*)	output "Internal error." 1 0
+			script_exit 64
+			;;
+		esac
+	done
+
+	# Script does not accept other arguments.
+	if [[ $# > 0 ]]; then
+		output "Invalid argument." 1 0
+		script_exit 64
+	fi
+
+	# One option has to be selected.
+	if ! $differential && ! $fulladhoc && ! $incremental && ! $selective \
+		&& ! $weekly; then
+		output "Either d, f, i, s or w must be set." 1 0
+		script_exit 64
+	fi
+}
+
 
 ########
 # Main #
@@ -259,131 +401,7 @@ trap_exit()
 # Setup trap.
 trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
-# Process command line arguments with GNU getopt.
-GETOPTTEMP=`getopt -o dfhisVw \
-	--long differential,full,help,incremental,selective,version,weekly \
-	-n "$0" -- "$@"`
-std_cmd_err_handler $?
-
-eval set -- "$GETOPTTEMP"
-std_cmd_err_handler $?
-
-while true; do
-	case "$1" in
-	-d|--differential)
-		if $fulladhoc || $incremental || $selective || $weekly; then
-			msg="Options d, f, i, s and w are all mutually "
-			msg+="exclusive."
-			output "$msg" 1 0
-			script_exit 64
-		fi
-		differential=true
-		bckuptype="differential"
-		attachtype="weekly"
-		script_short_desc=$(uname -n)" "$(date +%A)
-		script_short_desc+=" Daily Differential Backup"
-		shift
-		;;
-	-f|--full)
-		if $differential || $incremental || $selective || $weekly; then
-			msg="Options d, f, i, s and w are all mutually "
-			msg+="exclusive."
-			output "$msg" 1 0
-			script_exit 64
-		fi
-		fulladhoc=true
-		bckuptype="fulladhoc"
-		attachtype="adhoc"
-		script_short_desc=$(uname -n)" Ad Hoc Full Backup "
-		script_short_desc+=$(date '+%Y%m%d%H%M')
-		shift
-		;;
-	-h|--help)
-		usage
-		shift
-		script_exit 0
-		;;
-	-i|--incremental)
-		if $fulladhoc || $differential || $selective || $weekly; then
-			msg="Options d, f, i, s and w are all mutually "
-			msg+="exclusive."
-			output "$msg" 1 0
-			script_exit 64
-		fi
-		incremental=true
-		bckuptype="incremental"
-		attachtype="weekly"
-		script_short_desc=$(uname -n)" "$(date +%A)
-		script_short_desc+=" Daily Incremental Backup"
-		shift
-		;;
-	-s|--selective)
-		if $fulladhoc || $differential || $incremental || $weekly; then
-			msg="Options d, f, i, s and w are all mutually "
-			msg+="exclusive."
-			output "$msg" 1 0
-			script_exit 64
-		fi
-		selective=true
-		bckuptype="selective"
-		attachtype="adhoc"
-		script_short_desc=$(uname -n)" "$(date +%A)" Selective Backup"
-		shift
-		;;
-	-V|--version)	echo "$0 Script version "$version
-		echo "$0 Package version "$packageversion
-		shift
-		script_exit 0
-		;;
-	-w|--weekly)
-		if $fulladhoc || $differential || $incremental \
-			|| $selective; then
-			msg="Options d, f, i, s and w are all mutually "
-			msg+="exclusive."
-			output "$msg" 1 0
-			script_exit 64
-		fi
-		weekly=true
-		bckuptype="weekly"
-		attachtype="weekly"
-		# Calculate backup sequence number.
-		# Remove leading zeros otherwise thinks it is octal
-		day=$(date +%d)
-		day=$(echo $day | sed 's/^0*//')
-		bckseq=1
-		if [[ $day > 28 ]]; then
-			bckseq=5
-			elif [[ $day > 21 ]]; then
-				bckseq=4
-				elif [[ $day > 14 ]]; then
-					bckseq=3
-					elif [[ $day > 7 ]]; then
-						bckseq=2
-		fi
-		script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
-		shift
-		;;
-	--)	shift
-		break
-		;;
-	*)	output "Internal error." 1 0
-		script_exit 64
-		;;
-	esac
-done
-
-# Script does not accept other arguments.
-if [[ $# > 0 ]]; then
-	output "Invalid argument." 1 0
-	script_exit 64
-fi
-
-# One option has to be selected.
-if ! $differential && ! $fulladhoc && ! $incremental && ! $selective \
-	&& ! $weekly; then
-	output "Either d, f, i, s or w must be set." 1 0
-	script_exit 64
-fi
+proc_CL "$@"
 
 output "Refer to $loglocation/lixbackups.log for further information." 0 1
 output "$script_short_desc" 0 1
