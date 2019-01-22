@@ -126,28 +126,31 @@
 #				Standardise output function.		#
 #				Standardise script_exit and exit codes.	#
 #				Improve trap fnction.			#
+#				Use [[ ... ]] where appropriate.	#
 #									#
 #########################################################################
 
 ##################
 # Init variables #
 ##################
-version=1.3.1				# set version variable
-etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 outputprefix="$(basename $0):"
+version=1.3.1				# set version variable
+packageversion=@pkgversion@		# Version of the complete package
+etclocation=@sysconfdir@/lixbackups	# Path to etc directory
+loglocation=@localstatedir@/log		# Log file location
+
+adhocnotifyuser=""
+attachtype=""				# attbckshare  weekly or adhoc
+bckupCL=""				# Backup command line
+bckuptype=""				# Selected backup type
 differential=false
 fulladhoc=false
 incremental=false
+notifyuser=""
 selective=false
 weekly=false
-bckuptype=""				# Selected backup type
-bckupCL=""				# Backup command line
-packageversion=@pkgversion@		# Version of the complete package
 weeklynotifyuser=""
-adhocnotifyuser=""
-notifyuser=""
-attachtype=""				# attbckshare  weekly or adhoc
-loglocation=@localstatedir@/log		# Log file location
+
 
 #############
 # Functions #
@@ -191,7 +194,7 @@ std_cmd_err_handler()
 script_exit()
 {
 	# The backup share might or might not be mounted.
-	if [ "$(chkbckshare -bt)" = "TRUE" ]; then
+	if [[ $(chkbckshare -bt) == TRUE ]]; then
 		detbckshare
 		# No error check cos could loop via std_cmd_err_handler
 	fi
@@ -338,13 +341,13 @@ while true; do
 		day=$(date +%d)
 		day=$(echo $day | sed 's/^0*//')
 		bckseq=1
-		if [ $day -gt 28 ]; then
+		if [[ $day > 28 ]]; then
 			bckseq=5
-			elif [ $day -gt 21 ]; then
+			elif [[ $day > 21 ]]; then
 				bckseq=4
-				elif [ $day -gt 14 ]; then
+				elif [[ $day > 14 ]]; then
 					bckseq=3
-					elif [ $day -gt 7 ]; then
+					elif [[ $day > 7 ]]; then
 						bckseq=2
 		fi
 		script_short_desc=$(uname -n)" Weekly Full Backup - "$bckseq
@@ -360,7 +363,7 @@ while true; do
 done
 
 # Script does not accept other arguments.
-if [ $# -gt 0 ]; then
+if [[ $# > 0 ]]; then
 	output "Invalid argument." 1 0
 	script_exit 64
 fi
@@ -377,12 +380,12 @@ output "$script_short_desc" 0 1
 
 # Ensure backup log exists.
 mkdir -p $loglocation
-if [ ! -f $loglocation/lixbackups.log ]; then
-	touch $loglocation/lixbackups.log
+if [[ ! -f $loglocation/lixbackups.log ]]; then
+	touch "$loglocation/lixbackups.log"
 	std_cmd_err_handler $?
-	chown root:adm $loglocation/lixbackups.log
+	chown root:adm "$loglocation/lixbackups.log"
 	std_cmd_err_handler $?
-	chmod 0640 $loglocation/lixbackups.log
+	chmod 0640 "$loglocation/lixbackups.log"
 	std_cmd_err_handler $?
 fi
 
@@ -398,7 +401,7 @@ output "$script_short_desc" 0 0
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
 		print $2 ;}')
 
-if [ $pwdstatus = "P" ]; then
+if [[ $pwdstatus == P ]]; then
 	msg="Root password status is $pwdstatus. Denying non-root login "
 	msg+="access."
 	output "$msg" 0 1
@@ -412,7 +415,7 @@ fi
 # Read parameters from $etclocation/backups.conf
 IFS="="
 
-exec 3<$etclocation/backups.conf
+exec 3<"$etclocation/backups.conf"
 while read -u3 -ra input; do
 	case ${input[0]} in
 	mntdir)
@@ -428,7 +431,7 @@ while read -u3 -ra input; do
 done
 exec 3<&-
 
-if [ $attachtype = "weekly" ]; then
+if [[ $attachtype == weekly ]]; then
 	notifyuser=$weeklynotifyuser
 else
 	notifyuser=$adhocnotifyuser
@@ -436,7 +439,7 @@ fi
 
 # Check to see if the network backup share is mounted, if so umount as it could
 # be mounted using different parameters, then mount
-if [ "$(chkbckshare -bt)" = "TRUE" ]; then
+if [[ $(chkbckshare -bt) == TRUE ]]; then
 	detbckshare
 	std_cmd_err_handler $?
 fi
@@ -455,16 +458,16 @@ differential)
 
 	# If the incremental files exists, delete.
 	# (Just in case full backup has not done this)
-	if [ -f $snarpath ]; then
-		rm $snarpath
+	if [[ -f $snarpath ]]; then
+		rm "$snarpath"
 		std_cmd_err_handler $?
 	fi
 
 	# Copy level 0 incremental file in order to perform a
 	# level 1, effective differential backup each run.
-	if [ -f $mntdir/backup.snar -a -r $mntdir/backup.snar \
-		-a -w $mntdir/backup.snar ]; then
-		cp $mntdir/backup.snar $snarpath
+	if [[ -f $mntdir/backup.snar && -r $mntdir/backup.snar \
+		&& -w $mntdir/backup.snar ]]; then
+		cp "$mntdir/backup.snar" "$snarpath"
 		std_cmd_err_handler $?
 	else
 		status=66
@@ -483,7 +486,7 @@ differential)
 	;;
 fulladhoc)
 	# Build the backup file name and path
-	backpath="$mntdir/backup"$(date '+%Y%m%d%H%M')".tar.gz"
+	backpath="$mntdir/backup$(date '+%Y%m%d%H%M').tar.gz"
 
 	bckupCL+="$backpath "
 	# Exclude system and cache directories
@@ -493,11 +496,11 @@ fulladhoc)
 	;;
 incremental)
 	# Build the backup & incremental file names and paths
-	backpath="$mntdir/backup"$(date +%a)".tar.gz"
+	backpath="$mntdir/backup$(date +%a).tar.gz"
 	snarpath="$mntdir/backup.snar"
 
 	# Check that the incremental file exists.
-	if [ ! -f $snarpath -o ! -r $snarpath -o ! -w $snarpath ]; then
+	if [[ ! -f $snarpath || ! -r $snarpath || ! -w $snarpath ]]; then
 		status=66
 		msg="$snarpath does not exist or is not accessible. Exit "
 		msg+="code $status"
@@ -514,7 +517,7 @@ incremental)
 	;;
 selective)
 	# Build the backup file name and path
-	backpath="$mntdir/backupsel"$(date +%a)".tar.gz"
+	backpath="$mntdir/backupsel$(date +%a).tar.gz"
 
 	bckupCL+="$backpath --exclude-from=$etclocation/bckseldaily.exclude "
 	# Exclude system and cache directories
@@ -525,12 +528,12 @@ selective)
 	;;
 weekly)
 	# Build the backup & incremental file names and paths
-	backpath="$mntdir/backup"$bckseq".tar.gz"
+	backpath="$mntdir/backup$bckseq.tar.gz"
 	snarpath="$mntdir/backup.snar"
 
 	# If the level 0 incremental file exists, delete
-	if [ -f $snarpath ]; then
-		rm $snarpath
+	if [[ -f $snarpath ]]; then
+		rm "$snarpath"
 		std_cmd_err_handler $?
 	fi
 
@@ -544,15 +547,15 @@ weekly)
 esac
 
 # If the backup file exists, delete
-if [ -f $backpath ]; then
-	rm $backpath
+if [[ -f $backpath ]]; then
+	rm "$backpath"
 	std_cmd_err_handler $?
 fi
 
 output "Attempting to process backup - $backpath" 0 1
 
 # Empty the network trashbox if it exists
-rm -fr $mntdir/trashbox/*
+rm -fr "$mntdir/trashbox/*"
 std_cmd_err_handler $?
 
 # Produce list of sockets to exclude
@@ -564,28 +567,28 @@ std_cmd_err_handler $?
 
 findCL="find / -type d '(' "
 count=0
-exec 3<$etclocation/bcksystem.exclude
+exec 3<"$etclocation/bcksystem.exclude"
 while read -u3 -ra input; do
-	if [ $count != 0 ]; then
+	if [[ $count != 0 ]]; then
 		findCL=$findCL" -o "
 	fi
-	nameoption=$(echo $input | awk '{if (substr($0,1,1)=="'"'"'")
+	nameoption=$(echo "$input" | awk '{if (substr($0,1,1)=="'"'"'")
 				print "-name "
 				else
 				print "-wholename ";}')
-	findCL=$findCL$nameoption$input
+	findCL="$findCL$nameoption$input"
 	((count = count + 1))
 done
 exec 3<&-
 
-findCL=$findCL" ')' -prune -o -type s -print > "$mntdir/sockets.exclude
+findCL="$findCL ')' -prune -o -type s -print > $mntdir/sockets.exclude"
 
 output "Find command used:- $findCL" 0 0
 
 eval "$findCL"
 
 
-# Selective uses --files-from so doesn't need starting node (root)
+# Selective uses --files-from so doesnt need starting node (root)
 if ! $selective; then
 	bckupCL+="/"
 fi
@@ -595,10 +598,10 @@ eval "$bckupCL"
 std_cmd_err_handler $?
 
 # Mail disk stats
-df -h | mailx -s "$script_short_desc" $notifyuser
+df -h | mailx -s "$script_short_desc" "$notifyuser"
 
 # Mail backup file date hierarchy
-ls -lht $mntdir | mailx -s "$script_short_desc" $notifyuser
+ls -lht "$mntdir" | mailx -s "$script_short_desc" "$notifyuser"
 
 output "Processing of $backpath is complete. Status: 0" 0 1
 
