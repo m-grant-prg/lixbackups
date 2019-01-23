@@ -142,7 +142,6 @@ packageversion=@pkgversion@		# Version of the complete package
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 loglocation=@localstatedir@/log		# Log file location
 
-adhocnotifyuser=""
 attachtype=""				# attbckshare  weekly or adhoc
 bckupCL=""				# Backup command line
 bckuptype=""				# Selected backup type
@@ -152,7 +151,6 @@ incremental=false
 notifyuser=""
 selective=false
 weekly=false
-weeklynotifyuser=""
 
 
 #############
@@ -498,6 +496,42 @@ try_login_denial()
 	fi
 }
 
+# Process the config file just for the parameters of interest.
+# Parameters - None
+# No return value.
+proc_config_file()
+{
+	local input=()
+	local oldIFS=$IFS
+	local adhocnotifyuser weeklynotifyuser
+
+	IFS="="
+
+	exec 3<"$etclocation/backups.conf"
+	while read -u3 -ra input; do
+		case ${input[0]} in
+		adhocnotifyuser)
+			adhocnotifyuser=${input[1]}
+			;;
+		mntdir)
+			mntdir=${input[1]}
+			;;
+		weeklynotifyuser)
+			weeklynotifyuser=${input[1]}
+			;;
+		esac
+	done
+	exec 3<&-
+
+	if [[ $attachtype == weekly ]]; then
+		notifyuser=$weeklynotifyuser
+	else
+		notifyuser=$adhocnotifyuser
+	fi
+
+	IFS=$oldIFS
+}
+
 
 ########
 # Main #
@@ -526,30 +560,8 @@ chk_config_files
 
 try_login_denial
 
-# Read parameters from $etclocation/backups.conf
-IFS="="
-
-exec 3<"$etclocation/backups.conf"
-while read -u3 -ra input; do
-	case ${input[0]} in
-	mntdir)
-		mntdir=${input[1]}
-		;;
-	weeklynotifyuser)
-		weeklynotifyuser=${input[1]}
-		;;
-	adhocnotifyuser)
-		adhocnotifyuser=${input[1]}
-		;;
-	esac
-done
-exec 3<&-
-
-if [[ $attachtype == weekly ]]; then
-	notifyuser=$weeklynotifyuser
-else
-	notifyuser=$adhocnotifyuser
-fi
+# Get mntdir and notifyuser.
+proc_config_file
 
 # Check to see if the network backup share is mounted, if so umount as it could
 # be mounted using different parameters, then mount
