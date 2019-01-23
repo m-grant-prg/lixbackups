@@ -394,10 +394,10 @@ proc_CL()
 	fi
 }
 
-# Ensure required files exist and are accessible.
+# Ensure logfile exists and is accessible.
 # Parameters - None.
 # No return value.
-chk_reqd_files()
+chk_logfile()
 {
 	local msg
 
@@ -411,14 +411,21 @@ chk_reqd_files()
 		std_cmd_err_handler $?
 		chmod 0640 "$loglocation/lixbackups.log"
 		std_cmd_err_handler $?
-	fi
-	if [[ ! -f $loglocation/lixbackups.log \
+	elif [[ ! -f $loglocation/lixbackups.log \
 		|| ! -r $loglocation/lixbackups.log \
 		|| ! -w $loglocation/lixbackups.log ]]; then
 		msg="Incorrect file type or permissions for"
 		output "$msg $loglocation/lixbackups.log." 1 1
 		script_exit 66
 	fi
+}
+
+# Ensure required config files exist and are accessible.
+# Parameters - None.
+# No return value.
+chk_config_files()
+{
+	local msg
 
 	if [[ ! -f $etclocation/backups.conf || ! -r $etclocation/backups.conf \
 		|| ! -w $etclocation/backups.conf ]]; then
@@ -478,6 +485,8 @@ trap trap_exit SIGHUP SIGINT SIGQUIT SIGTERM
 
 proc_CL "$@"
 
+chk_logfile
+
 output "Refer to $loglocation/lixbackups.log for further information." 0 1
 output "$script_short_desc" 0 1
 
@@ -490,7 +499,7 @@ exec 1>> $loglocation/lixbackups.log 2>&1
 
 output "$script_short_desc" 0 0
 
-chk_reqd_files
+chk_config_files
 
 # Check to see if root account is accessible, if so, prohibit non-root login
 pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
