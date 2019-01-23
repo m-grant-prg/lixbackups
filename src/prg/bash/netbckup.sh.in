@@ -142,7 +142,7 @@ packageversion=@pkgversion@		# Version of the complete package
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 loglocation=@localstatedir@/log		# Log file location
 
-attachtype=""				# attbckshare  weekly or adhoc
+attachtype=""				# attbckshare - weekly or adhoc
 bckupCL=""				# Backup command line
 bckuptype=""				# Selected backup type
 differential=false
