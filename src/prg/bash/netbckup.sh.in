@@ -129,6 +129,7 @@
 #				Use [[ ... ]] where appropriate.	#
 #				Refactor into functions.		#
 #				Improve checking for required files.	#
+#				Replace last sed with awk.		#
 #									#
 #########################################################################
 
@@ -356,7 +357,7 @@ proc_CL()
 			# Calculate backup sequence number.
 			# Remove leading zeros otherwise thinks it is octal
 			day=$(date +%d)
-			day=$(echo $day | sed 's/^0*//')
+			day=$(echo $day | awk 'sub(/^0*/,"")')
 			bckseq=1
 			if [[ $day > 28 ]]; then
 				bckseq=5
