@@ -121,7 +121,7 @@
 # 09/01/2019	MG	1.2.13	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 22/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
+# 23/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Use true booleans.			#
 #				Standardise output function.		#
 #				Standardise script_exit and exit codes.	#
@@ -475,6 +475,28 @@ chk_config_files()
 	fi
 }
 
+# Check to see if root account is accessible, if so, prohibit non-root login
+# Parameters - none
+# No return value
+try_login_denial()
+{
+	local msg
+	local passwdstatus
+
+	passwdstatus=$(passwd -Sa | awk '$1 == "root" { print $2 }')
+
+	if [[ $passwdstatus == P ]]; then
+		msg="Root password status is $passwdstatus. Denying non-root "
+		msg+="login access."
+		output "$msg" 0 1
+		echo "Login refused. Backup in progress." > /etc/nologin
+	else
+		msg="Root password status is $passwdstatus. Login access not "
+		msg+="being denied."
+		output "$msg" 0 1
+	fi
+}
+
 
 ########
 # Main #
@@ -501,20 +523,7 @@ output "$script_short_desc" 0 0
 
 chk_config_files
 
-# Check to see if root account is accessible, if so, prohibit non-root login
-pwdstatus=$(passwd -Sa | awk '{ if ($1 == "root")
-		print $2 ;}')
-
-if [[ $pwdstatus == P ]]; then
-	msg="Root password status is $pwdstatus. Denying non-root login "
-	msg+="access."
-	output "$msg" 0 1
-	echo "Login refused. Backup in progress." > /etc/nologin
-else
-	msg="Root password status is $pwdstatus. Login access not being "
-	msg+="denied."
-	output "$msg" 0 1
-fi
+try_login_denial
 
 # Read parameters from $etclocation/backups.conf
 IFS="="
