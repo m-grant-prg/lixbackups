@@ -532,6 +532,44 @@ proc_config_file()
 	IFS=$oldIFS
 }
 
+# Produce list of sockets to exclude ignoring directories appearing in
+# bcksystem.exclude
+# If the directory being excluded is explicit then use wholename option so
+# the path has to be an exact match.
+# If the directory is quoted then use -name which matches any part of the full
+# path.
+# Parameters - none.
+# No return value.
+prod_sock_list()
+{
+	local -i count=0
+	local findCL
+	local input=()
+	local nameoption
+
+	findCL="find / -type d '(' "
+	exec 3<"$etclocation/bcksystem.exclude"
+	while read -u3 -ra input; do
+		if [[ $count > 0 ]]; then
+			findCL=$findCL" -o "
+		fi
+		nameoption=$(echo "$input" | awk '{if (substr($0,1,1)=="'"'"'")
+					print "-name "
+					else
+					print "-wholename "}')
+		findCL="$findCL$nameoption$input"
+		((count++))
+	done
+	exec 3<&-
+
+	findCL="$findCL ')' -prune -o -type s -print > $mntdir/sockets.exclude"
+
+	output "Find command used:- $findCL" 0 0
+
+	eval "$findCL"
+	std_cmd_err_handler $?
+}
+
 
 ########
 # Main #
@@ -571,6 +609,8 @@ if [[ $(chkbckshare -bt) == TRUE ]]; then
 fi
 attbckshare --$attachtype --verbose
 std_cmd_err_handler $?
+
+prod_sock_list
 
 # Start build of backup command
 bckupCL="tar -cpz --format=posix -f "
@@ -683,36 +723,6 @@ output "Attempting to process backup - $backpath" 0 1
 # Empty the network trashbox if it exists
 rm -fr "$mntdir/trashbox/*"
 std_cmd_err_handler $?
-
-# Produce list of sockets to exclude
-# ignoring directories appearing in bcksystem.exclude
-# If the directory being excluded is explicit then use wholename option so
-# the path has to be an exact match.
-# If the directory is quoted then use -name which matches any part of the full
-# path.
-
-findCL="find / -type d '(' "
-count=0
-exec 3<"$etclocation/bcksystem.exclude"
-while read -u3 -ra input; do
-	if [[ $count != 0 ]]; then
-		findCL=$findCL" -o "
-	fi
-	nameoption=$(echo "$input" | awk '{if (substr($0,1,1)=="'"'"'")
-				print "-name "
-				else
-				print "-wholename ";}')
-	findCL="$findCL$nameoption$input"
-	((count = count + 1))
-done
-exec 3<&-
-
-findCL="$findCL ')' -prune -o -type s -print > $mntdir/sockets.exclude"
-
-output "Find command used:- $findCL" 0 0
-
-eval "$findCL"
-
 
 # Selective uses --files-from so doesnt need starting node (root)
 if ! $selective; then
