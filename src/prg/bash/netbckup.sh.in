@@ -628,11 +628,9 @@ build_bckupCL()
 			cp "$mntdir/backup.snar" "$snarpath"
 			std_cmd_err_handler $?
 		else
-			status=66
-			msg="backup.snar does not exist or is not accessible. "
-			msg+="Exit code $status"
+			msg="backup.snar does not exist or is not accessible."
 			output "$msg" 1 1
-			script_exit $status
+			script_exit 66
 		fi
 
 		bckupCL+="$backpath "
@@ -656,11 +654,9 @@ build_bckupCL()
 		# Check that the incremental file exists.
 		if [[ ! -f $snarpath || ! -r $snarpath \
 			|| ! -w $snarpath ]]; then
-			status=66
-			msg="$snarpath does not exist or is not accessible. "
-			msg+="Exit code $status"
+			msg="$snarpath does not exist or is not accessible."
 			output "$msg" 1 1
-			script_exit $status
+			script_exit 66
 		fi
 
 		bckupCL+="$backpath "
@@ -769,7 +765,7 @@ std_cmd_err_handler $?
 ls -lht "$mntdir" | mailx -s "$script_short_desc" "$notifyuser"
 std_cmd_err_handler $?
 
-output "Processing of $backpath is complete. Status: 0" 0 1
+output "Processing of $backpath is complete" 0 1
 
 # And exit.
 script_exit 0
