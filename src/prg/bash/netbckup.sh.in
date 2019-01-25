@@ -763,9 +763,11 @@ std_cmd_err_handler $?
 
 # Mail disk stats
 df -h | mailx -s "$script_short_desc" "$notifyuser"
+std_cmd_err_handler $?
 
 # Mail backup file date hierarchy
 ls -lht "$mntdir" | mailx -s "$script_short_desc" "$notifyuser"
+std_cmd_err_handler $?
 
 output "Processing of $backpath is complete. Status: 0" 0 1
 
