@@ -340,8 +340,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			echo "$0 Script version "$version
-			echo "$0 Package version "$packageversion
+			printf "%s Script version %s\n" $0 $version
+			printf "%s Package version %s\n" $0 $packageversion
 			shift
 			script_exit 0
 			;;
@@ -358,8 +358,7 @@ proc_CL()
 			attachtype="weekly"
 			# Calculate backup sequence number.
 			# Remove leading zeros otherwise thinks it is octal
-			day=$(date +%d)
-			day=$(echo $day | awk 'sub(/^0*/,"")')
+			day=$(date +%d | awk 'sub(/^0*/,"")')
 			bckseq=1
 			if [[ $day > 28 ]]; then
 				bckseq=5
@@ -492,7 +491,7 @@ try_login_denial()
 		msg="Root password status is $passwdstatus. Denying non-root "
 		msg+="login access."
 		output "$msg" 0 1
-		echo "Login refused. Backup in progress." > /etc/nologin
+		printf "Login refused. Backup in progress.\n" > /etc/nologin
 	else
 		msg="Root password status is $passwdstatus. Login access not "
 		msg+="being denied."
