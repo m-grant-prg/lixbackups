@@ -131,30 +131,26 @@
 #				Improve checking for required files.	#
 #				Replace last sed with awk.		#
 #				Reinforce find function.		#
+#				Localise variables where appropriate.	#
 #									#
 #########################################################################
 
 ##################
 # Init variables #
 ##################
-outputprefix="$(basename $0):"
+readonly outputprefix="$(basename $0):"
 
-version=1.3.1					# Script version
-packageversion=@pkgversion@			# Package version
+readonly version=1.3.1				# Script version
+readonly packageversion=@pkgversion@		# Package version
 
-etclocation=@sysconfdir@/lixbackups		# Path to config directory
-loglocation=@localstatedir@/log			# Log file location
-tmpexclfile=/tmp/$$.$(basename $0).exclude	# Temporary exclude file
+readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory
+readonly loglocation=@localstatedir@/log		# Log file location
+readonly tmpexclfile=/tmp/$$.$(basename $0).exclude	# Temporary exclude file
 
 attachtype=""					# attbckshare - weekly or adhoc
 bckupCL=""					# Backup command line
 bckuptype=""					# Selected backup type
-differential=false
-fulladhoc=false
-incremental=false
 notifyuser=""
-selective=false
-weekly=false
 
 
 #############
@@ -262,6 +258,8 @@ trap_exit()
 # No return value.
 proc_CL()
 {
+	local differential=false fulladhoc=false incremental=false
+	local selective=false weekly=false
 	local GETOPTTEMP
 	local msg
 
@@ -634,7 +632,7 @@ build_bckupCL()
 		fi
 
 		bckupCL+="$backpath "
-		bckup_CL+="--exclude-from=$etclocation/bckdaily.exclude "
+		bckupCL+="--exclude-from=$etclocation/bckdaily.exclude "
 		# Exclude system and cache directories
 		bckupCL_add_std_excl
 		bckupCL+="--listed-incremental=$snarpath "
@@ -690,6 +688,11 @@ build_bckupCL()
 		bckupCL+="--listed-incremental=$snarpath "
 		;;
 	esac
+
+	# Selective uses --files-from so doesnt need starting node (root)
+	if [[ $bckuptype != selective ]]; then
+		bckupCL+="/"
+	fi
 }
 
 
@@ -748,11 +751,6 @@ output "Attempting to process backup - $backpath" 0 1
 rm -fr "$mntdir/trashbox/*"
 std_cmd_err_handler $?
 
-# Selective uses --files-from so doesnt need starting node (root)
-if ! $selective; then
-	bckupCL+="/"
-fi
-
 output "Backup command used:- $bckupCL" 0 0
 eval "$bckupCL"
 std_cmd_err_handler $?
@@ -764,8 +762,6 @@ std_cmd_err_handler $?
 # Mail backup file date hierarchy
 ls -lht "$mntdir" | mailx -s "$script_short_desc" "$notifyuser"
 std_cmd_err_handler $?
-
-output "Processing of $backpath is complete" 0 1
 
 # And exit.
 script_exit 0
