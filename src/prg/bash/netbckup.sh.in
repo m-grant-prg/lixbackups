@@ -139,16 +139,16 @@
 ##################
 outputprefix="$(basename $0):"
 
-version=1.3.1				# set version variable
-packageversion=@pkgversion@		# Version of the complete package
+version=1.3.1					# Script version
+packageversion=@pkgversion@			# Package version
 
-etclocation=@sysconfdir@/lixbackups	# Path to etc directory
-loglocation=@localstatedir@/log		# Log file location
+etclocation=@sysconfdir@/lixbackups		# Path to config directory
+loglocation=@localstatedir@/log			# Log file location
 tmpexclfile=/tmp/$$.$(basename $0).exclude	# Temporary exclude file
 
-attachtype=""				# attbckshare - weekly or adhoc
-bckupCL=""				# Backup command line
-bckuptype=""				# Selected backup type
+attachtype=""					# attbckshare - weekly or adhoc
+bckupCL=""					# Backup command line
+bckuptype=""					# Selected backup type
 differential=false
 fulladhoc=false
 incremental=false
