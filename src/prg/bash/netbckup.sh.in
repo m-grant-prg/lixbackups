@@ -587,6 +587,16 @@ prod_adhoc_excl_list()
 	std_cmd_err_handler $?
 }
 
+# Add standard excludes to backup CL.
+# Parameters - none.
+# No return value.
+bckupCL_add_std_excl()
+{
+	bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
+	bckupCL+="--exclude-from=$tmpexclfile "
+	bckupCL+="--exclude-caches "
+}
+
 # Build the backup command line and associated filenames.
 # Parameters -none.
 # No return value.
@@ -628,9 +638,7 @@ build_bckupCL()
 		bckupCL+="$backpath "
 		bckup_CL+="--exclude-from=$etclocation/bckdaily.exclude "
 		# Exclude system and cache directories
-		bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
-		bckupCL+="--exclude-from=$tmpexclfile "
-		bckupCL+="--exclude-caches "
+		bckupCL_add_std_excl
 		bckupCL+="--listed-incremental=$snarpath "
 		;;
 	fulladhoc)
@@ -638,10 +646,7 @@ build_bckupCL()
 		backpath="$mntdir/backup$(date '+%Y%m%d%H%M').tar.gz"
 
 		bckupCL+="$backpath "
-		# Exclude system and cache directories
-		bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
-		bckupCL+="--exclude-from=$tmpexclfile "
-		bckupCL+="--exclude-caches "
+		bckupCL_add_std_excl
 		;;
 	incremental)
 		# Build the backup & incremental file names and paths
@@ -660,10 +665,7 @@ build_bckupCL()
 
 		bckupCL+="$backpath "
 		bckupCL+="--exclude-from=$etclocation/bckdaily.exclude "
-		# Exclude system and cache directories
-		bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
-		bckupCL+="--exclude-from=$tmpexclfile "
-		bckupCL+="--exclude-caches "
+		bckupCL_add_std_excl
 		bckupCL+="--listed-incremental=$snarpath "
 		;;
 	selective)
@@ -672,10 +674,7 @@ build_bckupCL()
 
 		bckupCL+="$backpath "
 		bckupCL+="--exclude-from=$etclocation/bckseldaily.exclude "
-		# Exclude system and cache directories
-		bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
-		bckupCL+="--exclude-from=$tmpexclfile "
-		bckupCL+="--exclude-caches "
+		bckupCL_add_std_excl
 		bckupCL+="--files-from=$etclocation/bckseldaily.files "
 		;;
 	weekly)
@@ -691,10 +690,7 @@ build_bckupCL()
 
 		bckupCL+="$backpath "
 		bckupCL+="--exclude-from=$etclocation/bckweekly.exclude "
-		# Exclude system and cache directories
-		bckupCL+="--exclude-from=$etclocation/bcksystem.exclude "
-		bckupCL+="--exclude-from=$tmpexclfile "
-		bckupCL+="--exclude-caches "
+		bckupCL_add_std_excl
 		bckupCL+="--listed-incremental=$snarpath "
 		;;
 	esac
