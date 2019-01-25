@@ -538,15 +538,16 @@ proc_config_file()
 	IFS=$oldIFS
 }
 
-# Produce list of sockets to exclude ignoring directories appearing in
-# bcksystem.exclude
-# If the directory being excluded is explicit then use wholename option so
-# the path has to be an exact match.
-# If the directory is quoted then use -name which matches any part of the full
-# path.
+# Produce system-wide list of unreadable files and files of types to be excluded
+# skipping directories appearing in bcksystem.exclude.
+# Processing bcksystem.exclude:-
+#	If the directory being excluded is explicit then use wholename option
+#	so the path has to be an exact match.
+#	If the directory is quoted then use -name which matches any part of the
+#	full path.
 # Parameters - none.
 # No return value.
-prod_sock_list()
+prod_adhoc_excl_list()
 {
 	local -i count=0
 	local findCL
@@ -626,7 +627,7 @@ fi
 attbckshare --$attachtype --verbose
 std_cmd_err_handler $?
 
-prod_sock_list
+prod_adhoc_excl_list
 
 # Start build of backup command
 bckupCL="tar -cpz --format=posix -f "
