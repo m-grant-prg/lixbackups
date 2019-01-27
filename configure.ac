@@ -22,6 +22,24 @@
 # To use this facility run:-						#
 # make distcheck DISTCHECK_CONFIGURE_FLAGS=--enable-distcheckfake=yes	#
 #									#
+# Layout: (Only relevant sections will exist).				#
+# ChangeLog : High level ChangeLog					#
+# SECTION  1: Initialisation & Setup					#
+# SECTION  2: Architecture, target and host checks			#
+# SECTION  3: Command line arguments					#
+# SECTION  4: Compiler setup						#
+# SECTION  5: Check for programs					#
+# SECTION  6: Check for libraries					#
+# SECTION  7: Check for header files					#
+# SECTION  8: Check for types						#
+# SECTION  9: Check for structures					#
+# SECTION 10: Check for compiler characteristics			#
+# SECTION 11: Check for library functions				#
+# SECTION 12: Check for pkg-config files				#
+# SECTION 13: Check for system services					#
+# SECTION 14: Additional checks & variables				#
+# SECTION 15: Specify the output files					#
+#									#
 #########################################################################
 
 #########################################################################
@@ -90,29 +108,60 @@
 # 11/01/2019	MG	1.0.22	Change program check section to check	#
 #				for build required, build and run	#
 #				required, and, run required programs.	#
+# 27/01/2019	MG	1.1.1	Revamp to new standard layout.		#
 #									#
 #########################################################################
 
-AC_REVISION([$Revision: 1.0.22 $])
+
+#########################################
+#					#
+# SECTION  1: Initialisation & Setup	#
+#					#
+#########################################
+
+AC_REVISION([$Revision: 1.1.1 $])
 
 AC_PREREQ([2.69])
 
-
-########################
 #
 # The package version in ac init will be used to create an output variable which
 # can be used by ac output and / or the sed setup below to substitute bookmarks
 # in source files.
 #
-########################
-
 AC_INIT([Linux / Unix (LIX) Backup Scripts], 1.2.19,
 	[m.grant.prg@gmail.com], [lixbackups])
 
+AC_MSG_NOTICE(initialisation and setup)
+
 AC_SUBST(pkgversion, $PACKAGE_VERSION)
 
+#
+# Passes the options to all am files. Puts objects in the sub-directory
+# containing the source. Forces tar to use --format=posix in make dist.
+# This also checks :-	BSD install	make variable set	mkdir -p
+#			gawk
+#
+AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects tar-pax])
 
-########################
+#
+# Standard macros will be automatically placed in m4.
+# Programmer defined macros should be placed in, say, m4extra which allows us
+# to exclude the standard macros from being git tracked. This other directory
+# must be specified as an include option in the Makefile.am ACLOCAL_AMFLAGS
+# e.g.
+# ACLOCAL_AMFLAGS = -I m4 -I m4extra
+#
+AC_CONFIG_MACRO_DIR([m4])
+
+
+#########################################
+#					#
+# SECTION  3: Command line arguments	#
+#					#
+#########################################
+
+AC_MSG_NOTICE(processing command line arguments)
+
 #
 # If a file location has to be fixed, e.g. /etc/foo.conf and never
 # /usr/local/etc/foo.conf, then make distcheck will fail. Setting this flag
@@ -121,8 +170,6 @@ AC_SUBST(pkgversion, $PACKAGE_VERSION)
 # eg /usr/local/etc/foo.conf.
 # and hence succeed.
 #
-########################
-
 AC_ARG_ENABLE([distcheckfake],
 	[  --enable-distcheckfake    Enable running of distcheck],
 	[case "${enableval}" in
@@ -142,97 +189,11 @@ else
 fi
 
 
-########################
-#
-# Now set up a sed sequence to substitute bookmarks in script files with either
-# standard GNU Directory Variables, or with programmer-defined variables set up
-# using an AC_SUBST macro above. This sed sequence will be invoked at programmer
-# discretion at sub-directory Makefile.am level.
-# ----------------------
-#
-# prefix	/usr/local (typically)
-#	exec_prefix	${prefix}
-#		bindir	${exec_prefix}/bin	user executables
-#		sbindir	${exec_prefix}/sbin	system admin executables
-#		libexecdir	${exec_prefix}/libexec	program executables
-#		libdir	${exec_prefix}/lib	object code libraries
-#	sysconfdir	 ${prefix}/etc	read-only single-machine data
-#	sharedstatedir	${prefix}/com	modifiable architecture-independent data
-#	localstatedir	${prefix}/var	modifiable single-machine data
-#	runstatedir	${localstatedir}/run
-#	includedir	${prefix}/include	C header files
-#	oldincludedir	$usr/include	C header files
-#	datarootdir	${prefix}/share	read-only arch.-independent data root
-#		localedir	${datarootdir}/locale	locale-dependent data
-#		datadir	${datarootdir}	read-only architecture-independent data
-#		mandir	${datarootdir}/man	man documentation
-#		infodir	${datarootdir}/info	info documentation
-#		docdir	${datarootdir}/doc/${PACKAGE}	documentation root
-#			htmldir	${docdir}	html documentation
-#			dvidir	${docdir}	dvi documentation
-#			pdfdir	${docdir}	pdf documentation
-#			psdir	${docdir}	ps documentation
-#		lispdir	${datarootdir}/emacs/site-lisp
-#	pkgdatadir	${datarootdir}/${PACKAGE}
-#	pkgincludedir	${includedir}/${PACKAGE}
-#	pkglibdir	${libdir}/${PACKAGE}
-#	pkglibexecdir	${libexecdir}/${PACKAGE}
-#
-########################
-
-AC_SUBST([edit], ["sed \
-		-e 's|@bashlocation[@]|\$(BASH)|g' \
-		-e 's|@logrotateloc[@]|\$(logrotateloc)|g' \
-		-e 's|@pkgversion[@]|\$(pkgversion)|g' \
-		-e 's|@prefix[@]|\$(prefix)|g' \
-		-e 's|@exec_prefix[@]|\$(exec_prefix)|g' \
-		-e 's|@bindir[@]|\$(bindir)|g' \
-		-e 's|@sbindir[@]|\$(sbindir)|g' \
-		-e 's|@libexecdir[@]|\$(libexecdir)|g' \
-		-e 's|@libdir[@]|\$(libdir)|g' \
-		-e 's|@sysconfdir[@]|\$(sysconfdir)|g' \
-		-e 's|@sharedstatedir[@]|\$(sharedstatedir)|g' \
-		-e 's|@localstatedir[@]|\$(localstatedir)|g' \
-		-e 's|@runstatedir[@]|\$(runstatedir)|g' \
-		-e 's|@includedir[@]|\$(includedir)|g' \
-		-e 's|@oldincludedir[@]|\$(oldincludedir)|g' \
-		-e 's|@datarootdir[@]|\$(datarootdir)|g' \
-		-e 's|@localedir[@]|\$(localedir)|g' \
-		-e 's|@datadir[@]|\$(datadir)|g' \
-		-e 's|@mandir[@]|\$(mandir)|g' \
-		-e 's|@infodir[@]|\$(infodir)|g' \
-		-e 's|@docdir[@]|\$(docdir)|g' \
-		-e 's|@htmldir[@]|\$(htmldir)|g' \
-		-e 's|@dvidir[@]|\$(dvidir)|g' \
-		-e 's|@pdfdir[@]|\$(pdfdir)|g' \
-		-e 's|@psdir[@]|\$(psdir)|g' \
-		-e 's|@lispdir[@]|\$(lispdir)|g' \
-		-e 's|@pkgdatadir[@]|\$(pkgdatadir)|g' \
-		-e 's|@pkgincludedir[@]|\$(pkgincludedir)|g' \
-		-e 's|@pkglibdir[@]|\$(pkglibdir)|g' \
-		-e 's|@pkglibexecdir[@]|\$(pkglibexecdir)|g'"])
-
-
-# Passes the options to all am files. Puts objects in the sub-directory
-# containing the source. Forces tar to use --format=posix in make dist.
-# This also checks :-	BSD install	make variable set	mkdir -p
-#			gawk
-AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects tar-pax])
-
-
-########################
-#
-# Standard macros will be automatically placed in m4.
-# Programmer defined macros should be placed in, say, m4extra which allows us
-# to exclude the standard macros from being git tracked. This other directory
-# must be specified as an include option in the Makefile.am ACLOCAL_AMFLAGS
-# e.g.
-# ACLOCAL_AMFLAGS = -I m4 -I m4extra
-#
-########################
-
-AC_CONFIG_MACRO_DIR([m4])
-
+#########################################
+#					#
+# SECTION  5: Check for programs	#
+#					#
+#########################################
 
 AC_MSG_NOTICE(checking for basic programs that have AutoConf checks)
 
@@ -351,17 +312,97 @@ if test "x$DF" = "xno" ; then
 fi
 
 
-# Checks for libraries.
+#################################################
+#						#
+# SECTION 14: Additional checks & variables	#
+#						#
+#################################################
 
-# Checks for C header files.
+AC_MSG_NOTICE(processing additional checks and variables)
 
-# Checks for C++ header files.
+#
+# Now set up an awk sequence to substitute bookmarks in script files with either
+# standard GNU Directory Variables, or with programmer-defined variables set up
+# using an AC_SUBST macro above. This awk sequence will be invoked at programmer
+# discretion at sub-directory Makefile.am level.
+# ----------------------
+#
+# prefix	/usr/local (typically)
+#	exec_prefix	${prefix}
+#		bindir	${exec_prefix}/bin	user executables
+#		sbindir	${exec_prefix}/sbin	system admin executables
+#		libexecdir	${exec_prefix}/libexec	program executables
+#		libdir	${exec_prefix}/lib	object code libraries
+#	sysconfdir	 ${prefix}/etc	read-only single-machine data
+#	sharedstatedir	${prefix}/com	modifiable architecture-independent data
+#	localstatedir	${prefix}/var	modifiable single-machine data
+#	runstatedir	${localstatedir}/run
+#	includedir	${prefix}/include	C header files
+#	oldincludedir	$usr/include	C header files
+#	datarootdir	${prefix}/share	read-only arch.-independent data root
+#		localedir	${datarootdir}/locale	locale-dependent data
+#		datadir	${datarootdir}	read-only architecture-independent data
+#		mandir	${datarootdir}/man	man documentation
+#		infodir	${datarootdir}/info	info documentation
+#		docdir	${datarootdir}/doc/${PACKAGE}	documentation root
+#			htmldir	${docdir}	html documentation
+#			dvidir	${docdir}	dvi documentation
+#			pdfdir	${docdir}	pdf documentation
+#			psdir	${docdir}	ps documentation
+#		lispdir	${datarootdir}/emacs/site-lisp **Often empty, no check**
+#	pkgdatadir	${datarootdir}/${PACKAGE}
+#	pkgincludedir	${includedir}/${PACKAGE}
+#	pkglibdir	${libdir}/${PACKAGE}
+#	pkglibexecdir	${libexecdir}/${PACKAGE}
+#
+AC_SUBST([edit], ["$AWK \
+		'{ \
+		gsub(/@bashlocation[@]/,"'"$(BASH)"'"); \
+		gsub(/@logrotateloc[@]/,"'"$(logrotateloc)"'"); \
+		gsub(/@pkgversion[@]/,"'"$(pkgversion)"'"); \
+		gsub(/@prefix[@]/,"'"$(prefix)"'"); \
+		gsub(/@exec_prefix[@]/,"'"$(exec_prefix)"'"); \
+		gsub(/@bindir[@]/,"'"$(bindir)"'"); \
+		gsub(/@sbindir[@]/,"'"$(sbindir)"'"); \
+		gsub(/@libexecdir[@]/,"'"$(libexecdir)"'"); \
+		gsub(/@libdir[@]/,"'"$(libdir)"'"); \
+		gsub(/@sysconfdir[@]/,"'"$(sysconfdir)"'"); \
+		gsub(/@sharedstatedir[@]/,"'"$(sharedstatedir)"'"); \
+		gsub(/@localstatedir[@]/,"'"$(localstatedir)"'"); \
+		gsub(/@runstatedir[@]/,"'"$(runstatedir)"'"); \
+		gsub(/@includedir[@]/,"'"$(includedir)"'"); \
+		gsub(/@oldincludedir[@]/,"'"$(oldincludedir)"'"); \
+		gsub(/@datarootdir[@]/,"'"$(datarootdir)"'"); \
+		gsub(/@localedir[@]/,"'"$(localedir)"'"); \
+		gsub(/@datadir[@]/,"'"$(datadir)"'"); \
+		gsub(/@mandir[@]/,"'"$(mandir)"'"); \
+		gsub(/@infodir[@]/,"'"$(infodir)"'"); \
+		gsub(/@docdir[@]/,"'"$(docdir)"'"); \
+		gsub(/@htmldir[@]/,"'"$(htmldir)"'"); \
+		gsub(/@dvidir[@]/,"'"$(dvidir)"'"); \
+		gsub(/@pdfdir[@]/,"'"$(pdfdir)"'"); \
+		gsub(/@psdir[@]/,"'"$(psdir)"'"); \
+		gsub(/@pkgdatadir[@]/,"'"$(pkgdatadir)"'"); \
+		gsub(/@pkgincludedir[@]/,"'"$(pkgincludedir)"'"); \
+		gsub(/@pkglibdir[@]/,"'"$(pkglibdir)"'"); \
+		gsub(/@pkglibexecdir[@]/,"'"$(pkglibexecdir)"'"); \
+		print ; }'"])
 
-# Checks for typedefs, structures, and compiler characteristics.
 
-# Checks for library functions.
+#########################################
+#					#
+# SECTION 15: Specify the output files	#
+#					#
+#########################################
 
-# Checks for pkg-config files.
+AC_MSG_NOTICE(processing output files)
+
+#
+# Non-Makefile files to generate.
+# AC_CONFIG_FILES should not be used to substitute AutoConf Installation
+# Directory Variables, (bindir and friends), except in Makefiles and pkg-config
+# files. See GNU AutoConf manual section 4.8.2 Installation Directory Variables.
+#
 
 # Project Makefiles to create.
 AC_CONFIG_FILES([Makefile
