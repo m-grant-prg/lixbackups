@@ -109,6 +109,7 @@
 #				for build required, build and run	#
 #				required, and, run required programs.	#
 # 28/01/2019	MG	1.1.1	Revamp to new standard layout.		#
+#				Add chown and chmod checks.		#
 #									#
 #########################################################################
 
@@ -261,6 +262,16 @@ if test "x$TAR" = "xno" ; then
 fi
 
 AC_MSG_NOTICE(checking for particular programs required at run time)
+AC_CHECK_PROG(CHMOD, chmod, yes, no)
+if test "x$CHMOD" = "xno" ; then
+	AC_MSG_WARN(chmod not found - needed at run time)
+fi
+
+AC_CHECK_PROG(CHOWN, chown, yes, no)
+if test "x$CHOWN" = "xno" ; then
+	AC_MSG_WARN(chown not found - needed at run time)
+fi
+
 AC_CHECK_PROG(DF, df, yes, no)
 if test "x$DF" = "xno" ; then
 	AC_MSG_WARN(df not found - needed at run time)
