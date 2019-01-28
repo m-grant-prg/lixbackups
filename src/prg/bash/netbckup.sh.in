@@ -597,7 +597,11 @@ prod_adhoc_excl_list()
 	done
 	exec 3<&-
 
-	findCL+=" ')' -prune -o ! -readable -print -o -type b,c,p,s -print "
+	findCL+=" ')' -prune -o ! -readable -print "
+	# GNU extension allowing -type b,c,p,s is not ubiquitous,
+	# openSUSE 190128, so use the long method.
+	findCL+="-o -type b -print -o -type c -print -o -type p -print "
+	findCL+="-o -type s -print "
 	findCL+="> $tmpexclfile"
 
 	output "Find command used:- $findCL" 0 0
