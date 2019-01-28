@@ -108,7 +108,7 @@
 # 11/01/2019	MG	1.0.22	Change program check section to check	#
 #				for build required, build and run	#
 #				required, and, run required programs.	#
-# 27/01/2019	MG	1.1.1	Revamp to new standard layout.		#
+# 28/01/2019	MG	1.1.1	Revamp to new standard layout.		#
 #									#
 #########################################################################
 
@@ -261,14 +261,14 @@ if test "x$TAR" = "xno" ; then
 fi
 
 AC_MSG_NOTICE(checking for particular programs required at run time)
+AC_CHECK_PROG(DF, df, yes, no)
+if test "x$DF" = "xno" ; then
+	AC_MSG_WARN(df not found - needed at run time)
+fi
+
 AC_CHECK_PROG(ECHO, echo, yes, no)
 if test "x$ECHO" = "xno" ; then
 	AC_MSG_WARN(echo not found - needed at run time)
-fi
-
-AC_CHECK_PROG(PRINTF, printf, yes, no)
-if test "x$PRINTF" = "xno" ; then
-	AC_MSG_WARN(printf not found - needed at run time)
 fi
 
 AC_CHECK_PROG(FIND, find, yes, no)
@@ -286,6 +286,11 @@ if test "x$LOGGER" = "xno" ; then
 	AC_MSG_WARN(logger not found - needed at run time)
 fi
 
+AC_CHECK_PROG(LSOF, lsof, yes, no)
+if test "x$LSOF" = "xno" ; then
+	AC_MSG_WARN(lsof not found - needed at run time)
+fi
+
 AC_CHECK_PROG(MAILX, mailx, yes, no)
 if test "x$MAILX" = "xno" ; then
 	AC_MSG_WARN(mailx not found - needed at run time)
@@ -296,19 +301,14 @@ if test "x$MOUNT" = "xno" ; then
 	AC_MSG_WARN(mount not found - needed at run time)
 fi
 
-AC_CHECK_PROG(LSOF, lsof, yes, no)
-if test "x$LSOF" = "xno" ; then
-	AC_MSG_WARN(lsof not found - needed at run time)
-fi
-
 AC_CHECK_PROG(PASSWD, passwd, yes, no)
 if test "x$PASSWD" = "xno" ; then
 	AC_MSG_WARN(passwd not found - needed at run time)
 fi
 
-AC_CHECK_PROG(DF, df, yes, no)
-if test "x$DF" = "xno" ; then
-	AC_MSG_WARN(df not found - needed at run time)
+AC_CHECK_PROG(PRINTF, printf, yes, no)
+if test "x$PRINTF" = "xno" ; then
+	AC_MSG_WARN(printf not found - needed at run time)
 fi
 
 
