@@ -121,7 +121,7 @@
 # 09/01/2019	MG	1.2.13	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 27/01/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
+# 03/02/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Use true booleans.			#
 #				Standardise output function.		#
 #				Standardise script_exit and exit codes.	#
@@ -135,6 +135,8 @@
 #				Create logfile with ownership and	#
 #				permissions based on either syslog,	#
 #				messages or default.			#
+#				Ensure numerics use ((  )) not [[  ]]	#
+#				(( var )) does not need $.		#
 #									#
 #########################################################################
 
@@ -186,14 +188,14 @@ EOF
 # No return value.
 output()
 {
-	if [ $2 = 0 ]; then
+	if (( $2 == 0 )); then
 		printf "%s %s %s\n" "$(date +'[ %a %b %d %T ]')" $outputprefix \
 			"$1"
 	else
 		printf "%s %s %s\n" "$(date +'[ %a %b %d %T ]')" $outputprefix \
 			"$1" 1>&2
 	fi
-	if [ $3 = 1 ]; then
+	if (( $3 == 1 )); then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -204,7 +206,7 @@ output()
 # No return value.
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]; then
+	if (( $1 != 0 )); then
 		script_exit $1
 	fi
 }
@@ -225,11 +227,11 @@ script_exit()
 	# warnings, FD 6, output only FD for this current PID and pipe it's
 	# output to wc to count the lines. If FD 6 is open, 2 lines result, PID
 	# number and f6.
-	if [[ $(lsof -aw -d 6 -F f -p $$ | wc -l) > 0 ]]; then
+	if (( $(lsof -aw -d 6 -F f -p $$ | wc -l) > 0 )); then
 		output "$script_short_desc completed with status $1" $1 1
 		exec 1>&6 6>&-	# Restore stdout and close FD 6
 	fi
-	if [[ $(lsof -aw -d 7 -F f -p $$ | wc -l) > 0 ]]; then
+	if (( $(lsof -aw -d 7 -F f -p $$ | wc -l) > 0 )); then
 		exec 2>&7 7>&-	# Restore stderr and close FD 7
 	fi
 
@@ -364,14 +366,14 @@ proc_CL()
 			# Remove leading zeros otherwise thinks it is octal
 			day=$(date +%d | awk 'sub(/^0*/,"")')
 			bckseq=1
-			if [[ $day > 28 ]]; then
+			if (( day > 28 )); then
 				bckseq=5
-				elif [[ $day > 21 ]]; then
-					bckseq=4
-					elif [[ $day > 14 ]]; then
-						bckseq=3
-						elif [[ $day > 7 ]]; then
-							bckseq=2
+			elif (( day > 21 )); then
+				bckseq=4
+			elif (( day > 14 )); then
+				bckseq=3
+			elif (( day > 7 )); then
+				bckseq=2
 			fi
 			script_short_desc="$(uname -n) Weekly Full Backup - "
 			script_short_desc+="$bckseq"
@@ -387,7 +389,7 @@ proc_CL()
 	done
 
 	# Script does not accept other arguments.
-	if [[ $# > 0 ]]; then
+	if (( $# > 0 )); then
 		output "Invalid argument." 1 0
 		script_exit 64
 	fi
@@ -576,7 +578,7 @@ prod_adhoc_excl_list()
 	findCL="find / -type d '(' "
 	exec 3<"$etclocation/bcksystem.exclude"
 	while read -u3 -ra input; do
-		if [[ $count > 0 ]]; then
+		if (( count > 0 )); then
 			findCL+=" -o "
 		fi
 		# In the substring test below we are looking for a single quote.
