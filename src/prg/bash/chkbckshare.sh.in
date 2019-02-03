@@ -90,6 +90,7 @@
 #				Use standardised printf aot echo.	#
 #				Make boolean output 'TRUE' not 'TRUE '	#
 #				Improve output when mount detected.	#
+#				Ensure numerics use (( )) not [[ ]]	#
 #									#
 #########################################################################
 
@@ -134,7 +135,7 @@ EOF
 # No return value.
 output()
 {
-	if [ $2 = 0 ]; then
+	if (( $2 == 0 )); then
 		printf "%s\n" "$outputprefix$1"
 	else
 		printf "%s\n" "$outputprefix$1" 1>&2
@@ -146,7 +147,7 @@ output()
 # No return value.
 std_cmd_err_handler()
 {
-	if [ $1 != 0 ]; then
+	if (( $1 != 0 )); then
 		script_exit $1
 	fi
 }
@@ -218,7 +219,7 @@ proc_CL()
 	done
 
 	# Script does not accept other arguments.
-	if [[ $# > 0 ]]; then
+	if (( $# > 0 )); then
 		output "Invalid argument." 1
 		script_exit 64
 	fi
