@@ -299,7 +299,7 @@ proc_CL "$@"
 proc_config_file
 
 # Exit if not mounted.
-if [ "$(chkbckshare -bt)" = "FALSE" ]; then
+if [[ $(chkbckshare -bt) == FALSE ]]; then
 	status=1
 	output "Backup share not mounted. Script exit code: $status" 1 1
 	script_exit $status
