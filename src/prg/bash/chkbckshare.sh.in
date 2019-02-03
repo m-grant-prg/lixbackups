@@ -91,6 +91,7 @@
 #				Make boolean output 'TRUE' not 'TRUE '	#
 #				Improve output when mount detected.	#
 #				Ensure numerics use (( )) not [[ ]]	#
+#				Specify type for numeric variables.	#
 #									#
 #########################################################################
 
@@ -165,7 +166,7 @@ script_exit()
 # No return value.
 trap_exit()
 {
-	local exit_code=$?
+	local -i exit_code=$?
 	local msg
 
 	msg="Script terminating with exit code $exit_code due to trap received."
