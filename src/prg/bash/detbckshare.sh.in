@@ -124,6 +124,7 @@
 #				Use more standard printf aot echo.	#
 #				Ensure numerics use (( )) not [[ ]]	#
 #				(( var )) does not need $.		#
+#				Specify type for numeric variables.	#
 #									#
 #########################################################################
 
@@ -202,7 +203,7 @@ script_exit()
 # No return value.
 trap_exit()
 {
-	local exit_code=$?
+	local -i exit_code=$?
 	local msg
 
 	msg="Script terminating with exit code $exit_code due to trap received."
