@@ -137,6 +137,7 @@
 #				messages or default.			#
 #				Ensure numerics use ((  )) not [[  ]]	#
 #				(( var )) does not need $.		#
+#				Specify type for numeric variables.	#
 #									#
 #########################################################################
 
@@ -250,7 +251,7 @@ script_exit()
 # No return value.
 trap_exit()
 {
-	local exit_code=$?
+	local -i exit_code=$?
 	local msg
 
 	msg="Script terminating with exit code $exit_code due to trap received."
@@ -263,7 +264,7 @@ trap_exit()
 # No return value.
 proc_CL()
 {
-	local day
+	local -i day
 	local differential=false fulladhoc=false incremental=false
 	local selective=false weekly=false
 	local GETOPTTEMP
