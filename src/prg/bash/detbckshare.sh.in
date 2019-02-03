@@ -123,6 +123,7 @@
 #				Use meaningful exit codes.		#
 #				Use more standard printf aot echo.	#
 #				Ensure numerics use (( )) not [[ ]]	#
+#				(( var )) does not need $.		#
 #									#
 #########################################################################
 
@@ -310,7 +311,7 @@ fi
 umount $mntdir
 status=$?
 
-if (( $status != 0 )); then
+if (( status != 0 )); then
 	msg="Failed to unmount backup share. Umount error: "
 	msg+="$status Script exit code: $status"
 	output "$msg" 1 1
