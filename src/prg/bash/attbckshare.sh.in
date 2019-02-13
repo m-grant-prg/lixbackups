@@ -126,7 +126,7 @@
 # 09/01/2019	MG	1.2.8	Use absolute bash path in shebang	#
 #				instead of env. Using env is OK for a 	#
 #				non-AutoTools script.			#
-# 03/02/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
+# 13/02/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
 #				Make true booleans.			#
 #				Standardise parameters of output().	#
 #				Remove script_exit_code variable.	#
@@ -187,18 +187,18 @@ EOF
 #		$2 Where:-	stdout == 0
 #				stderr != 0
 #		$3 Syslog:-	$3 == 0, No.
-#				$3 == 1, Yes.
+#				$3 != 0, Yes.
 # No return value.
 output()
 {
-	if (( $2 == 0 )); then
+	if (( !$2 )); then
 		if $verbose ; then
 			printf "%s %s\n" $outputprefix "$1"
 		fi
 	else
 		printf "%s %s\n" $outputprefix "$1" 1>&2
 	fi
-	if (( $3 == 1 )); then
+	if (( $3 )); then
 		logger "$outputprefix $1"
 		std_cmd_err_handler $?
 	fi
@@ -209,7 +209,7 @@ output()
 # No return value.
 std_cmd_err_handler()
 {
-	if (( $1 != 0 )); then
+	if (( $1 )); then
 		script_exit $1
 	fi
 }
@@ -436,7 +436,7 @@ fi
 eval "$mountCL"
 status=$?
 
-if (( status != 0 )); then
+if (( status )); then
 	msg="Failed to mount backup share. Mount error: $status"
 	msg+=" Script exit code: $status"
 	output "$msg" 1 1
