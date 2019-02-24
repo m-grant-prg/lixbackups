@@ -11,17 +11,21 @@ OPTIONS
 
 -V, --version  prints version information
 EXIT STATUS
-0
-if OK,
+0 - Success
 
-1
-on failure.
+1 - General error
+
+64 - Command line error
+
+66 - Input error, configuration file not found
+
+Exit status of a command run by the script
 AUTHOR
 Written by Mark Grant.
 REPORTING BUGS
 Report bugs to <m.grant.prg@gmail.com>
 COPYRIGHT
-Copyright 2012-2017 Mark Grant.
+Copyright (C) 2012-2017, 2019 Mark Grant.
 .br
 License GPLv3+: GNU GPL version 3 or later
 .br
