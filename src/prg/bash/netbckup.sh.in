@@ -143,6 +143,7 @@
 #				--all CLA not available in, at least,	#
 #				Fedora. Also correct matching of return	#
 #				values as they differ between distros.	#
+# 18/03/2019	MG	1.3.2	Fix globbing of trashbox emptying.	#
 #									#
 #########################################################################
 
@@ -151,7 +152,7 @@
 ##################
 readonly outputprefix="$(basename $0):"
 
-readonly version=1.3.1				# Script version
+readonly version=1.3.2				# Script version
 readonly packageversion=@pkgversion@		# Package version
 
 readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory
@@ -785,7 +786,7 @@ fi
 output "Attempting to process backup - $backpath" 0 1
 
 # Empty the network trashbox if it exists
-rm -fr "$mntdir/trashbox/*"
+rm -fr "$mntdir"/trashbox/*
 std_cmd_err_handler $?
 
 output "Backup command used:- $bckupCL" 0 0
