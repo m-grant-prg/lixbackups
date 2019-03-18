@@ -1,3 +1,6 @@
+Release 1.3.2 2019-03-18
+Fix globbing of trashbox emptying. Trashbox was not getting emptied.
+
 Release 1.3.1 2019-02-24
 Update Copyright in all section 5 man pages
 Update exit status section in section 8 man pages
