@@ -1,3 +1,11 @@
+2019-03-27 v 1.3.3 Mark Grant <m.grant.prg@gmail.com>
+	*  Update bootstrap.sh to v1.4.1
+	attbckshare		still at version 1.3.1
+	chkbckshare		still at version 1.3.1
+	detbckshare		still at version 1.3.1
+	netbckup		still at version 1.3.2
+	setup.sh		still at version 1.2.7
+
 2019-03-18 v 1.3.2 Mark Grant <m.grant.prg@gmail.com>
 	*  Fix globbing of trashbox emptying. Trashbox was not getting
 	emptied.
