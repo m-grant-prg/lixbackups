@@ -126,6 +126,7 @@
 #				(( var )) does not need $.		#
 #				Specify type for numeric variables.	#
 # 19/04/2019	MG	1.3.2	Replace obsolete backticks with $(cmd).	#
+# 09/08/2019	MG	1.3.3	Correct getopt CL for proper quoting.	#
 #									#
 #########################################################################
 
@@ -133,7 +134,7 @@
 # Init variables #
 ##################
 readonly outputprefix="$(basename $0):"
-readonly version=1.3.2				# set version variable
+readonly version=1.3.3				# set version variable
 readonly packageversion=@pkgversion@		# Version of the package
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 
@@ -220,8 +221,8 @@ proc_CL()
 	local GETOPTTEMP
 	local tmpGETOPTTEMP
 
-	tmpGETOPTTEMP="getopt -o hvV --long help,verbose,version -n $0 -- $@"
-	GETOPTTEMP=$($tmpGETOPTTEMP)
+	tmpGETOPTTEMP="getopt -o hvV --long help,verbose,version"
+	GETOPTTEMP=$($tmpGETOPTTEMP -n "$0" -- "$@")
 	std_cmd_err_handler $?
 
 	eval set -- "$GETOPTTEMP"
