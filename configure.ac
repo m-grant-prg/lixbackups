@@ -110,6 +110,7 @@
 #				required, and, run required programs.	#
 # 28/01/2019	MG	1.1.1	Revamp to new standard layout.		#
 #				Add chown and chmod checks.		#
+# 09/08/2019	MG	1.1.2	Correct ARG_ENABLE help text.		#
 #									#
 #########################################################################
 
@@ -120,7 +121,7 @@
 #					#
 #########################################
 
-AC_REVISION([$Revision: 1.1.1 $])
+AC_REVISION([$Revision: 1.1.2 $])
 
 AC_PREREQ([2.69])
 
@@ -172,7 +173,7 @@ AC_MSG_NOTICE(processing command line arguments)
 # and hence succeed.
 #
 AC_ARG_ENABLE([distcheckfake],
-	[  --enable-distcheckfake    Enable running of distcheck],
+	AS_HELP_STRING([--enable-distcheckfake], [enable running of distcheck]),
 	[case "${enableval}" in
 		yes) distcheckfake=true ;;
 		no)  distcheckfake=false ;;
