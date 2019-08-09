@@ -12,15 +12,15 @@
 # configure cmd line syntax:						#
 # ./configure	[--enable-distcheckfake=<yes|no> [default: no]]		#
 #									#
-# --enable-distcheckfake enables the replacement of an absolute		#
-# directory path specified in a variable, with a value based on		#
-# AutoTools standard directories. This enables the Makefile.am to use	#
-# the AT variable based value when running distcheck and the absolute	#
-# path for all else. Hence distcheck can now succeed when it would 	#
-# normally fail.							#
-#									#
-# To use this facility run:-						#
-# make distcheck DISTCHECK_CONFIGURE_FLAGS=--enable-distcheckfake=yes	#
+# Parameters generic description. For specifics to this configure.ac	#
+# please see inline comments at the point of definition:-		#
+# --enable-distcheckfake						#
+#	Enables the replacement of an absolute directory path specified	#
+#	in a variable, with a value based on AutoTools standard		#
+#	directories. This enables the Makefile.am to use the AT		#
+#	variable based value when running distcheck and the absolute	#
+#	path for all else. Hence distcheck can now succeed when it	#
+#	would normally fail.						#
 #									#
 # Layout: (Only relevant sections will exist).				#
 # ChangeLog : High level ChangeLog					#
@@ -111,6 +111,9 @@
 # 28/01/2019	MG	1.1.1	Revamp to new standard layout.		#
 #				Add chown and chmod checks.		#
 # 09/08/2019	MG	1.1.2	Correct ARG_ENABLE help text.		#
+#				Correct AC_MSG_NOTICE texts.		#
+#				Improve configure CLA description in	#
+#				header comments above.			#
 #									#
 #########################################################################
 
