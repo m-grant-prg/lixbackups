@@ -46,11 +46,20 @@
 # 13/01/2019	MG	1.0.14	Remove unnecessary shebang.		#
 #				Add install of standard top level GNU	#
 #				files AUTHOR, etc.			#
+# 09/08/2019	MG	1.0.15	To enable make distcheck to work, any	#
+#				hard-coded paths requiring permissions	#
+#				such as /etc or fixed locations such as	#
+#				/usr/share/java must be accommodated,	#
+#				so set the configure flags to be used	#
+#				by make distcheck.			#
 #									#
 #########################################################################
 
 
 ACLOCAL_AMFLAGS = -I m4
+
+
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-distcheckfake=yes
 
 
 SUBDIRS = src/prg/bash
