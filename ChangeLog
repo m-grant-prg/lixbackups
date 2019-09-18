@@ -1,3 +1,24 @@
+2019-09-18 v 1.3.4 Mark Grant <m.grant.prg@gmail.com>
+	*  travis: Reinstate default build environment
+	at: Update bootstrap.sh to v1.4.5
+	at: configure.ac: Improve CLA comments at TOF
+	at: configure.ac: Correct AC_MSG_NOTICE messages
+	at: configure.ac: Correct ARG_ENABLE help text
+	at: Fix make distcheck using enable-distcheckfake
+	travis: Initial Travis CI build test setup
+	README: Point bootstrap.sh part at acmbuild wiki
+	git: Update project root gitignore to v1.0.2
+	netbckup: Correct getopt CL build WRT quoting
+	detbckshare: Correct getopt CL build WRT quoting
+	chkbckshare: Correct getopt CL build WRT quoting
+	attbckshare: Correct getopt CL build WRT quoting
+	all: Replace obsolete backticks with $(cmd)
+	attbckshare		now at version 1.3.3
+	chkbckshare		now at version 1.3.3
+	detbckshare		now at version 1.3.3
+	netbckup		now at version 1.3.4
+	setup.sh		still at version 1.2.7
+
 2019-03-27 v 1.3.3 Mark Grant <m.grant.prg@gmail.com>
 	*  Update bootstrap.sh to v1.4.1
 	attbckshare		still at version 1.3.1
