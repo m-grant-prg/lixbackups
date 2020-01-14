@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: netbckup							#
-# Author: Copyright (C) 2012-2019  Mark Grant				#
+# Author: Copyright (C) 2012-2020  Mark Grant				#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -149,6 +149,9 @@
 # 11/10/2019	MG	1.3.5	Move std_cmd_err_handler() before it is	#
 #				used.					#
 #				Move script_exit() before it is used.	#
+# 14/01/2020	MG	1.3.6	Use no-check-device when performing any	#
+#				listed-incremental operation. (See	#
+#				in-line comment for reasoning).		#
 #									#
 #########################################################################
 
@@ -157,7 +160,7 @@
 ##################
 readonly outputprefix="$(basename $0):"
 
-readonly version=1.3.5				# Script version
+readonly version=1.3.6				# Script version
 readonly packageversion=@pkgversion@		# Package version
 
 readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory
@@ -678,7 +681,12 @@ build_bckupCL()
 		bckupCL+="--exclude-from=$etclocation/bckdaily.exclude "
 		# Exclude system and cache directories
 		bckupCL_add_std_excl
-		bckupCL+="--listed-incremental=$snarpath "
+		# --listed-incremental, by default, stores the device number in
+		# the snar file. Some file systems, perhaps particularly NFS, do
+		# not consistently use the same device number for the same mount
+		# operation. If this happens then a device number mismatch leads
+		# to a full backup. So, do not check the device numbers.
+		bckupCL+="--listed-incremental=$snarpath --no-check-device "
 		;;
 	fulladhoc)
 		# Build the backup file name and path
@@ -703,7 +711,7 @@ build_bckupCL()
 		bckupCL+="$backpath "
 		bckupCL+="--exclude-from=$etclocation/bckdaily.exclude "
 		bckupCL_add_std_excl
-		bckupCL+="--listed-incremental=$snarpath "
+		bckupCL+="--listed-incremental=$snarpath --no-check-device "
 		;;
 	selective)
 		# Build the backup file name and path
@@ -728,7 +736,7 @@ build_bckupCL()
 		bckupCL+="$backpath "
 		bckupCL+="--exclude-from=$etclocation/bckweekly.exclude "
 		bckupCL_add_std_excl
-		bckupCL+="--listed-incremental=$snarpath "
+		bckupCL+="--listed-incremental=$snarpath --no-check-device "
 		;;
 	esac
 
