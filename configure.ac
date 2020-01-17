@@ -133,7 +133,7 @@ AC_PREREQ([2.69])
 # can be used by ac output and / or the sed setup below to substitute bookmarks
 # in source files.
 #
-AC_INIT([Linux / Unix (LIX) Backup Scripts], 1.3.4+rc1,
+AC_INIT([Linux / Unix (LIX) Backup Scripts], 1.3.5,
 	[m.grant.prg@gmail.com], [lixbackups])
 
 AC_MSG_NOTICE(initialisation and setup)
