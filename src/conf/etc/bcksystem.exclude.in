@@ -17,6 +17,7 @@
 /var/crash
 /var/games
 /var/run
+/var/lib/lxcfs
 /var/lock
 /var/log
 /var/spool
