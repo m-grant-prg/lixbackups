@@ -9,7 +9,7 @@
 #########################################################################
 #									#
 # Script ID: attbckshare						#
-# Author: Copyright (C) 2012-2019  Mark Grant				#
+# Author: Copyright (C) 2012-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0					#
@@ -143,6 +143,10 @@
 # 19/04/2019	MG	1.3.2	Replace obsolete backticks with $(cmd).	#
 # 09/08/2019	MG	1.3.3	Correct getopt CL for proper quoting.	#
 # 11/10/2019	MG	1.3.4	Move script_exit() before it is used.	#
+# 05/03/2021	MG	1.3.5	Prepend invocations of programs in this	#
+#				package with sbindir to allow for	#
+#				parallel AutoTool and distro package	#
+#				installations.				#
 #									#
 #########################################################################
 
@@ -150,7 +154,7 @@
 # Init variables #
 ##################
 readonly outputprefix="$(basename $0):"
-readonly version=1.3.4				# Set version variable
+readonly version=1.3.5				# Set version variable
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 readonly packageversion=@pkgversion@		# Version of the package
 
@@ -429,7 +433,7 @@ proc_config_file
 build_mnt_cmd
 
 # Exit if share already mounted.
-if [[ $(chkbckshare -bt) == TRUE ]]; then
+if [[ $(@sbindir@/chkbckshare -bt) == TRUE ]]; then
 	msg="Backup share already mounted."
 	output "$msg" 1 1
 	script_exit 1
