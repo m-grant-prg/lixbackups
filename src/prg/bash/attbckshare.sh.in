@@ -12,7 +12,7 @@
 # Author: Copyright (C) 2012-2019, 2021  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
-# SPDX-License-Identifier: GPL-3.0					#
+# SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # To mount a CIFS or NFS backup share. E.g.				#
@@ -147,6 +147,7 @@
 #				package with sbindir to allow for	#
 #				parallel AutoTool and distro package	#
 #				installations.				#
+# 24/11/2021	MG	1.3.6	Tighten SPDX tag.			#
 #									#
 #########################################################################
 
@@ -154,7 +155,7 @@
 # Init variables #
 ##################
 readonly outputprefix="$(basename $0):"
-readonly version=1.3.5				# Set version variable
+readonly version=1.3.6				# Set version variable
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 readonly packageversion=@pkgversion@		# Version of the package
 
