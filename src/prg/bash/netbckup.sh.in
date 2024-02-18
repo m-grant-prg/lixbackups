@@ -8,8 +8,7 @@
 
 #########################################################################
 #									#
-# Script ID: netbckup							#
-# Author: Copyright (C) 2012-2021  Mark Grant				#
+# Author: Copyright (C) 2012-2021, 2024  Mark Grant			#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -59,113 +58,13 @@
 #									#
 #########################################################################
 
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 24/09/2014	MG	1.0.1	Created from consolidation of separate	#
-#				full, weekly, daily and data scripts.	#
-# 28/09/2014	MG	1.0.2	Changed latency_compensate function to	#
-#				attempt 1 execution of command without	#
-#				causing a sleep.			#
-# 30/09/2014	MG	1.0.3	If the root account is accessible, ('P'	#
-#				from passwd -S), then deny login access	#
-#				to non-root users for the duration of	#
-#				the backup. If root is not accessible,	#
-#				then do not deny access as it would be	#
-#				dangerous if for some reason it is not	#
-#				re-allowed. Only root would have access.#
-#				(Even though shutdown clears the	#
-#				restriction, this script does not	#
-#				demand a shutdown).			#
-# 22/11/2014	MG	1.0.4	Add overall package version to -V.	#
-# 22/11/2014	MG	1.0.5	Switched from getopts to GNU getopt to	#
-#				allow long options.			#
-# 03/02/2015	MG	1.0.6	Remove BSD support.			#
-# 03/02/2015	MG	1.2.1	Add support for NFS backup shares. Add	#
-#				support for different backup share	#
-#				targets for weekly and ad hoc type	#
-#				backups. Remove latency_compensate	#
-#				function as improved hardware or	#
-#				removal of BSD has cured the problem.	#
-# 24/02/2015	MG	1.2.2	Change configuration files directory to	#
-#				lixbackups to limit risk of conflict	#
-#				with other backup packages.		#
-# 26/02/2015	MG	1.2.3	Use logger to write key messages to	#
-#				syslog.					#
-# 01/03/2015	MG	1.2.4	Use log file in localstatedir/log. Log	#
-#				file management set to use logrotate in	#
-#				this package release.			#
-# 16/03/2015	MG	1.2.5	Improve logging.			#
-# 05/06/2015	MG	1.2.6	Reduce df output from df -ah to a more	#
-#				sensible df -h.				#
-# 18/06/2017	MG	1.2.7	With the introduction of GNU tar v1.29,	#
-#				some command line arguments are		#
-#				sensitive to the order in which they	#
-#				appear. In our case excludes must	#
-#				precede includes.			#
-# 20/06/2017	MG	1.2.8	Ensure script respects the 80 column	#
-#				rule.					#
-# 30/06/2017	MG	1.2.9	Add --format=posix to the tar command	#
-#				to avoid the 99 character file name	#
-#				limitation.				#
-# 16/08/2017	MG	1.2.10	If lixbackups.log does not exist create	#
-#				with root:adm ownership instead of	#
-#				syslog:adm as Debian does not have a	#
-#				syslog user.				#
-# 30/11/2017	MG	1.2.11	Add SPDX license tags to source files.	#
-# 03/12/2017	MG	1.2.12	Adopt normal exit code policy; 0 on	#
-#				success, 1 on failure.			#
-# 09/01/2019	MG	1.2.13	Use absolute bash path in shebang	#
-#				instead of env. Using env is OK for a 	#
-#				non-AutoTools script.			#
-# 14/02/2019	MG	1.3.1	Do not hard code outputprefix contents.	#
-#				Use true booleans.			#
-#				Standardise output function.		#
-#				Standardise script_exit and exit codes.	#
-#				Improve trap fnction.			#
-#				Use [[ ... ]] where appropriate.	#
-#				Refactor into functions.		#
-#				Improve checking for required files.	#
-#				Replace last sed with awk.		#
-#				Reinforce find function.		#
-#				Localise variables where appropriate.	#
-#				Create logfile with ownership and	#
-#				permissions based on either syslog,	#
-#				messages or default.			#
-#				Ensure numerics use ((  )) not [[  ]]	#
-#				(( var )) does not need $.		#
-#				Specify type for numeric variables.	#
-#				In try_login_denial use passwd cmd	#
-#				itself to select root account as -a or	#
-#				--all CLA not available in, at least,	#
-#				Fedora. Also correct matching of return	#
-#				values as they differ between distros.	#
-# 18/03/2019	MG	1.3.2	Fix globbing of trashbox emptying.	#
-# 19/04/2019	MG	1.3.3	Replace obsolete backticks with $(cmd).	#
-# 09/08/2019	MG	1.3.4	Correct getopt CL for proper quoting.	#
-# 11/10/2019	MG	1.3.5	Move std_cmd_err_handler() before it is	#
-#				used.					#
-#				Move script_exit() before it is used.	#
-# 14/01/2020	MG	1.3.6	Use no-check-device when performing any	#
-#				listed-incremental operation. (See	#
-#				in-line comment for reasoning).		#
-# 05/03/2021	MG	1.3.7	Prepend invocations of programs in this	#
-#				package with sbindir to allow for	#
-#				parallel AutoTool and distro package	#
-#				installations.				#
-# 24/11/2021	MG	1.3.8	Tighten SPDX tag.			#
-#									#
-#########################################################################
 
 ##################
 # Init variables #
 ##################
 readonly outputprefix="$(basename $0):"
 
-readonly version=1.3.8				# Script version
+readonly version=1.3.9				# Script version
 readonly packageversion=@pkgversion@		# Package version
 
 readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory

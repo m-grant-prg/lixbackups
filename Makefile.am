@@ -1,60 +1,12 @@
 #########################################################################
 #									#
-# Script ID: ./Makefile.am						#
-# Author: Copyright (C) 2012-2019, 2021, 2023  Mark Grant		#
+# Author: Copyright (C) 2012-2019, 2021, 2023, 2024  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
 #									#
 # Purpose:								#
 # AutoMake script file to generate LIXBackups project from source.	#
-#									#
-#########################################################################
-
-#########################################################################
-#									#
-# Changelog								#
-#									#
-# Date		Author	Version	Description				#
-#									#
-# 16/06/2014	MG	1.0.1	Started versioning of this script.	#
-# 17/06/2014	MG	1.0.2	Inserted man1 and man5 as subdirectories#
-#				of manpages to allow for man 5 pages.	#
-# 01/08/2014	MG	1.0.3	Change project name from IXBackups to	#
-#				LUXBackups.				#
-# 27/02/2015	MG	1.0.4	Add rootconffiles as a sub-directory.	#
-# 28/09/2015	MG	1.0.5	Change to conform to AutoTools Template	#
-#				version 1.0.4.				#
-# 19/10/2015	MG	1.0.6	Restructure to conform to AutoTools	#
-#				General Template v1.0.5.		#
-# 01/05/2017	MG	1.0.7	Move command man pages to section 8.	#
-#				Move logrotate to new subdir logrotate.	#
-# 30/11/2017	MG	1.0.8	Add SPDX license tags to source files.	#
-# 10/02/2018	MG	1.0.9	Shorten directory names to reduce	#
-#				overall path length.			#
-#				Add standard macro directory.		#
-# 11/04/2018	MG	1.0.10	Add srctarball target to build a source	#
-#				tarball in the build directory. Uses	#
-#				git archive to archive HEAD.		#
-# 10/06/2018	MG	1.0.11	Add info messages to srctarball target.	#
-# 01/11/2018	MG	1.0.12	Change srctarball target to build with	#
-#				src between package name and version in	#
-#				filename.				#
-# 09/01/2019	MG	1.0.13	Change source tarball name to be the	#
-#				same as that in GitHub releases. This	#
-#				aids integrating with rpm generation.	#
-# 13/01/2019	MG	1.0.14	Remove unnecessary shebang.		#
-#				Add install of standard top level GNU	#
-#				files AUTHOR, etc.			#
-# 09/08/2019	MG	1.0.15	To enable make distcheck to work, any	#
-#				hard-coded paths requiring permissions	#
-#				such as /etc or fixed locations such as	#
-#				/usr/share/java must be accommodated,	#
-#				so set the configure flags to be used	#
-#				by make distcheck.			#
-# 08/11/2021	MG	1.0.16	Add misc directory to DIST.		#
-# 24/11/2021	MG	1.0.17	Tighten SPDX tag.			#
-# 08/08/2023	MG	1.0.18	Enable use of v1.1.1~rc1 type vesrion	#
 #									#
 #########################################################################
 
