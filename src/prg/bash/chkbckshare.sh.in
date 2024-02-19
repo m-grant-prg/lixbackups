@@ -19,8 +19,7 @@
 # 	on								#
 # 	/mnt/charybdisbck						#
 #									#
-# Syntax:	chkbckshare [-b or --boolean || -h or --help ||		#
-#				-t or --terse || -V or --version]	#
+# Syntax:	See usage().						#
 #									#
 # Exit codes used:-							#
 # Bash standard Exit Codes:	0 - success				#
@@ -76,7 +75,11 @@ mountoutput=""
 usage()
 {
 cat << EOF
-Usage is $0 [options]
+Usage is:-
+${0##*/} [-b] [-t]
+${0##*/} {-h|-V}
+Usage is:-
+${0##*/} [OPTIONS]
 	-b or --boolean displays TRUE or FALSE instead of mount information
 	OR
 	-h or --help displays usage information

@@ -25,10 +25,7 @@
 #		incremental backup.					#
 #	a selective backup.						#
 #                                                            	  	#
-# Syntax:      netbckup [ -d or --differential || -f or --full ||	#
-#			-h or --help || -i or --incremental ||		#
-#			-s or --selective || -V or --version ||		#
-#			-w or --weekly ]				#
+# Syntax:      See usage().						#
 #									#
 # Exit codes used:-							#
 # Bash standard Exit Codes:	0 - success				#
@@ -87,7 +84,11 @@ notifyuser=""
 usage()
 {
 cat << EOF
-Usage is $0 [options]
+Usage is:-
+${0##*/} {-d|-f|-i|-s|-w}
+${0##*/} {-h|-V}
+Usage is:-
+${0##*/} [OPTIONS]
 	-d or --differential - perform a differential backup
 	-f or --full - perform a full ad hoc backup
 	-h or --help displays usage information

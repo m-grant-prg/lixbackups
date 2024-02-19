@@ -19,7 +19,7 @@
 #	from								#
 # 	\\MyServer\mybackupdirectory or hermes:/srv/backups/charybdis	#
 #									#
-# Syntax:	detbckshare [-h --help || -v --verbose || -V --version ]#
+# Syntax:	See usage().						#
 #									#
 # Exit codes used:-							#
 # Bash standard Exit Codes:	0 - success				#
@@ -73,7 +73,11 @@ verbose=false
 usage()
 {
 cat << EOF
-Usage is $0 [options]
+Usage is:-
+${0##*/} [-v]
+${0##*/} {-h|-V}
+Usage is:-
+${0##*/} [OPTIONS]
 	-h or --help displays usage information
 	OR
 	-v or --verbose verbose output

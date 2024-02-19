@@ -19,8 +19,7 @@
 # 	on								#
 # 	/mnt/charybdisbck						#
 #									#
-# Syntax:	attbckshare [ -a --adhoc || -h --help || -v --verbose	#
-#				|| -V --version || -w --weekly ]	#
+# Syntax:	See usage().						#
 #									#
 # Exit codes used:-							#
 # Bash standard Exit Codes:	0 - success				#
@@ -83,7 +82,11 @@ weekly=false
 usage()
 {
 cat << EOF
-Usage is $0 [options]
+Usage is:-
+${0##*/} {-a|-w} [-v]
+${0##*/} {-h|-V}
+Usage is:-
+${0##*/} [OPTIONS]
 	-a or --adhoc mount the ad hoc backup target share
 	OR
 	-h or --help displays usage information
