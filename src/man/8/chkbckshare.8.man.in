@@ -1,7 +1,9 @@
 NAME
 chkbckshare - check if network share is mounted for backups
 SYNOPSIS
-chkbckshare [OPTION]
+chkbckshare [-b] [-t]
+chkbckshare {-h|-V}
+chkbckshare [OPTIONS]
 DESCRIPTION
 Checks to see if a pre-determined network share is mounted as a target
 location for backup files.
@@ -28,7 +30,7 @@ Written by Mark Grant.
 REPORTING BUGS
 Report bugs to <m.grant.prg@gmail.com>
 COPYRIGHT
-Copyright (C) 2013-2017, 2019, 2021 Mark Grant.
+Copyright (C) 2013-2017, 2019, 2021, 2024 Mark Grant.
 .br
 License GPLv3: GNU GPL version 3 only
 .br
