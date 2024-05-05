@@ -1,3 +1,23 @@
+2024-05-05 v1.4.2 Mark Grant <m.grant.prg@gmail.com>
+	* build(deps): bump actions/checkout from 2 to 4
+dependabot[bot] (1):
+
+	git: Correct resoning in gitignore, empty vs untracked
+	man: Update CL syntax
+	at: Improve CL syntax description
+	bash: Improve CL syntax description
+	at: Update Copyright for 2024
+	all: Remove most in-file ChangeLogs and versioning
+	git: Stabdardise on non-root gitignores
+	git: Update mailmap to v1.0.4
+	git: Update gitignore to v1.0.12
+	git: Update gitattributes to v1.0.5
+	editors: Update editorconfig to v1.0.6
+	at: Upgrade bootstrap.sh to v1.6.0
+	Merge pull request #1 from m-grant-prg/dependabot/github_actions/actions/checkout-4
+	github: Add dependabot version update config
+Mark Grant (16):
+
 2023-08-08 v1.4.1 Mark Grant <m.grant.prg@gmail.com>
 	* actions: Remove txt2man, rely on txt2manwrap dependencies
 	lxcu: Remove txt2man, rely on txt2manwrap dependecies
