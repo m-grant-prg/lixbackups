@@ -720,6 +720,8 @@ df -h | mailx -s "$script_short_desc" "$notifyuser"
 std_cmd_err_handler $?
 
 # Mail backup file date hierarchy
+# shellcheck disable=SC2012  # Output although not standardised is meant for
+# humans, so ls is fine, find not needed.
 ls -lht "$mntdir" | mailx -s "$script_short_desc" "$notifyuser"
 std_cmd_err_handler $?
 
