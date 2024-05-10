@@ -59,14 +59,16 @@
 ##################
 # Init variables #
 ##################
-readonly outputprefix="$(basename "$0"):"
+outputprefix="$(basename "$0"):"
+readonly outputprefix
 
 readonly version=1.3.10				# Script version
 readonly packageversion=@pkgversion@		# Package version
 
 readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory
 readonly loglocation=@localstatedir@/log		# Log file location
-readonly tmpexclfile=/tmp/$$.$(basename "$0").exclude	# Temporary exclude file
+tmpexclfile=/tmp/$$.$(basename "$0").exclude	# Temporary exclude file
+readonly tmpexclfile
 
 attachtype=""					# attbckshare - weekly or adhoc
 bckupCL=""					# Backup command line
