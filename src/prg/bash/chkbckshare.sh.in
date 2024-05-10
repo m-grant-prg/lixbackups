@@ -55,8 +55,8 @@
 ##################
 # Init variables #
 ##################
-outputprefix="$(basename $0): "			# Can be altered by --terse CLA
-readonly version=1.3.6				# set version variable
+outputprefix="$(basename "$0"): "
+readonly version=1.3.7				# set version variable
 readonly packageversion=@pkgversion@		# Version of the package
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 
@@ -109,7 +109,7 @@ output()
 # No return value.
 script_exit()
 {
-	exit $1
+	exit "$1"
 }
 
 # Standard function to test command error and exit if non-zero.
@@ -118,7 +118,7 @@ script_exit()
 std_cmd_err_handler()
 {
 	if (( $1 )); then
-		script_exit $1
+		script_exit "$1"
 	fi
 }
 
@@ -132,7 +132,7 @@ trap_exit()
 
 	msg="Script terminating with exit code $exit_code due to trap received."
 	output "$msg" 1 0
-	script_exit $exit_code
+	script_exit "$exit_code"
 }
 
 # Process command line arguments with GNU getopt.
@@ -167,8 +167,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			printf "%s Script version %s\n" $0 $version
-			printf "%s Package version %s\n" $0 $packageversion
+			printf "%s Script version %s\n" "$0" $version
+			printf "%s Package version %s\n" "$0" $packageversion
 			shift
 			script_exit 0
 			;;
