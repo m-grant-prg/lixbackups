@@ -500,12 +500,12 @@ prod_adhoc_excl_list()
 {
 	local -i count=0
 	local findCL
-	local input=()
+	local input
 	local nameoption
 
 	findCL="find / -type d '(' "
 	exec 3<"$etclocation/bcksystem.exclude"
-	while read -u3 -ra input; do
+	while read -u3 -r input; do
 		if (( count )); then
 			findCL+=" -o "
 		fi
