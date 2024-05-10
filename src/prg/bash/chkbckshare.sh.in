@@ -61,7 +61,6 @@ readonly packageversion=@pkgversion@		# Version of the package
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 
 bool=false
-terse=false
 mntdir=""
 mountoutput=""
 
@@ -164,7 +163,6 @@ proc_CL()
 			script_exit 0
 			;;
 		-t|--terse)
-			terse=true
 			outputprefix=""
 			shift
 			;;
