@@ -564,8 +564,8 @@ build_bckupCL()
 	case $bckuptype in
 	differential)
 		# Build the backup & incremental file names and paths
-		backpath="$mntdir/backup"$(date +%a)".tar.gz"
-		snarpath="$mntdir/backup"$(date +%a)".snar"
+		backpath="$mntdir/backup$(date +%a).tar.gz"
+		snarpath="$mntdir/backup$(date +%a).snar"
 
 		# If the incremental files exists, delete.
 		# (Just in case full backup has not done this)
