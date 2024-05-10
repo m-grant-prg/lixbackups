@@ -239,8 +239,8 @@ proc_config_file()
 	local oldIFS=$IFS
 	local input=()
 	local msg
-	local adhoccredfile adhocnotifyuser adhoctarget adhoctype
-	local weeklycredfile weeklynotifyuser weeklytarget weeklytype
+	local adhoccredfile adhoctarget adhoctype
+	local weeklycredfile weeklytarget weeklytype
 
 	if [[ ! -f $etclocation/backups.conf \
 		|| ! -r $etclocation/backups.conf ]]; then
@@ -264,9 +264,6 @@ proc_config_file()
 		weeklycredfile)
 			weeklycredfile=${input[1]}
 			;;
-		weeklynotifyuser)
-			weeklynotifyuser=${input[1]}
-			;;
 		adhoctype)
 			adhoctype=${input[1]}
 			;;
@@ -275,9 +272,6 @@ proc_config_file()
 			;;
 		adhoccredfile)
 			adhoccredfile=${input[1]}
-			;;
-		adhocnotifyuser)
-			adhocnotifyuser=${input[1]}
 			;;
 		cifsversion)
 			cifsversion=${input[1]}
@@ -294,13 +288,11 @@ proc_config_file()
 		type=$adhoctype
 		target=$adhoctarget
 		credfile=$adhoccredfile
-		notifyuser=$adhocnotifyuser
 		;;
 	weekly)
 		type=$weeklytype
 		target=$weeklytarget
 		credfile=$weeklycredfile
-		notifyuser=$weeklynotifyuser
 		;;
 	esac
 
