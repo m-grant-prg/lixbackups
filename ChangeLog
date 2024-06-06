@@ -1,3 +1,21 @@
+2024-06-06 v1.4.3 Mark Grant <m.grant.prg@gmail.com>
+	* bash: netbckup: Silence unnecessary shellcheck ls warning
+	bash: Array recipient not required reading file
+	bash: netbckup: Remove unquoting quotes
+	bash: netbckup: Declare and assign separately
+	bash: netbckup: Suppress unreachable trap code warning
+	bash: netbckup: Double quote to prevent globbing and word splitting
+	bash: detbckshare: Declare and assign separately
+	bash: detbckshare: Suppress unreachable trap code warning
+	bash: detbckshare: Double quote to prevent globbing and word splitting
+	bash: chkbckshare: Remove unused variable terse
+	bash: chkbckshare: Suppress unreachable trap code warning
+	bash: chkbckshare: Double quote to avoid globbing and word splitting
+	bash: attbckshare: Remove unused variable
+	bash: attbckshare: Suppress unreachable trap code warning
+	bash: attbckshare: Double quote to avoid globbing and word-splitting
+	bash: attbckshare: Declare and assign separately
+
 2024-05-05 v1.4.2 Mark Grant <m.grant.prg@gmail.com>
 	* build(deps): bump actions/checkout from 2 to 4
 dependabot[bot] (1):
