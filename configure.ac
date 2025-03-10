@@ -213,11 +213,6 @@ if test "x$BASH" = "xno" ; then
 	AC_MSG_ERROR(bash not found)
 fi
 
-AC_CHECK_PROG(TAR, tar, yes, no)
-if test "x$TAR" = "xno" ; then
-	AC_MSG_ERROR(tar not found)
-fi
-
 AC_MSG_NOTICE(checking for particular programs required at run time)
 AC_CHECK_PROG(CHMOD, chmod, yes, no)
 if test "x$CHMOD" = "xno" ; then
@@ -277,6 +272,11 @@ fi
 AC_CHECK_PROG(PRINTF, printf, yes, no)
 if test "x$PRINTF" = "xno" ; then
 	AC_MSG_WARN(printf not found - needed at run time)
+fi
+
+AC_CHECK_PROG(TAR, tar, yes, no)
+if test "x$TAR" = "xno" ; then
+	AC_MSG_ERROR(tar not found)
 fi
 
 
