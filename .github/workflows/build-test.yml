@@ -1,6 +1,6 @@
 #########################################################################
 #                                                                       #
-# Author: Copyright (C) 2021-2024  Mark Grant                           #
+# Author: Copyright (C) 2021-2025  Mark Grant                           #
 #                                                                       #
 # Released under the GPLv3 only.                                        #
 # SPDX-License-Identifier: GPL-3.0-only                                 #
@@ -22,7 +22,7 @@ on:
 
 jobs:
   build-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       # Check-out the repository under $GITHUB_WORKSPACE.
