@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2012-2021, 2024  Mark Grant			#
+# Author: Copyright (C) 2012-2021, 2024, 2025  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -62,7 +62,7 @@
 outputprefix="$(basename "$0"):"
 readonly outputprefix
 
-readonly version=1.3.10				# Script version
+readonly version=1.3.11				# Script version
 readonly packageversion=@pkgversion@		# Package version
 
 readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory
@@ -87,10 +87,10 @@ usage()
 {
 cat << EOF
 Usage is:-
-${0##*/} {-d|-f|-i|-s|-w}
-${0##*/} {-h|-V}
+$(basename "$0") {-d|-f|-i|-s|-w}
+$(basename "$0") {-h|-V}
 Usage is:-
-${0##*/} [OPTIONS]
+$(basename "$0") [OPTIONS]
 	-d or --differential - perform a differential backup
 	-f or --full - perform a full ad hoc backup
 	-h or --help displays usage information

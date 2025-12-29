@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2013-2019, 2021, 2024  Mark Grant		#
+# Author: Copyright (C) 2013-2019, 2021, 2024, 2025  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -56,7 +56,7 @@
 # Init variables #
 ##################
 outputprefix="$(basename "$0"): "
-readonly version=1.3.7				# set version variable
+readonly version=1.3.8				# set version variable
 readonly packageversion=@pkgversion@		# Version of the package
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 
@@ -75,16 +75,13 @@ usage()
 {
 cat << EOF
 Usage is:-
-${0##*/} [-b] [-t]
-${0##*/} {-h|-V}
+$(basename "$0") [-b] [-t]
+$(basename "$0") {-h|-V}
 Usage is:-
-${0##*/} [OPTIONS]
+$(basename "$0") [OPTIONS]
 	-b or --boolean displays TRUE or FALSE instead of mount information
-	OR
 	-h or --help displays usage information
-	OR
 	-t or --terse removes prepending script name from the output
-	OR
 	-V or --version displays version information
 EOF
 }

@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2012-2019, 2021, 2024  Mark Grant		#
+# Author: Copyright (C) 2012-2019, 2021, 2024, 2025  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -61,7 +61,7 @@
 ##################
 outputprefix="$(basename "$0"):"
 readonly outputprefix
-readonly version=1.3.8				# Set version variable
+readonly version=1.3.9				# Set version variable
 readonly etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 readonly packageversion=@pkgversion@		# Version of the package
 
@@ -84,18 +84,14 @@ usage()
 {
 cat << EOF
 Usage is:-
-${0##*/} {-a|-w} [-v]
-${0##*/} {-h|-V}
+$(basename "$0") {-a|-w} [-v]
+$(basename "$0") {-h|-V}
 Usage is:-
-${0##*/} [OPTIONS]
+$(basename "$0") [OPTIONS]
 	-a or --adhoc mount the ad hoc backup target share
-	OR
 	-h or --help displays usage information
-	OR
 	-v or --verbose verbose output
-	OR
 	-V or --version displays version information
-	OR
 	-w or --weekly mount the weekly target backup share
 EOF
 }
