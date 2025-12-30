@@ -1,0 +1,37 @@
+#########################################################################
+#									#
+# Author: Copyright (C) 2025  Mark Grant				#
+#									#
+# Released under the GPLv3 only.					#
+# SPDX-License-Identifier: GPL-3.0-only					#
+#									#
+# Purpose:								#
+# AutoMake script file to generate bash-completion scripts from source.	#
+#									#
+#########################################################################
+
+
+bashcompdir = $(datadir)/bash-completion/completions
+
+
+attbckshare chkbckshare detbckshare netbckup: Makefile
+	mkdir -p $(@D)
+	rm -f $@ $@.tmp
+	test -f ./$@.in || srcdir=$(srcdir)/; \
+	$(edit) $${srcdir}$(@F).sh.in > $@.tmp
+	mv $@.tmp $@
+attbckshare: $(srcdir)/attbckshare.sh.in
+chkbckshare: $(srcdir)/chkbckshare.sh.in
+detbckshare: $(srcdir)/detbckshare.sh.in
+netbckup: $(srcdir)/netbckup.sh.in
+
+
+bashcomp_DATA = attbckshare chkbckshare detbckshare netbckup
+
+
+EXTRA_DIST = $(srcdir)/attbckshare.sh.in $(srcdir)/chkbckshare.sh.in \
+	     $(srcdir)/detbckshare.sh.in $(srcdir)/netbckup.sh.in
+
+
+CLEANFILES = *.tmp attbckshare chkbckshare detbckshare netbckup
+
