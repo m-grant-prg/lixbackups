@@ -1,3 +1,24 @@
+2026-01-02 v1.5.0 Mark Grant <m.grant.prg@gmail.com>
+	* build(deps): bump actions/checkout from 5 to 6
+	build(deps): bump actions/checkout from 4 to 5
+dependabot[bot] (2):
+
+	at: Update Copyright for 2026
+	v1.5.0-rc2
+	bash-comp: Add bash completion
+	bash: Use standard help format
+	Merge pull request #5 from m-grant-prg/dependabot/github_actions/tip/actions/checkout-6
+	at: Upgrade bootstrap.sh to v1.6.2
+	at: Upgrade bootstrap.sh to v1.6.1
+	Merge pull request #2 from m-grant-prg/dependabot/github_actions/tip/actions/checkout-5
+	v1.5.0-rc1
+	actions: Run on Noble
+	actions: Set dependabot to target stable and old stable branches
+	at: Improve CL arguments comments
+	at: Update Copyright for 2025
+	at: Re-order program checks alphabetically
+Mark Grant (14):
+
 2024-06-06 v1.4.3 Mark Grant <m.grant.prg@gmail.com>
 	* bash: netbckup: Silence unnecessary shellcheck ls warning
 	bash: Array recipient not required reading file
