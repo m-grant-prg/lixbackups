@@ -173,38 +173,51 @@ std_cmd_err_handler $?
 
 # Write $etclocation/backups.conf file
 echo "weeklytype=$weeklysharetype" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 echo "weeklytarget=$weeklytarget" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 echo "weeklycredfile=$weeklycredfile" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 echo "weeklynotifyuser=$weeklynotifyuser" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 
 echo "adhoctype=$adhocsharetype" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 echo "adhoctarget=$adhoctarget" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 echo "adhoccredfile=$adhoccredfile" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 echo "adhocnotifyuser=$adhocnotifyuser" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 
 echo "cifsversion=$cifsversion" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 
 echo "mntdir=$mntdir" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 
 # Ensure there is a new line
 echo "" >>"$etclocation"/backups.conf
+# shellcheck disable=SC2317,SC2320	# We want the result from echo
 std_cmd_err_handler $?
 
 # Write weekly CIFS credential file.
 if [ "$weeklysharetype" = "CIFS" ]; then
 	echo "username=$weeklyusr" >>"$weeklycredfile"
+	# shellcheck disable=SC2317,SC2320	# We want the result from echo
 	std_cmd_err_handler $?
 	echo "password=$weeklypwd" >>"$weeklycredfile"
+	# shellcheck disable=SC2317,SC2320	# We want the result from echo
 	std_cmd_err_handler $?
 	chmod 0600 "$weeklycredfile"
 	std_cmd_err_handler $?
@@ -213,8 +226,10 @@ fi
 # Write ad hoc CIFS credential file.
 if [ "$adhocsharetype" = "CIFS" ]; then
 	echo "username=$adhocusr" >>"$adhoccredfile"
+	# shellcheck disable=SC2317,SC2320	# We want the result from echo
 	std_cmd_err_handler $?
 	echo "password=$adhocpwd" >>"$adhoccredfile"
+	# shellcheck disable=SC2317,SC2320	# We want the result from echo
 	std_cmd_err_handler $?
 	chmod 0600 "$adhoccredfile"
 	std_cmd_err_handler $?
