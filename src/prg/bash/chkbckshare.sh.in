@@ -165,8 +165,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			printf "%s Script version %s\n" "$0" $version
-			printf "%s Package version %s\n" "$0" $packageversion
+			printf "%s Script version %s\n" "$0" "$version"
+			printf "%s Package version %s\n" "$0" "$packageversion"
 			shift
 			script_exit 0
 			;;
@@ -205,7 +205,7 @@ proc_config_file()
 
 	IFS="="
 
-	exec 3<$etclocation/backups.conf
+	exec 3<"$etclocation"/backups.conf
 	while read -u3 -ra input; do
 		case ${input[0]} in
 		mntdir)

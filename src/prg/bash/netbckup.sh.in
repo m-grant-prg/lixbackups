@@ -271,8 +271,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			printf "%s Script version %s\n" "$0" $version
-			printf "%s Package version %s\n" "$0" $packageversion
+			printf "%s Script version %s\n" "$0" "$version"
+			printf "%s Package version %s\n" "$0" "$packageversion"
 			shift
 			script_exit 0
 			;;
@@ -340,12 +340,12 @@ cre_logfile()
 	elif [[ -f $loglocation/messages ]]; then
 		logname=$loglocation/messages
 	fi
-	touch $loglocation/lixbackups.log
+	touch "$loglocation"/lixbackups.log
 	std_cmd_err_handler $?
 	if [[ $logname ]]; then
-		chown --reference=$logname  $loglocation/lixbackups.log
+		chown --reference="$logname" "$loglocation"/lixbackups.log
 		std_cmd_err_handler $?
-		chmod --reference=$logname  $loglocation/lixbackups.log
+		chmod --reference="$logname" "$loglocation"/lixbackups.log
 		std_cmd_err_handler $?
 	fi
 }
@@ -357,7 +357,7 @@ chk_logfile()
 {
 	local msg
 
-	mkdir -p $loglocation
+	mkdir -p "$loglocation"
 	std_cmd_err_handler $?
 
 	if [[ ! -e $loglocation/lixbackups.log ]]; then
@@ -676,7 +676,7 @@ output "$script_short_desc" 0 1
 # and write initial entries
 exec 6>&1 7>&2
 
-exec 1>> $loglocation/lixbackups.log 2>&1
+exec 1>> "$loglocation"/lixbackups.log 2>&1
 
 output "$script_short_desc" 0 0
 
@@ -693,7 +693,7 @@ if [[ $(@sbindir@/chkbckshare -bt) == TRUE ]]; then
 	@sbindir@/detbckshare
 	std_cmd_err_handler $?
 fi
-@sbindir@/attbckshare --$attachtype --verbose
+@sbindir@/attbckshare --"$attachtype" --verbose
 std_cmd_err_handler $?
 
 prod_adhoc_excl_list

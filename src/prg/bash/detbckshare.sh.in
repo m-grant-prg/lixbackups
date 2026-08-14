@@ -168,8 +168,8 @@ proc_CL()
 			shift
 			;;
 		-V|--version)
-			printf "%s Script version %s\n" "$0" $version
-			printf "%s Package version %s\n" "$0" $packageversion
+			printf "%s Script version %s\n" "$0" "$version"
+			printf "%s Package version %s\n" "$0" "$packageversion"
 			shift
 			script_exit 0
 			;;
@@ -208,7 +208,7 @@ proc_config_file()
 
 	IFS="="
 
-	exec 3<$etclocation/backups.conf
+	exec 3<"$etclocation"/backups.conf
 	while read -u3 -ra input; do
 		case ${input[0]} in
 		mntdir)
@@ -237,7 +237,7 @@ proc_config_file
 if [[ $(@sbindir@/chkbckshare -bt) == FALSE ]]; then
 	status=1
 	output "Backup share not mounted. Script exit code: $status" 1 1
-	script_exit $status
+	script_exit "$status"
 fi
 
 # Finally unmount.
@@ -248,7 +248,7 @@ if (( status )); then
 	msg="Failed to unmount backup share. Umount error: "
 	msg+="$status Script exit code: $status"
 	output "$msg" 1 1
-	script_exit $status
+	script_exit "$status"
 fi
 
 output "Share unmounted from $mntdir" 0 1

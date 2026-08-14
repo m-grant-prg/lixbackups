@@ -127,8 +127,8 @@ while getopts :hV arg; do
 		script_exit_code=0
 		script_exit
 		;;
-	V)	echo "$0 Script version "$version
-		echo "$0 Package version "$packageversion
+	V)	echo "$0 Script version $version"
+		echo "$0 Package version $packageversion"
 		script_exit_code=0
 		script_exit
 		;;
@@ -139,7 +139,7 @@ while getopts :hV arg; do
 	esac
 done
 
-if [ -f $etclocation/backups.conf ]; then
+if [ -f "$etclocation"/backups.conf ]; then
 	script_exit_code=1
 	output "File(s) exist, they must be maintained with an editor." 1
 	script_exit
@@ -168,36 +168,36 @@ read -p "CIFS version to use (blank for default): " cifsversion
 read -p "Mount backup directory: " mntdir
 
 # Setup location
-test -d $etclocation || mkdir -p $etclocation
+test -d "$etclocation" || mkdir -p "$etclocation"
 std_cmd_err_handler $?
 
 # Write $etclocation/backups.conf file
-echo "weeklytype="$weeklysharetype >>$etclocation/backups.conf
+echo "weeklytype="$weeklysharetype >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
-echo "weeklytarget="$weeklytarget >>$etclocation/backups.conf
+echo "weeklytarget="$weeklytarget >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
-echo "weeklycredfile="$weeklycredfile >>$etclocation/backups.conf
+echo "weeklycredfile="$weeklycredfile >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
-echo "weeklynotifyuser="$weeklynotifyuser >>$etclocation/backups.conf
-std_cmd_err_handler $?
-
-echo "adhoctype="$adhocsharetype >>$etclocation/backups.conf
-std_cmd_err_handler $?
-echo "adhoctarget="$adhoctarget >>$etclocation/backups.conf
-std_cmd_err_handler $?
-echo "adhoccredfile="$adhoccredfile >>$etclocation/backups.conf
-std_cmd_err_handler $?
-echo "adhocnotifyuser="$adhocnotifyuser >>$etclocation/backups.conf
+echo "weeklynotifyuser="$weeklynotifyuser >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
 
-echo "cifsversion="$cifsversion >>$etclocation/backups.conf
+echo "adhoctype="$adhocsharetype >>"$etclocation"/backups.conf
+std_cmd_err_handler $?
+echo "adhoctarget="$adhoctarget >>"$etclocation"/backups.conf
+std_cmd_err_handler $?
+echo "adhoccredfile="$adhoccredfile >>"$etclocation"/backups.conf
+std_cmd_err_handler $?
+echo "adhocnotifyuser="$adhocnotifyuser >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
 
-echo "mntdir="$mntdir >>$etclocation/backups.conf
+echo "cifsversion="$cifsversion >>"$etclocation"/backups.conf
+std_cmd_err_handler $?
+
+echo "mntdir="$mntdir >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
 
 # Ensure there is a new line
-echo "" >>$etclocation/backups.conf
+echo "" >>"$etclocation"/backups.conf
 std_cmd_err_handler $?
 
 # Write weekly CIFS credential file.
@@ -221,13 +221,13 @@ if [ $adhocsharetype = "CIFS" ]; then
 fi
 
 # Create $etclocation/backups inclde and exclude files
-touch $etclocation/bckweekly.exclude
+touch "$etclocation"/bckweekly.exclude
 std_cmd_err_handler $?
-touch $etclocation/bckdaily.exclude
+touch "$etclocation"/bckdaily.exclude
 std_cmd_err_handler $?
-touch $etclocation/bckseldaily.files
+touch "$etclocation"/bckseldaily.files
 std_cmd_err_handler $?
-touch $etclocation/bckseldaily.exclude
+touch "$etclocation"/bckseldaily.exclude
 std_cmd_err_handler $?
 
 script_exit_code=0
