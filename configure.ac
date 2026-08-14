@@ -221,6 +221,11 @@ AC_MSG_NOTICE(checking for some standard AutoTools required programs)
 AC_PROG_INSTALL
 
 AC_MSG_NOTICE(checking for particular programs required by this build)
+AC_CHECK_PROG([SHELLCHECK], [shellcheck], [yes], [no])
+if test "x$SHELLCHECK" = "xno" ; then
+	AC_MSG_ERROR([shellcheck not found])
+fi
+
 AC_CHECK_PROG(TXT2MAN, txt2man, yes, no)
 if test "x$TXT2MAN" = "xno" ; then
 	AC_MSG_ERROR(txt2man not found)
