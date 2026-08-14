@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2012-2021, 2024, 2025  Mark Grant		#
+# Author: Copyright (C) 2012-2021, 2024-2026  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -62,7 +62,7 @@
 outputprefix="$(basename "$0"):"
 readonly outputprefix
 
-readonly version=1.3.11				# Script version
+readonly version=1.3.12				# Script version
 readonly packageversion=@pkgversion@		# Package version
 
 readonly etclocation=@sysconfdir@/lixbackups	# Path to config directory
@@ -170,8 +170,9 @@ output()
 # Standard trap exit function.
 # No parameters.
 # No return value.
-# shellcheck disable=SC2317  # Do not warn about unreachable commands in trap
-# functions, they are legitimate.
+# Do not warn about unreachable commands in trap functions, nor function is
+# never invoked as these are legitimate features of trap handlers.
+# shellcheck disable=SC2317,SC2329
 trap_exit()
 {
 	local -i exit_code=$?

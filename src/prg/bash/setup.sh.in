@@ -8,7 +8,7 @@
 
 #########################################################################
 #									#
-# Author: Copyright (C) 2012-2019, 2021, 2024  Mark Grant		#
+# Author: Copyright (C) 2012-2019, 2021, 2024, 2026  Mark Grant		#
 #									#
 # Released under the GPLv3 only.					#
 # SPDX-License-Identifier: GPL-3.0-only					#
@@ -52,7 +52,7 @@
 ##################
 script_exit_code=0
 outputprefix="$(basename $0):"
-version=1.2.9				# set version variable
+version=1.2.10				# set version variable
 etclocation=@sysconfdir@/lixbackups	# Path to etc directory
 packageversion=@pkgversion@		# Version of the complete package
 
@@ -101,6 +101,9 @@ script_exit()
 }
 
 # Standard trap exit function
+# Do not warn about unreachable commands in trap functions, nor function is
+# never invoked as these are legitimate features of trap handlers.
+# shellcheck disable=SC2317,SC2329
 trap_exit()
 {
 script_exit_code=1
