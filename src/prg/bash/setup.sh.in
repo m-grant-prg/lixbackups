@@ -145,27 +145,27 @@ if [ -f "$etclocation"/backups.conf ]; then
 	script_exit
 fi
 
-read -p "Weekly backup share type: " weeklysharetype
-read -p "Weekly backup target: " weeklytarget
+read -pr "Weekly backup share type: " weeklysharetype
+read -pr "Weekly backup target: " weeklytarget
 if [ "$weeklysharetype" = "CIFS" ]; then
-	read -p "Weekly credential file (full path): " weeklycredfile
-	read -p "Weekly user profile: " weeklyusr
-	read -p "Weekly password for user profile: " weeklypwd
+	read -pr "Weekly credential file (full path): " weeklycredfile
+	read -pr "Weekly user profile: " weeklyusr
+	read -pr "Weekly password for user profile: " weeklypwd
 fi
-read -p "Weekly user to notify: " weeklynotifyuser
+read -pr "Weekly user to notify: " weeklynotifyuser
 
-read -p "Ad hoc backup share type: " adhocsharetype
-read -p "Ad hoc backup target: " adhoctarget
+read -pr "Ad hoc backup share type: " adhocsharetype
+read -pr "Ad hoc backup target: " adhoctarget
 if [ "$adhocsharetype" = "CIFS" ]; then
-	read -p "Ad hoc credential file (full path): " adhoccredfile
-	read -p "Ad hoc user profile: " adhocusr
-	read -p "Ad hoc password for user profile: " adhocpwd
+	read -pr "Ad hoc credential file (full path): " adhoccredfile
+	read -pr "Ad hoc user profile: " adhocusr
+	read -pr "Ad hoc password for user profile: " adhocpwd
 fi
-read -p "Ad hoc user to notify: " adhocnotifyuser
+read -pr "Ad hoc user to notify: " adhocnotifyuser
 
-read -p "CIFS version to use (blank for default): " cifsversion
+read -pr "CIFS version to use (blank for default): " cifsversion
 
-read -p "Mount backup directory: " mntdir
+read -pr "Mount backup directory: " mntdir
 
 # Setup location
 test -d "$etclocation" || mkdir -p "$etclocation"
