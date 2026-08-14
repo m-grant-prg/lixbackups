@@ -242,6 +242,11 @@ if test "x$BASH" = "xno" ; then
 	AC_MSG_ERROR(bash not found)
 fi
 
+AC_PATH_PROG([ENV], [env], [no])
+if test "x$ENV" = "xno" ; then
+	AC_MSG_ERROR([env not found])
+fi
+
 AC_MSG_NOTICE(checking for particular programs required at run time)
 AC_CHECK_PROG(CHMOD, chmod, yes, no)
 if test "x$CHMOD" = "xno" ; then
@@ -401,7 +406,10 @@ AC_MSG_NOTICE(processing additional checks and variables)
 #
 AC_SUBST([edit], ["$AWK \
 		'{ \
+		gsub(/@abstopsrcdir[@]/,"'"$(abs_top_srcdir)"'"); \
+		gsub(/@abstopbuilddir[@]/,"'"$(abs_top_builddir)"'"); \
 		gsub(/@bashlocation[@]/,"'"$(BASH)"'"); \
+		gsub(/@envlocation[@]/,"'"$(ENV)"'"); \
 		gsub(/@logrotateloc[@]/,"'"$(logrotateloc)"'"); \
 		gsub(/@pkgversion[@]/,"'"$(pkgversion)"'"); \
 		gsub(/@prefix[@]/,"'"$(prefix)"'"); \
@@ -455,7 +463,9 @@ AC_CONFIG_FILES([Makefile
 		src/conf/rootetc/logrotate/Makefile
 		src/man/5/Makefile
 		src/man/8/Makefile
-		src/prg/bash/Makefile])
+		src/prg/bash/Makefile
+		src/prg/tests/shellcheck/Makefile
+		src/prg/run-tests/Makefile])
 
 AC_OUTPUT
 
