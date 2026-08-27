@@ -304,7 +304,13 @@ build_mnt_cmd()
 	mountCL="mount -t "
 	case $type in
 	NFS)
-		mountCL=$mountCL"nfs $target $mntdir"
+		# NFS will try to share the superblock if shares from the same
+		# root, eg /srv, are already mounted. If the different mounts
+		# have different options or permissions then on some systems, eg
+		# Fedora 44, SeLinux will cause the mount to fail as the
+		# superblock should not be shared, so use the option to not
+		# share the superblock.
+		mountCL=$mountCL"nfs -o nosharecache $target $mntdir"
 		;;
 	CIFS)
 		mountCL=$mountCL"cifs -o credentials=$credfile $target $mntdir"
