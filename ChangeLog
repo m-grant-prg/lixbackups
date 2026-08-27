@@ -1,3 +1,31 @@
+2026-08-27 v1.5.1 Mark Grant <m.grant.prg@gmail.com>
+	* build(deps): bump actions/checkout from 6 to 7
+dependabot[bot] (1):
+
+	bash: Do not share the superblock on NFS mounts
+	tests: Move tree-wide tests to appropriate level in tree
+	at: bash: tests: Use @envlocation@ bash for bash shebang
+	bash-comp: Fix shellcheck warning prev is unused
+	bash: Fix shellcheck warning about $? after echo
+	bash: fix shellcheck warning on read without -r
+	bash: Fix shellcheck warning double quote to prevent globbing
+	bash: Fix shellcheck prefer double quotes warning
+	bash: Fix shellcheck warning trap function never invoked
+	at: tests: Install shellcheck tests v1.0.1
+	at: Upgrade bootstrap.sh to v1.7.4
+	actions: Upload test logs on failure
+	lxcu: Add shellcheck to container install lists
+	at: Add check for shellcheck
+	Merge pull request #7 from m-grant-prg/dependabot/github_actions/tip/actions/checkout-7
+	at: Upgrade bootstrap.sh to v1.7.2
+	at: Add distro info for Installation Directories
+	at: Upgrade bootstrap.sh to v1.7.1
+	at: Remove old signature file before creating a new one
+	at: Upgrade bootstrap.sh to v1.7.0
+	at: Add sign_tarball target
+	at: Leave source tarball name same as distribution tarball
+Mark Grant (22):
+
 2026-01-02 v1.5.0 Mark Grant <m.grant.prg@gmail.com>
 	* build(deps): bump actions/checkout from 5 to 6
 	build(deps): bump actions/checkout from 4 to 5
