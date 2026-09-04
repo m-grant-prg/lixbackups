@@ -59,7 +59,7 @@ AC_COPYRIGHT([Copyright (C) 2012-2026  Mark Grant
 	      This script is free to copy or distribute under the terms set out
 	      in the package license. See COPYING for details.])
 
-AC_REVISION([$Revision: 1.1.9 $])
+AC_REVISION([$Revision: 1.1.10 $])
 
 AC_PREREQ([2.69])
 
@@ -406,8 +406,8 @@ AC_MSG_NOTICE(processing additional checks and variables)
 #
 AC_SUBST([edit], ["$AWK \
 		'{ \
-		gsub(/@abstopsrcdir[@]/,"'"$(abs_top_srcdir)"'"); \
 		gsub(/@abstopbuilddir[@]/,"'"$(abs_top_builddir)"'"); \
+		gsub(/@abstopsrcdir[@]/,"'"$(abs_top_srcdir)"'"); \
 		gsub(/@envlocation[@]/,"'"$(ENV)"'"); \
 		gsub(/@logrotateloc[@]/,"'"$(logrotateloc)"'"); \
 		gsub(/@pkgversion[@]/,"'"$(pkgversion)"'"); \
